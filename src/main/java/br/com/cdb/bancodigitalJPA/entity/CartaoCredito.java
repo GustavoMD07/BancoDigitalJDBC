@@ -19,9 +19,9 @@ public class CartaoCredito extends Cartao {
 	//qualquer coisa, usa o JsonIgnore
 	//o double primitivo não tava permitindo que o objeto fosse nulo
 	
-	private BigDecimal limiteCredito;
+	private BigDecimal limiteCredito = BigDecimal.ZERO;
 	
-	private BigDecimal fatura;
+	private BigDecimal fatura = BigDecimal.ZERO;;
 	
 	
 	public BigDecimal getLimiteCredito() {
