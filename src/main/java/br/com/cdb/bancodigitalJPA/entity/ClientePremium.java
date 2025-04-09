@@ -2,6 +2,7 @@ package br.com.cdb.bancodigitalJPA.entity;
 
 import java.math.BigDecimal;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 
@@ -9,8 +10,12 @@ import jakarta.persistence.PrimaryKeyJoinColumn;
 public class ClientePremium extends Cliente {
 
 	private BigDecimal limiteCredito = BigDecimal.valueOf(10000);
+	
+	@Column(precision = 4, scale = 3)
 	private BigDecimal taxaRendimento = BigDecimal.valueOf(0.009);
+	
 	private BigDecimal taxaManutencao = BigDecimal.ZERO;
+	
 	private BigDecimal valorApolice = BigDecimal.ZERO;
 	
 	

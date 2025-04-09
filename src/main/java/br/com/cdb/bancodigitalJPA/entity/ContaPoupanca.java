@@ -2,6 +2,7 @@ package br.com.cdb.bancodigitalJPA.entity;
 
 import java.math.BigDecimal;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -11,7 +12,8 @@ import jakarta.persistence.PrimaryKeyJoinColumn;
 @PrimaryKeyJoinColumn(name = "idConta")
 public class ContaPoupanca extends Conta {
 
-	private BigDecimal taxaRendimento;
+	@Column(precision = 4, scale = 3)
+	private BigDecimal taxaRendimento = BigDecimal.ZERO;
 	
 	// Se você precisa de um construtor, garanta que o Hibernate consiga usar o no-arg constructor
     public ContaPoupanca() {

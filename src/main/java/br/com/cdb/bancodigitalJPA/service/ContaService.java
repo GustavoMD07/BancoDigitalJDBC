@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import br.com.cdb.bancodigitalJPA.entity.Cartao;
 import br.com.cdb.bancodigitalJPA.entity.Cliente;
 import br.com.cdb.bancodigitalJPA.entity.Conta;
 import br.com.cdb.bancodigitalJPA.entity.ContaCorrente;
@@ -26,22 +27,21 @@ public class ContaService {
 
 	@Autowired
 	private ClienteRepository clienteRepository;
-	
+
 	@Autowired
 	private CartaoRepository cartaoRepository;
-	
+
 	@Autowired
 	private SeguroRepository seguroRepository;
 
 	// a conta puxa o cliente, e o cliente puxa o ID
 
 	public Conta addConta(Conta conta) {
-		
+
 		// Recupera o cliente da conta
-		Cliente cliente = clienteRepository.findById(conta.getCliente().getId()).
-			orElseThrow(() -> new ObjetoNuloException("Cliente com ID " + conta.getCliente().getId() + 
-					" não encontrado!"));
-		
+		Cliente cliente = clienteRepository.findById(conta.getCliente().getId()).orElseThrow(
+				() -> new ObjetoNuloException("Cliente com ID " + conta.getCliente().getId() + " não encontrado!"));
+
 		if (cliente.getContas().size() >= 2) {
 			throw new QuantidadeExcedidaException("O cliente já possui duas contas");
 		}
@@ -52,20 +52,23 @@ public class ContaService {
 
 	public Conta removerConta(Long id) {
 		Conta conta = buscarContaPorId(id);
-		
+
 		if (conta.getCartoes() != null && !conta.getCartoes().isEmpty()) {
+			for (Cartao cartao : conta.getCartoes()) {
+				if (cartao.getSeguros() != null && !cartao.getSeguros().isEmpty()) {
+					seguroRepository.deleteAll(cartao.getSeguros());
+				}
+			}
 			cartaoRepository.deleteAll(conta.getCartoes());
+
 		}
-		
-		seguroRepository.deleteAll();
-		
+
 		contaRepository.deleteById(id);
 		return conta;
 	}
 
 	public Conta buscarContaPorId(Long id) {
-		return contaRepository.findById(id).orElseThrow(() -> 
-			new ObjetoNuloException("Conta não encontrada"));
+		return contaRepository.findById(id).orElseThrow(() -> new ObjetoNuloException("Conta não encontrada"));
 	}
 
 	public List<Conta> listarContas() {
@@ -81,8 +84,9 @@ public class ContaService {
 		Conta origem = buscarContaPorId(origemid);
 		Conta destino = buscarContaPorId(destinoid);
 
-		if (valor.compareTo(origem.getSaldo()) > 0 ) { //ele retorna 1 se o valor for maior que o saldo, e ai a gente compara
-			//se o valor for maior que o saldo, ele vai retornar 1 e comparar com o 0
+		if (valor.compareTo(origem.getSaldo()) > 0) { // ele retorna 1 se o valor for maior que o saldo, e ai a gente
+														// compara
+			// se o valor for maior que o saldo, ele vai retornar 1 e comparar com o 0
 			throw new SaldoInsuficienteException("Saldo insuficiente na conta de origem");
 		}
 
@@ -100,7 +104,7 @@ public class ContaService {
 	@Transactional
 	public void pix(Long id, BigDecimal valor) {
 		Conta conta = buscarContaPorId(id);
-		if (valor.compareTo(conta.getSaldo()) > 0 ) {
+		if (valor.compareTo(conta.getSaldo()) > 0) {
 			throw new SaldoInsuficienteException("Saldo insuficiente para fazer o pix");
 		}
 		conta.setSaldo(conta.getSaldo().subtract(valor));
@@ -117,7 +121,7 @@ public class ContaService {
 	@Transactional
 	public void saque(Long id, BigDecimal valor) {
 		Conta conta = buscarContaPorId(id);
-		if (valor.compareTo(conta.getSaldo()) > 0 ) {
+		if (valor.compareTo(conta.getSaldo()) > 0) {
 			throw new SaldoInsuficienteException("Saldo insuficiente para saque");
 		}
 		conta.setSaldo(conta.getSaldo().subtract(valor));
@@ -155,7 +159,7 @@ public class ContaService {
 		ContaPoupanca contaP = (ContaPoupanca) conta;
 		BigDecimal taxa = contaP.getTaxaRendimento();
 
-		if (conta.getSaldo().compareTo(BigDecimal.ZERO) == 0) { //não posso usar + ou * com BigDecimal
+		if (conta.getSaldo().compareTo(BigDecimal.ZERO) == 0) { // não posso usar + ou * com BigDecimal
 			throw new SaldoInsuficienteException("Não é possível aplicar rendimento a um saldo nulo");
 		}
 
