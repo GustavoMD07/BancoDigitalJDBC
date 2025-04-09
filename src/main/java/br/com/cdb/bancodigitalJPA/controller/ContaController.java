@@ -90,7 +90,7 @@ public class ContaController {
 	public ResponseEntity<List<Conta>> listarContas() {
 		List<Conta> contas = contaService.listarContas();
 		if(contas.isEmpty()) {
-			throw new ListaVaziaException("Não foram encontradas Contas");
+			throw new ListaVaziaException("Não foram encontradas Contas.");
 		}
 		return new ResponseEntity<List<Conta>>(contas, HttpStatus.OK);
 	}
