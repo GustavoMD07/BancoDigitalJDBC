@@ -14,4 +14,9 @@ public class AdminController {
 	public ResponseEntity<String> areaAdmin() {
 		return new ResponseEntity<>("Bem vindo a Role Admin", HttpStatus.OK);
 	} //apenas um teste pra verificar as roles 
+	
+	@GetMapping("/test-auth")
+	public ResponseEntity<String> test() {
+	    return ResponseEntity.ok("Tudo certo, você tá autenticado!");
+	}
 }

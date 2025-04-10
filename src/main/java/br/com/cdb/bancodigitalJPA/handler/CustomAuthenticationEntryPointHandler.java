@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -15,6 +17,9 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class CustomAuthenticationEntryPointHandler implements AuthenticationEntryPoint {
 
+	@Autowired
+	private ObjectMapper objectMapper;
+	
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException authException) throws IOException {
@@ -29,7 +34,6 @@ public class CustomAuthenticationEntryPointHandler implements AuthenticationEntr
 		responseBody.put("message", "Antes de usar qualquer request, é necessário estar logado no sistema");
 		responseBody.put("path", request.getRequestURI());
 
-		ObjectMapper mapper = new ObjectMapper();
-		response.getWriter().write(mapper.writeValueAsString(responseBody));
+		response.getWriter().write(objectMapper.writeValueAsString(responseBody));
 	}
 }

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -20,6 +21,9 @@ import jakarta.servlet.http.HttpServletResponse;
 // eu deixo como Component, então ele coloca no contexto que precisar
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 	
+	@Autowired
+	private ObjectMapper objectMapper;
+	
 	@Override //é um método do Handler que já tem no Spring Security, só estou "reescrevendo" ele
 	public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException
 	accessDeniedException) throws IOException, ServletException {
@@ -33,7 +37,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         responseBody.put("message", "Usuário não tem permissão para acessar esse request");
         responseBody.put("path", request.getRequestURI());
         
-        ObjectMapper mapper = new ObjectMapper();
-        response.getWriter().write(mapper.writeValueAsString(responseBody));
+        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
 	}
 }

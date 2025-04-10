@@ -52,6 +52,10 @@ public class SecurityConfig { // autenticação, autorização, e gerencia o flu
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/h2-console/**").permitAll()
 				.requestMatchers("/admin-security/**").hasRole("ADMIN")
+				.requestMatchers("/clientes/admin-security/**").hasRole("ADMIN")
+				.requestMatchers("/contas/admin-security/**").hasRole("ADMIN")
+				.requestMatchers("/cartoes/admin-security/**").hasRole("ADMIN")
+				.requestMatchers("/seguros/admin-security/**").hasRole("ADMIN")
 				.requestMatchers("/cliente-security/**").hasAnyRole("ADMIN", "CLIENTE")
 				.requestMatchers("/public/**", "/auth/**").permitAll()
 				.anyRequest().authenticated()
