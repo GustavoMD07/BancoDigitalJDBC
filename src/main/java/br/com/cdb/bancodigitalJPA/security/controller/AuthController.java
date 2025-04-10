@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.cdb.bancodigitalJPA.security.dto.LoginRequest;
 import br.com.cdb.bancodigitalJPA.security.jwt.JwtService;
 import br.com.cdb.bancodigitalJPA.security.model.Usuario;
+import br.com.cdb.bancodigitalJPA.security.service.UsuarioService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -24,6 +25,7 @@ public class AuthController { // aqui eu vou criar os endpoints de autenticaçã
 	//tenta verificar os dados, se der certo, ai a gente gera o JWT(token)
 	
 	
+	//manager é o cara responsável por gerenciar a lógica de autenticação, mais ou menos um Service
 	@Autowired
 	private AuthenticationManager authService;
 	
@@ -36,14 +38,14 @@ public class AuthController { // aqui eu vou criar os endpoints de autenticaçã
 	@PostMapping("/login") //aqui eu poderia fazer um <?> pra deixar como wildcard também, mas optei por mensagem mesmo
 	public ResponseEntity<String> login(@RequestBody @Valid LoginRequest request) {
 		try {
-			Authentication autenticacao = autenticacao.authenticate( new UsernamePasswordAuthenticationToken(
-					request.email(), request.senha()));
+			Authentication authentication = authService.authenticate(
+				    new UsernamePasswordAuthenticationToken(request.email(), request.senha()));
 			// usernamePassword carrega o email e a senha que o usuário digitou, ai se for válido, ele retorna a instância
 			
 			
 		
-			Usuario usuario = (Usuario) autenticacao.getPrincipal();	//cast
-			String token = jwtService.generateToken(usuario); //gera o token
+			Usuario usuario = (Usuario) authentication.getPrincipal();	//cast
+			String token = jwtService.gerarToken(usuario.getUsername()); //gera o token
 			return new ResponseEntity<>("Token: " + token, HttpStatus.OK);
 		} catch (AuthenticationException e) {
             return new ResponseEntity<>("Erro ao autenticar: " + e.getMessage(), HttpStatus.UNAUTHORIZED);
