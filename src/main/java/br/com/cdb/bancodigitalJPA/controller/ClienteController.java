@@ -30,7 +30,7 @@ public class ClienteController {
 	
 	//esse ResponseEntity eu uso pra dar alguma resposta a quem fez a requisição
 	//é mais pra informar o que tá acontecendo
-	@PostMapping("/add")
+	@PostMapping("/cliente-security/add")
 	public ResponseEntity<String> addCliente(@RequestBody @Valid ClienteDTO clienteDto) {
 		
 		
@@ -49,7 +49,7 @@ public class ClienteController {
 		}
 	}
 	
-	@DeleteMapping("/remove/{id}")
+	@DeleteMapping("/admin-security/remove/{id}")
 	public ResponseEntity<String> removeCliente(@PathVariable Long id) {
 		
 		Cliente clienteRemovido = clienteService.removerCliente(id);
@@ -63,7 +63,7 @@ public class ClienteController {
 		}
 	}
 	
-	@PutMapping("/atualizar/{id}")
+	@PutMapping("/cliente-security/atualizar/{id}")
 	public ResponseEntity<String> atualizarCliente(@PathVariable Long id,  @RequestBody @Valid ClienteDTO clienteDto) {
 		
 		Cliente clienteAtualizado = clienteService.atualizarCliente(id, clienteDto);
@@ -75,7 +75,7 @@ public class ClienteController {
 		}
 	}
 	
-	@GetMapping("/listAll")
+	@GetMapping("/admin-security/listAll")
 	public ResponseEntity<List<ClienteResponse>> listarClientes() {
 		List<ClienteResponse> clientes = clienteService.getAllClientes();
 		if(clientes.isEmpty()) {
@@ -84,7 +84,7 @@ public class ClienteController {
 		return new ResponseEntity<>(clientes, HttpStatus.OK);
 	}
 	
-	@GetMapping("/list/{id}")			//com o PathVariable, eu mostro que o LongId vai ser o que o usuário escreve
+	@GetMapping("/cliente-security/list/{id}")			//com o PathVariable, eu mostro que o LongId vai ser o que o usuário escreve
 	public ResponseEntity<ClienteResponse> buscarClientePorId(@PathVariable Long id) {
 		
 		Cliente clienteProcurado = clienteService.buscarClientePorId(id);

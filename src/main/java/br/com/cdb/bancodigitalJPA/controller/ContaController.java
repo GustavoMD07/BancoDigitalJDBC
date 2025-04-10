@@ -36,7 +36,7 @@ public class ContaController {
 	private ClienteRepository clienteRepository;
 	
 	
-	@PostMapping("/add")
+	@PostMapping("/cliente-security/add")
 	public ResponseEntity<String> addConta(@RequestBody @Valid ContaDTO contaDto) {
 		Optional<Cliente> clienteProcurado = clienteRepository.findById(contaDto.getClienteId());
 		
@@ -62,7 +62,7 @@ public class ContaController {
 		
 	}
 	
-	@DeleteMapping("/remove/{id}")
+	@DeleteMapping("/admin-security/remove/{id}")
 	public ResponseEntity<String> removerConta(@PathVariable Long id) {
 		Conta contaRemovida = contaService.removerConta(id);
 		
@@ -74,7 +74,7 @@ public class ContaController {
 		}
 	}
 	
-	@GetMapping("/list/{id}")
+	@GetMapping("/cliente-security/list/{id}")
 	public ResponseEntity<Conta> buscarConta(@PathVariable Long id) {
 		Conta contaProcurada = contaService.buscarContaPorId(id);
 		
@@ -86,7 +86,7 @@ public class ContaController {
 		}
 	}
 	
-	@GetMapping("/listAll")
+	@GetMapping("/admin-security/listAll")
 	public ResponseEntity<List<Conta>> listarContas() {
 		List<Conta> contas = contaService.listarContas();
 		if(contas.isEmpty()) {
@@ -95,42 +95,42 @@ public class ContaController {
 		return new ResponseEntity<List<Conta>>(contas, HttpStatus.OK);
 	}
 	
-	@GetMapping("/saldo/{id}")
+	@GetMapping("cliente-security/saldo/{id}")
 	public ResponseEntity<String> verificarSaldo(@PathVariable Long id) {
 		return new ResponseEntity<>("Saldo: R$" + contaService.verificarSaldo(id), HttpStatus.OK);
 	}
 	
-	@PostMapping("/transf/{id}")
+	@PostMapping("/cliente-security/transf/{id}")
 	public ResponseEntity<String> transferencia(@PathVariable Long id, @RequestParam Long destinoid, @RequestParam BigDecimal valor){
 		contaService.transferir(id, destinoid, valor);
 		return new ResponseEntity<>("Transferência de R$ " + valor + " concluída com sucesso", HttpStatus.ACCEPTED);
 	}
 	
-	@PostMapping("/pix/{id}")
+	@PostMapping("/cliente-security/pix/{id}")
 	public ResponseEntity<String> pix(@PathVariable Long id, @RequestParam BigDecimal valor) {
 		contaService.pix(id, valor);
 		return new ResponseEntity<>("Pix de R$ " + valor +" realizado com sucesso!", HttpStatus.ACCEPTED);
 	}
 	
-	@PostMapping("/deposito/{id}")
+	@PostMapping("/cliente-security/deposito/{id}")
 	public ResponseEntity<String> deposito(@PathVariable Long id, @RequestParam BigDecimal valor) {
 		contaService.deposito(id, valor);
 		return new ResponseEntity<>("Depósito de R$ " + valor + " realizado com sucesso", HttpStatus.ACCEPTED);
 	}
 	
-	@PostMapping("/saque/{id}")
+	@PostMapping("/cliente-security/saque/{id}")
 	public ResponseEntity<String> saque(@PathVariable Long id, @RequestParam BigDecimal valor) {
 		contaService.saque(id, valor);
 		return new ResponseEntity<>("Saque de R$ " + valor + " realizado com sucesso", HttpStatus.ACCEPTED);
 	}
 	
-	@PutMapping("/manutencao/{id}")
+	@PutMapping("/admin-security/manutencao/{id}")
 	public ResponseEntity<String> taxaManutencao(@PathVariable Long id) {
 		contaService.aplicarTaxaManutencao(id);
 		return new ResponseEntity<>("Taxa de manutenção aplicada", HttpStatus.OK);
 	}
 	
-	@PutMapping("/rendimento/{id}")
+	@PutMapping("/admin-security/rendimento/{id}")
 	public ResponseEntity<String> taxaRendimento(@PathVariable Long id) {
 		contaService.aplicarRendimento(id);
 		return new ResponseEntity<>("Taxa de rendimento aplicada", HttpStatus.OK);

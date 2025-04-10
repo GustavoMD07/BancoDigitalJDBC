@@ -24,7 +24,7 @@ public class SeguroController {
 	@Autowired
     private SeguroService seguroService;
 	
-	@PostMapping("/add")
+	@PostMapping("/cliente-security/add")
     public ResponseEntity<String> contratarSeguro(@RequestBody @Valid SeguroDTO dto) {
         SeguroResponse response = seguroService.contratarSeguro(dto);
         
@@ -37,19 +37,19 @@ public class SeguroController {
 		}
     }
 
-    @GetMapping("/list/{id}")
+    @GetMapping("/cliente-security/list/{id}")
     public ResponseEntity<SeguroResponse> buscarSeguroPorId(@PathVariable Long id) {
         SeguroResponse response = seguroService.buscarSeguroPorId(id);
         return new ResponseEntity<>(response, HttpStatus.FOUND);
     }
 
-    @GetMapping("/listAll")
+    @GetMapping("/admin-security/listAll")
     public ResponseEntity<List<SeguroResponse>> listarSeguros() {
         List<SeguroResponse> lista = seguroService.listarSeguros();
         return new ResponseEntity<>(lista, HttpStatus.FOUND);
     }
 
-    @PutMapping("/cancelar/{id}")
+    @PutMapping("/cliente-security/cancelar/{id}")
     public ResponseEntity<String> cancelarSeguro(@PathVariable Long id) {
         seguroService.cancelarSeguro(id);
         return new ResponseEntity<>("Seguro cancelado com sucesso, obrigado por utilizar nossos serviços.", 

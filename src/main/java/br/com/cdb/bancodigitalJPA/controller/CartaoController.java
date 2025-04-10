@@ -38,7 +38,7 @@ public class CartaoController {
 	@Autowired
 	private ContaRepository contaRepository;
 	
-	@PostMapping("/add")
+	@PostMapping("/cliente-security/add")
 	public ResponseEntity<String> addCartao(@RequestBody @Valid CartaoDTO cartaoDto) {
 		Optional<Conta> contaProcurada = contaRepository.findById(cartaoDto.getContaId());
 		
@@ -67,7 +67,7 @@ public class CartaoController {
 				HttpStatus.OK);
 	}
 	
-	@GetMapping("/listAll")
+	@GetMapping("/admin-security/listAll")
 	public ResponseEntity<List<Cartao>> listarCartoes() {
 		List<Cartao> cartoes = cartaoService.listarCartoes();
 		if(cartoes.isEmpty()) {
@@ -76,44 +76,44 @@ public class CartaoController {
 		return new ResponseEntity<>(cartoes, HttpStatus.FOUND);
 	}
 	
-	@GetMapping("/list/{id}")
+	@GetMapping("/cliente-security/list/{id}")
 	public ResponseEntity<Cartao> buscarCartao(@PathVariable Long id) {
 		Cartao cartao = cartaoService.buscarCartaoPorId(id);
 		return new ResponseEntity<>(cartao, HttpStatus.FOUND);
 	}
 	
-	@PutMapping("/desativar/{id}")
+	@PutMapping("/admin-security/desativar/{id}")
 	public ResponseEntity<String> desativarCartao(@PathVariable Long id) {
 		cartaoService.desativarCartao(id);
 		
 		return new ResponseEntity<>("Cartão desativado com sucesso!", HttpStatus.OK);
 	}
 	
-	@PutMapping("/ativar/{id}")
+	@PutMapping("/admin-security/ativar/{id}")
 	public ResponseEntity<String> ativarCartao(@PathVariable Long id) {
 		cartaoService.ativarCartao(id);
 		return new ResponseEntity<>("Cartão ativado com sucesso!", HttpStatus.OK);
 	}
 	
-	@PutMapping("/limite/{id}")
+	@PutMapping("/cliente-security/limite/{id}")
 	public ResponseEntity<String> alterarLimiteCredito(@PathVariable Long id, @RequestParam BigDecimal novoLimite) {
 		cartaoService.alterarLimiteCredito(id, novoLimite);
 		return new ResponseEntity<>("Novo limite: R$" + novoLimite, HttpStatus.OK);
 	}
 	
-	@PutMapping("limite-diario/{id}")
+	@PutMapping("/cliente-security/limite-diario/{id}")
 	public ResponseEntity<String> alterarLimiteDiario(@PathVariable Long id, @RequestParam BigDecimal novoLimite) {
 		cartaoService.alterarLimiteDiario(id, novoLimite);
 		return new ResponseEntity<>("Novo limite diário: R$ " + novoLimite, HttpStatus.OK);
 	}
 	
-	@PutMapping("/senha/{id}")
+	@PutMapping("/cliente-security/senha/{id}")
 	public ResponseEntity<String> alterarSenha(@PathVariable Long id, @RequestParam String senhaAntiga, @RequestParam String novaSenha) {
 		cartaoService.alterarSenha(id, senhaAntiga, novaSenha);
 		return new ResponseEntity<>("Nova senha: " + novaSenha, HttpStatus.OK);
 	}
 	
-	@GetMapping("/fatura/{id}")
+	@GetMapping("/cliente-security/fatura/{id}")
 	public ResponseEntity<String> verificarFatura(@PathVariable Long id) {
 		Cartao cartao = cartaoService.buscarCartaoPorId(id);
 		
@@ -128,7 +128,7 @@ public class CartaoController {
 		}
 	}
 	
-	@PostMapping("/pagamento/{id}")
+	@PostMapping("/cliente-security/pagamento/{id}")
 	public ResponseEntity<String> realizarPagamento(@PathVariable Long id, @RequestParam BigDecimal valor) {
 		Cartao cartao = cartaoService.buscarCartaoPorId(id);
 		cartaoService.realizarPagamento(id, valor);
@@ -147,7 +147,7 @@ public class CartaoController {
 		return new ResponseEntity<>("Não foi possível realizar o pagamento", HttpStatus.NOT_ACCEPTABLE);
 	}
 	
-	@PostMapping("/pagamento/fatura/{id}")
+	@PostMapping("/cliente-security/pagamento/fatura/{id}")
 	public ResponseEntity<String> pagarFatura(@PathVariable Long id, @RequestParam BigDecimal valor) {
 		Cartao cartao = cartaoService.buscarCartaoPorId(id);
 		Conta conta = cartao.getConta();
