@@ -34,7 +34,7 @@ public class Usuario implements UserDetails { // o SpringSecurity entende com o 
 	private Long id;
 
 	private String nome;
-	private String login;
+	private String email;
 	private String senha;
 
 	@Enumerated(EnumType.STRING) // salvando os Enums como String pra aparecer certo no banco
@@ -53,7 +53,7 @@ public class Usuario implements UserDetails { // o SpringSecurity entende com o 
 
 	@Override
 	public String getUsername() {
-		return login;
+		return email;
 	}
 
 	@Override

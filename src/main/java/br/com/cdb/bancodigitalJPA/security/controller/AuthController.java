@@ -62,9 +62,9 @@ public class AuthController { // aqui eu vou criar os endpoints de autenticaçã
 		}
 		
 		
-		Usuario usuario = Usuario.builder().nome(request.nome()).login(request.email()).senha(
+		Usuario usuario = Usuario.builder().nome(request.nome()).email(request.email()).senha(
 		new BCryptPasswordEncoder().encode(request.senha())) //essa classe deixa a senha criptografada :), mais seguro
-		.role(Role.valueOf(request.role())).build();
+		.role(Role.valueOf(request.role().toUpperCase())).build();
 
 		usuarioService.save(usuario);
 
