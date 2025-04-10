@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor	//pra eu injetar com o RequiredArgs ou Autowired
 public class JwtAuthFilter extends OncePerRequestFilter {
 //o RequiredArgsConstructor já gera o construtor automático com os atributos finais
-	
+	//essa classe é o filtro JWT personalizado
 	private final JwtService jwtService;
 	private final UsuarioService usuarioService;
 	
