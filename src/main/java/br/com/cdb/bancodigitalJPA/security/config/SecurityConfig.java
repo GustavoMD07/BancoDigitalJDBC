@@ -13,6 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import br.com.cdb.bancodigitalJPA.handler.CustomAccessDeniedHandler;
+import br.com.cdb.bancodigitalJPA.handler.CustomAuthenticationEntryPointHandler;
 import br.com.cdb.bancodigitalJPA.security.jwt.JwtAuthFilter;
 import br.com.cdb.bancodigitalJPA.security.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,9 @@ public class SecurityConfig { // autenticação, autorização, e gerencia o flu
 	private final JwtAuthFilter jwtAuthFilter;
 	
 	private final UsuarioService usuarioService;
+	
+	private final CustomAccessDeniedHandler accessDeniedHandler;
+    private final CustomAuthenticationEntryPointHandler authenticationEntryPointHandler;
 
 	// a notação Bean diz mais ou menos pro Spring criar o objeto, guardar e
 	// retornar ele
@@ -50,6 +56,11 @@ public class SecurityConfig { // autenticação, autorização, e gerencia o flu
 				.requestMatchers("/public/**", "/auth/**").permitAll()
 				.anyRequest().authenticated()
 			)
+			
+			.exceptionHandling(exception -> exception
+		            .authenticationEntryPoint(authenticationEntryPointHandler)
+		            .accessDeniedHandler(accessDeniedHandler)
+		        )
 
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

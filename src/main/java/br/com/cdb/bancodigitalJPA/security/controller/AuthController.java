@@ -68,6 +68,7 @@ public class AuthController { // aqui eu vou criar os endpoints de autenticaçã
 
 		usuarioService.save(usuario);
 
-		return new ResponseEntity<>("Usuário registrado com sucesso!", HttpStatus.CREATED);
+		return new ResponseEntity<>("Usuário registrado com sucesso! | Tipo: " + usuario.getRole(),
+			HttpStatus.CREATED);
 	}
 }
