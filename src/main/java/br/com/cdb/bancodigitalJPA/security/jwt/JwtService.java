@@ -1,6 +1,7 @@
 package br.com.cdb.bancodigitalJPA.security.jwt;
 
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,8 +20,7 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 
-	private final String ChaveSecreta = "minha-chave-secreta-123456789123456789"; //é só um exemplo, mas depois 
-	//vou redefinir pra ser mais difícil de acertar 
+	private final String ChaveSecreta = Base64.getEncoder().encodeToString("m3uSegr3doSup3rF0rte!@#1234567890".getBytes());
 	
 	private Key getChaveAssinatura() {
 		return Keys.hmacShaKeyFor(ChaveSecreta.getBytes());

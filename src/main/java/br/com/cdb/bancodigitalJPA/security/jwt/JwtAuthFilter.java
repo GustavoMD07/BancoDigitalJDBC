@@ -14,6 +14,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //filtro = basicamente o portão de segurança antes de chegar no meu controller
 //ele é o filtro que vai interceptar as requisições, e validar o token JWT, toda vez que ocorre alguma
@@ -28,12 +30,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 	//essa classe é o filtro JWT personalizado
 	private final JwtService jwtService;
 	private final UsuarioService usuarioService;
+	private static final Logger log = LoggerFactory.getLogger(JwtAuthFilter.class);
+
 	
 	@Override     //esse método vai ser chamado toda vez que uma requisição for feita
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, 
 			FilterChain filterChain)
 			throws ServletException, IOException {
 		// aqui eu vou pegar o token do header da requisição
+		log.info("JwtAuthFilter - interceptando requisição!");
 		final String authHeader = request.getHeader("Authorization"); // pega o cabeçalho de autorização
 		final String jwt;
 		final String email;

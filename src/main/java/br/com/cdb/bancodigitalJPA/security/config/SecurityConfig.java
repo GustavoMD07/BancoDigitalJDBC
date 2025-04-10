@@ -46,8 +46,8 @@ public class SecurityConfig { // autenticação, autorização, e gerencia o flu
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/h2-console/**").permitAll()
 				.requestMatchers("/admin-security/**").hasRole("ADMIN")
-				.requestMatchers("/cliente-security/**").hasAnyRole("ADMIN", "CLIENTE")
-				.requestMatchers("/api/public/**", "/auth/**").permitAll()
+				.requestMatchers("/clientes/cliente-security/**").hasAnyRole("ADMIN", "CLIENTE")
+				.requestMatchers("/public/**", "/auth/**").permitAll()
 				.anyRequest().authenticated()
 			)
 
@@ -55,7 +55,7 @@ public class SecurityConfig { // autenticação, autorização, e gerencia o flu
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)
 
-			.authenticationProvider(authenticationProvider()) // 🔥 esse cara aqui tava faltando
+			.authenticationProvider(authenticationProvider()) 
 
 			.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 
