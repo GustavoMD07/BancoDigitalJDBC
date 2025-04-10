@@ -49,7 +49,7 @@ public class SeguroController {
         return new ResponseEntity<>(lista, HttpStatus.FOUND);
     }
 
-    @PutMapping("/cliente-security/cancelar/{id}")
+    @PutMapping("/admin-security/cancelar/{id}")
     public ResponseEntity<String> cancelarSeguro(@PathVariable Long id) {
         seguroService.cancelarSeguro(id);
         return new ResponseEntity<>("Seguro cancelado com sucesso, obrigado por utilizar nossos serviços.", 
