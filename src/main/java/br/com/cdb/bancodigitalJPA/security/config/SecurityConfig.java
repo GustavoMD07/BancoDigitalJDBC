@@ -34,8 +34,11 @@ public class SecurityConfig { // autenticação, autorização, e gerencia o flu
 	//eu crio o "painel de controle"
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		return http.csrf(csrf -> csrf.disable())
+		return http.csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**").disable())
+		.headers(headers -> headers.disable()) // desabilita o frame pra acessar o h2-console
+		
 		.authorizeHttpRequests(auth -> auth
+		.requestMatchers("/h2-console/**").permitAll()
 		.requestMatchers("/admin-security/**").hasRole("ADMIN")
 		.requestMatchers("/cliente-security/**").hasAnyRole("ADMIN", "CLIENTE").requestMatchers
 		("/api/public/**", "/auth/**").permitAll().anyRequest().authenticated())

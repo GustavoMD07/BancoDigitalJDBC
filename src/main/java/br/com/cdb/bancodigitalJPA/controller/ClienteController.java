@@ -63,7 +63,7 @@ public class ClienteController {
 		}
 	}
 	
-	@PutMapping("/cliente-security/atualizar/{id}")
+	@PutMapping("/admin-security/atualizar/{id}")
 	public ResponseEntity<String> atualizarCliente(@PathVariable Long id,  @RequestBody @Valid ClienteDTO clienteDto) {
 		
 		Cliente clienteAtualizado = clienteService.atualizarCliente(id, clienteDto);
