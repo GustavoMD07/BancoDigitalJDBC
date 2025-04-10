@@ -11,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,6 +20,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor // lombok pra deixar mais "CleanCode"
 @AllArgsConstructor
+@Builder
 @Entity
 public class Usuario implements UserDetails { // o SpringSecurity entende com o UserDetails que essa classe
 // é um usuário do sistema, aqui ele verifica qual é o login, a senha e as roles
@@ -31,6 +33,7 @@ public class Usuario implements UserDetails { // o SpringSecurity entende com o 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	private String nome;
 	private String login;
 	private String senha;
 

@@ -7,13 +7,15 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import br.com.cdb.bancodigitalJPA.security.dto.LoginRequest;
+import br.com.cdb.bancodigitalJPA.security.dto.RegisterRequest;
 import br.com.cdb.bancodigitalJPA.security.jwt.JwtService;
+import br.com.cdb.bancodigitalJPA.security.model.Role;
 import br.com.cdb.bancodigitalJPA.security.model.Usuario;
 import br.com.cdb.bancodigitalJPA.security.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -50,5 +52,22 @@ public class AuthController { // aqui eu vou criar os endpoints de autenticaçã
 		} catch (AuthenticationException e) {
             return new ResponseEntity<>("Erro ao autenticar: " + e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
+	}
+	
+	@PostMapping("/registrar")
+	public ResponseEntity<String> registrar(@RequestBody @Valid RegisterRequest request) {
+		
+		if (usuarioService.existePorEmail(request.email())) {
+			return new ResponseEntity<>("Email já cadastrado!", HttpStatus.BAD_REQUEST);
+		}
+		
+		
+		Usuario usuario = Usuario.builder().nome(request.nome()).login(request.email()).senha(
+		new BCryptPasswordEncoder().encode(request.senha())) //essa classe deixa a senha criptografada :), mais seguro
+		.role(Role.valueOf(request.role())).build();
+
+		usuarioService.save(usuario);
+
+		return new ResponseEntity<>("Usuário registrado com sucesso!", HttpStatus.CREATED);
 	}
 }
