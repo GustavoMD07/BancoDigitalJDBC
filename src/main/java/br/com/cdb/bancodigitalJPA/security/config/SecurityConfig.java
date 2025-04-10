@@ -3,6 +3,8 @@ package br.com.cdb.bancodigitalJPA.security.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -12,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import br.com.cdb.bancodigitalJPA.security.jwt.JwtAuthFilter;
+import br.com.cdb.bancodigitalJPA.security.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 
 @Configuration // essa notação diz que a classe configura algo no projeto
@@ -21,6 +24,8 @@ public class SecurityConfig { // autenticação, autorização, e gerencia o flu
 	// basicamente as configurações gerais, o que cada role pode ou não fazer, etc
 
 	private final JwtAuthFilter jwtAuthFilter;
+	
+	private final UsuarioService usuarioService;
 
 	// a notação Bean diz mais ou menos pro Spring criar o objeto, guardar e
 	// retornar ele
@@ -34,17 +39,29 @@ public class SecurityConfig { // autenticação, autorização, e gerencia o flu
 	//eu crio o "painel de controle"
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		return http.csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**").disable())
-		.headers(headers -> headers.disable()) // desabilita o frame pra acessar o h2-console
-		
-		.authorizeHttpRequests(auth -> auth
-		.requestMatchers("/h2-console/**").permitAll()
-		.requestMatchers("/admin-security/**").hasRole("ADMIN")
-		.requestMatchers("/cliente-security/**").hasAnyRole("ADMIN", "CLIENTE").requestMatchers
-		("/api/public/**", "/auth/**").permitAll().anyRequest().authenticated())
-		.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-		.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).build();
-	} 
+		return http
+			.csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**").disable())
+			.headers(headers -> headers.disable()) // desabilita o frame pra acessar o h2-console
+
+			.authorizeHttpRequests(auth -> auth
+				.requestMatchers("/h2-console/**").permitAll()
+				.requestMatchers("/admin-security/**").hasRole("ADMIN")
+				.requestMatchers("/cliente-security/**").hasAnyRole("ADMIN", "CLIENTE")
+				.requestMatchers("/api/public/**", "/auth/**").permitAll()
+				.anyRequest().authenticated()
+			)
+
+			.sessionManagement(session -> session
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			)
+
+			.authenticationProvider(authenticationProvider()) // 🔥 esse cara aqui tava faltando
+
+			.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+
+			.build();
+	}
+
 	//admin acessa tudo com o **
 	//o Admin tbm pode acessar as rotas do cliente, mas só o admin pode acessar as dele
 	//só usuários com a role admin podem acessar os requests que comecem com /api/admin, com rotas livres tbm
@@ -60,6 +77,14 @@ public class SecurityConfig { // autenticação, autorização, e gerencia o flu
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder(); // é só um criptografador de senha padrão, mas é seguro tbm
+	}
+	
+	@Bean
+	public AuthenticationProvider authenticationProvider() {
+	    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+	    authProvider.setUserDetailsService(usuarioService); // ou o seu UserDetailsService
+	    authProvider.setPasswordEncoder(passwordEncoder());
+	    return authProvider;
 	}
 
 	

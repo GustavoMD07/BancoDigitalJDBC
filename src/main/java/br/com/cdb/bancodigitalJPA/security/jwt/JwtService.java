@@ -3,10 +3,12 @@ package br.com.cdb.bancodigitalJPA.security.jwt;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.springframework.stereotype.Service;
 
+import br.com.cdb.bancodigitalJPA.security.model.Usuario;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -24,10 +26,14 @@ public class JwtService {
 		return Keys.hmacShaKeyFor(ChaveSecreta.getBytes());
 	}
 	
-	public String gerarToken(String username) {
+	public String gerarToken(Usuario usuario) {
+		
+		Map<String, Object> claims = new HashMap<>();
+		claims.put("role", usuario.getRole().name()); // role do usuário no token
+		
 		return Jwts.builder()
-                .setClaims(new HashMap<>())
-                .setSubject(username)
+                .setClaims(claims)
+                .setSubject(usuario.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 horas
                 .signWith(getChaveAssinatura(), SignatureAlgorithm.HS256)

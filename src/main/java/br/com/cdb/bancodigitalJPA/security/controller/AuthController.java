@@ -47,7 +47,7 @@ public class AuthController { // aqui eu vou criar os endpoints de autenticaçã
 			
 		
 			Usuario usuario = (Usuario) authentication.getPrincipal();	//cast
-			String token = jwtService.gerarToken(usuario.getUsername()); //gera o token
+			String token = jwtService.gerarToken(usuario); //gera o token
 			return new ResponseEntity<>("Token: " + token, HttpStatus.OK);
 		} catch (AuthenticationException e) {
             return new ResponseEntity<>("Erro ao autenticar: " + e.getMessage(), HttpStatus.UNAUTHORIZED);
