@@ -1,0 +1,71 @@
+package br.com.cdb.bancodigitalJPA.security.jwt;
+
+import java.security.Key;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.function.Function;
+
+import org.springframework.stereotype.Service;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+
+//esse é tipo o porteiro da segurança, ele gera o token, valida e pega o email do usuário do token
+
+@Service
+public class JwtService {
+
+	private final String ChaveSecreta = "minha-chave-secreta-123456789123456789"; //é só um exemplo, mas depois 
+	//vou redefinir pra ser mais difícil de acertar 
+	
+	private Key getChaveAssinatura() {
+		return Keys.hmacShaKeyFor(ChaveSecreta.getBytes());
+	}
+	
+	public String gerarToken(String username) {
+		return Jwts.builder()
+                .setClaims(new HashMap<>())
+                .setSubject(username)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 horas
+                .signWith(getChaveAssinatura(), SignatureAlgorithm.HS256)
+                .compact();
+	}
+	
+	//aqui eu to usando o T como um coringa, por que posso querer extrair o email, ou a data de expiração
+	//posteriormente eu vou fazer modificações
+	public <T> T extrairClaim(String token, Function<Claims, T> claimsResolver) {
+		final Claims claims = extrairTodosOsClaims(token);
+		return claimsResolver.apply(claims);
+	} // ele pega o token, e devolve o que eu pedi (o email ou qualquer outra coisa)
+	
+	public String extrairUsername(String token) {
+		return extrairClaim(token, Claims::getSubject);
+	}
+	
+	private Claims extrairTodosOsClaims(String token) {
+        return Jwts
+                .parserBuilder()
+                .setSigningKey(getChaveAssinatura())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    } // ele gera o token, e coloca o email dentro do token, depois assina com a chave secreta
+	
+	private Date extrairExpiration(String token) {
+		return extrairClaim(token, Claims::getExpiration);
+	}
+	
+	public boolean tokenExpirado(String token) {
+		return extrairExpiration(token).before(new Date());
+	}
+	
+	
+	public boolean tokenValido(String token, String username) {
+		final String usernameEncontrado = extrairUsername(token);
+		return (usernameEncontrado.equals(username) && !tokenExpirado(token));
+	}
+		
+}
