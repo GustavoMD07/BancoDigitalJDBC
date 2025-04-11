@@ -37,11 +37,10 @@ public abstract class Cliente {
 	//cpf tem que ser único
 	@Column(unique = true)
 	private String cpf;
+	
 	private String nome;
 	private LocalDate dataNascimento;
 	
-	
-
 	//logo ao criar um atributo no Entity, ele já cria essa coluna no H2
 	private String cep;				//isso tudo vai ser mostrado no H2, que é o nosso banco de dados
 
@@ -55,10 +54,11 @@ public abstract class Cliente {
 	public abstract BigDecimal getTaxaRendimento();
 	public abstract BigDecimal getLimiteCredito();
 	
-	@OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER) //fetch pra toda vez que eu buscar o cliente, eu trago as contas dele também
 	@JsonManagedReference
-	private List<Conta> contas;
+	private List<Conta> contas; 
 
+	
 	//por que usar? 1- Ele impede a criação de um cliente_id no cliente
 	//2- vai ser a Entidade Conta que vai ter o cliente_id
 	//estamos apontando que o cliente é dono da conta, que ele é o dono da Foreing Key

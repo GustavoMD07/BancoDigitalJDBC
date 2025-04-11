@@ -32,8 +32,6 @@ public class ClienteController {
 	//é mais pra informar o que tá acontecendo
 	@PostMapping("/cliente-security/add")
 	public ResponseEntity<String> addCliente(@RequestBody @Valid ClienteDTO clienteDto) {
-		
-		
 		Cliente clienteAdicionado = clienteService.addCliente(clienteDto);
 		
 		if(clienteAdicionado != null) {

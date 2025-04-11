@@ -63,8 +63,6 @@ public class ContaService {
 			throw new QuantidadeExcedidaException("O cliente já possui duas contas");
 		}
 		
-		
-
 		conta.setCliente(cliente);
 		Conta contaSalva = contaRepository.save(conta);
 		inicializarSaldos(contaSalva);

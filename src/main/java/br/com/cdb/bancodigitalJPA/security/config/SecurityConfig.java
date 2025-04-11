@@ -20,9 +20,9 @@ import br.com.cdb.bancodigitalJPA.security.jwt.JwtAuthFilter;
 import br.com.cdb.bancodigitalJPA.security.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 
-@Configuration // essa notação diz que a classe configura algo no projeto
+@Configuration 
 @EnableWebSecurity // habilita a segurança na aplicação
-@RequiredArgsConstructor // aqui o lombok deveria injetar o JwtAuthFiller, mas não funcionou
+@RequiredArgsConstructor 
 public class SecurityConfig { // autenticação, autorização, e gerencia o fluxo de login
 	// basicamente as configurações gerais, o que cada role pode ou não fazer, etc
 

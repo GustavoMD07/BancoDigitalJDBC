@@ -156,7 +156,7 @@ public class ClienteService {
 			String url = "https://brasilapi.com.br/api/cep/v1/" + cep;
 			ResponseEntity<EnderecoResponse> response = restTemplate.getForEntity(url, EnderecoResponse.class);
 			// pego o corpo do EnderecoResponse, a url é onde eu quero pegar os dados pra
-			// armazenar no EnderecoResponse
+			// uso o restTemplate pra ele me trazer a resposta convertida pro tipo de EnderecoResponse
 
 			if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
 				return response.getBody();
