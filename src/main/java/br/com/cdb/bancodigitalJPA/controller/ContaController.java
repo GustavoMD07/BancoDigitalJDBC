@@ -106,26 +106,30 @@ public class ContaController {
 			@RequestParam String moedaOrigem, @RequestParam String moedaDestino){
 		
 		contaService.transferir(id, destinoid, valor, moedaOrigem, moedaDestino);
-		return new ResponseEntity<>("Transferência de R$ " + valor + " concluída com sucesso", HttpStatus.ACCEPTED);
+		return new ResponseEntity<>("Transferência de "+ moedaOrigem + " "+ valor + " para conta de Id " + destinoid + " receber em "
+		+ moedaDestino + " realizada com sucesso!", HttpStatus.ACCEPTED);
 	}
 	
 	@PostMapping("/cliente-security/pix/{id}")
 	public ResponseEntity<String> pix(@PathVariable Long id, @RequestParam BigDecimal valor, @RequestParam String moeda) {
 		contaService.pix(id, valor, moeda);
-		return new ResponseEntity<>("Pix de R$ " + valor +" realizado com sucesso!\n | Moeda paga: " + moeda, HttpStatus.ACCEPTED);
+		return new ResponseEntity<>("Pix de " + valor +" realizado com sucesso!\n"
+				+ " | Moeda paga: " + moeda, HttpStatus.ACCEPTED);
 	}
 	
 	@PostMapping("/cliente-security/deposito/{id}")
 	public ResponseEntity<String> deposito(@PathVariable Long id, @RequestParam BigDecimal valor, @RequestParam String moeda, @RequestParam String moedaDepositada) {
 		contaService.deposito(id, valor, moeda, moedaDepositada);
-		return new ResponseEntity<>("Depósito de R$ " + valor + " realizado com sucesso", HttpStatus.ACCEPTED);
+		return new ResponseEntity<>("Depósito de " + moeda + " " + valor + 
+		" realizado com sucesso\nValor depositado em: " + moedaDepositada, HttpStatus.ACCEPTED);
 	}
 	
 	@PostMapping("/cliente-security/saque/{id}")
 	public ResponseEntity<String> saque(@PathVariable Long id, @RequestParam BigDecimal valor, @RequestParam String moeda, @RequestParam String moedaSacada) {
 		contaService.saque(id, valor, moeda, moedaSacada);
 		
-		return new ResponseEntity<>("Saque de R$ " + valor + " realizado com sucesso\n", HttpStatus.ACCEPTED);
+		return new ResponseEntity<>("Saque de "+ moeda + valor + 
+			" realizado com sucesso\nSaque feito de saldo: " + moedaSacada, HttpStatus.ACCEPTED);
 	}
 	
 	@PutMapping("/admin-security/manutencao/{id}")
