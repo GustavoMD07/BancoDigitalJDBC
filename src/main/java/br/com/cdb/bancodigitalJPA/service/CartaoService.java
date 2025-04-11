@@ -60,10 +60,20 @@ public class CartaoService {
 		return cartaoRepository.findAll();
 	}
 
-	public Cartao desativarCartao(Long id) {
+	public Cartao desativarCartao(Long id, String senha) {
 		Cartao cartao = cartaoRepository.findById(id)
 				.orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
 
+		String senhaEncontrada = cartao.getSenha();
+		
+		if (senha == null) {
+			throw new StatusNegadoException("Digite sua senha");
+		}
+		
+		if (!senha.equals(senhaEncontrada)) {
+		    throw new StatusNegadoException("Senha inválida!");
+		}
+		
 		if (!cartao.isStatus()) {
 			throw new StatusNegadoException("Seu cartão já está desativado!");
 		}
@@ -81,10 +91,20 @@ public class CartaoService {
 		return cartaoRepository.save(cartao);
 	}
 
-	public Cartao ativarCartao(Long id) {
+	public Cartao ativarCartao(Long id, String senha) {
 
 		Cartao cartao = cartaoRepository.findById(id)
 				.orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
+		
+		String senhaEncontrada = cartao.getSenha();
+		
+		if (senha == null) {
+			throw new StatusNegadoException("Digite sua senha");
+		}
+		
+		if (!senha.equals(senhaEncontrada)) {
+		    throw new StatusNegadoException("Senha inválida!");
+		}
 
 		if (cartao.isStatus()) {
 			throw new StatusNegadoException("Seu cartão já está ativado!");
@@ -103,7 +123,7 @@ public class CartaoService {
 			throw new StatusNegadoException("Digite sua senha");
 		}
 		
-		if (!passwordEncoder.matches(senha, senhaEncontrada)) {
+		if (!senha.equals(senhaEncontrada)) {
 		    throw new StatusNegadoException("Senha inválida!");
 		}
 		

@@ -63,7 +63,7 @@ public class CartaoController {
 		}
 		
 		cartao.setConta(contaProcurada.get());
-		cartao.setSenha(passwordEncoder.encode(cartaoDto.getSenha())); //codificando a senha pra ter mais segurança
+		cartao.setSenha(cartaoDto.getSenha()); //codificando a senha pra ter mais segurança
 		cartao.setNumCartao(cartaoService.gerarNumeroCartao());
 		cartao.setStatus(true);
 		cartaoService.addCartao(cartao);
@@ -87,15 +87,15 @@ public class CartaoController {
 	}
 	
 	@PutMapping("/admin-security/desativar/{id}")
-	public ResponseEntity<String> desativarCartao(@PathVariable Long id) {
-		cartaoService.desativarCartao(id);
+	public ResponseEntity<String> desativarCartao(@PathVariable Long id, @RequestParam String senha) {
+		cartaoService.desativarCartao(id, senha);
 		
 		return new ResponseEntity<>("Cartão desativado com sucesso!", HttpStatus.OK);
 	}
 	
 	@PutMapping("/admin-security/ativar/{id}")
-	public ResponseEntity<String> ativarCartao(@PathVariable Long id) {
-		cartaoService.ativarCartao(id);
+	public ResponseEntity<String> ativarCartao(@PathVariable Long id, @RequestParam String senha) {
+		cartaoService.ativarCartao(id, senha);
 		return new ResponseEntity<>("Cartão ativado com sucesso!", HttpStatus.OK);
 	}
 	
