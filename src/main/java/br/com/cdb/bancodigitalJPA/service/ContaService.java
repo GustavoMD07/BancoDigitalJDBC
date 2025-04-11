@@ -193,10 +193,13 @@ public class ContaService {
 		}
 		try {
 			ObjectMapper mapper = new ObjectMapper(); // converte o JSON em java normal, só pra ler a resposta da API
-			JsonNode root = mapper.readTree(response.getBody());
+			JsonNode root = mapper.readTree(response.getBody()); //transforma o JSON da resposta em uma "arvore de dados"
+			//eu uso ele pra caminhar no JSON da URL, o path fala pra ele ir até USDBRL e me retornar como texto o campo high
 			double taxaUSD = Double.parseDouble(root.path("USDBRL").path("high").asText());
 			double taxaEUR = Double.parseDouble(root.path("EURBRL").path("high").asText());
-
+			//e retornando como texto, eu faço a conversão pra Double
+			
+			//pego o saldo em reais, divido pela taxa em dolar, quero 2 casas decimais e arredondar pra cima só se for + 0.5 :)
 			BigDecimal saldoUSD = saldoBRL.divide(BigDecimal.valueOf(taxaUSD), 2, RoundingMode.HALF_UP);
 			BigDecimal saldoEUR = saldoBRL.divide(BigDecimal.valueOf(taxaEUR), 2, RoundingMode.HALF_UP);
 			return new SaldoConvertidoResponse(saldoBRL, saldoUSD, saldoEUR);
