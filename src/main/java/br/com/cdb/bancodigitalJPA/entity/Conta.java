@@ -1,13 +1,10 @@
 package br.com.cdb.bancodigitalJPA.entity;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
@@ -29,10 +26,13 @@ public abstract class Conta {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) //ID vai ser incremento (1 a 1)
 	private Long id;
-	
+						//se eu deletar a conta, ele já deleta, ai é menos dor de cabeça
 	@OneToMany(mappedBy = "conta", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<SaldoMoeda> saldos = new ArrayList();
+	private List<SaldoMoeda> saldos = new ArrayList<>();
 	
+	
+
+
 	//ManyToOne - posso ter mais de uma conta, mas todas elas vão ter que ser relacionadas a um só objeto
 	//o cliente :)
 	//O JoinColumn é responsável por criar a Foreing Key
@@ -56,13 +56,6 @@ public abstract class Conta {
 		this.id = id;
 	}
 
-	public BigDecimal getSaldo() {
-		return saldo;
-	}
-
-	public void setSaldo(BigDecimal saldo) {
-		this.saldo = saldo;
-	}
 
 	public Cliente getCliente() {
 		return cliente;
@@ -78,6 +71,14 @@ public abstract class Conta {
 
 	public void setCartao(List<Cartao> cartoes) {
 		this.cartoes = cartoes;
+	}
+	
+	public List<SaldoMoeda> getSaldos() {
+		return saldos;
+	}
+
+	public void setSaldos(List<SaldoMoeda> saldos) {
+		this.saldos = saldos;
 	}
 
 	

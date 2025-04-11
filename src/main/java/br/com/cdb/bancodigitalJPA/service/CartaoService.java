@@ -11,6 +11,7 @@ import br.com.cdb.bancodigitalJPA.entity.Cartao;
 import br.com.cdb.bancodigitalJPA.entity.CartaoCredito;
 import br.com.cdb.bancodigitalJPA.entity.CartaoDebito;
 import br.com.cdb.bancodigitalJPA.entity.Conta;
+import br.com.cdb.bancodigitalJPA.entity.SaldoMoeda;
 import br.com.cdb.bancodigitalJPA.exception.ObjetoNuloException;
 import br.com.cdb.bancodigitalJPA.exception.QuantidadeExcedidaException;
 import br.com.cdb.bancodigitalJPA.exception.SaldoInsuficienteException;
@@ -18,6 +19,7 @@ import br.com.cdb.bancodigitalJPA.exception.StatusNegadoException;
 import br.com.cdb.bancodigitalJPA.exception.SubClasseDiferenteException;
 import br.com.cdb.bancodigitalJPA.repository.CartaoRepository;
 import br.com.cdb.bancodigitalJPA.repository.ContaRepository;
+import br.com.cdb.bancodigitalJPA.repository.SaldoMoedaRepository;
 
 @Service
 public class CartaoService {
@@ -30,6 +32,9 @@ public class CartaoService {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private SaldoMoedaRepository saldoMoedaRepository;
 
 	private static final int QntdsNum = 15;
 	private SecureRandom random = new SecureRandom(); // secureRandom pra gerar os números aleatórios
@@ -141,6 +146,9 @@ public class CartaoService {
 				.orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
 
 		Conta conta = cartao.getConta();
+		SaldoMoeda saldo = saldoMoedaRepository.findByMoedaAndContaId("BRL", conta.getId()).orElseThrow(() -> 
+		new ObjetoNuloException("Saldo em BRL não encontrado para essa conta"));
+		
 
 		if (cartao instanceof CartaoDebito) {
 			throw new SubClasseDiferenteException("Cartão de débito não possuí fatura, fique tranquilo");
@@ -160,11 +168,11 @@ public class CartaoService {
 			valor = cartaoC.getFatura();
 		}
 
-		if (conta.getSaldo().compareTo(valor) < 0) {
+		if (saldo.getSaldo().compareTo(valor) < 0) {
 			throw new SaldoInsuficienteException("Saldo da conta insuficiente para pagar a fatura");
 		}
 
-		conta.setSaldo(conta.getSaldo().subtract(valor));
+		saldo.setSaldo(saldo.getSaldo().subtract(valor));
 		cartaoC.setFatura(cartaoC.getFatura().subtract(valor));
 		cartaoRepository.save(cartaoC);
 

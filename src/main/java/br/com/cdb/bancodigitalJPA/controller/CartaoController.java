@@ -154,12 +154,12 @@ public class CartaoController {
 	@PostMapping("/cliente-security/pagamento/fatura/{id}")
 	public ResponseEntity<String> pagarFatura(@PathVariable Long id, @RequestParam BigDecimal valor) {
 		Cartao cartao = cartaoService.buscarCartaoPorId(id);
-		Conta conta = cartao.getConta();
+//		Conta conta = cartao.getConta();
 		cartaoService.pagarFatura(id, valor);
 		if(cartao instanceof CartaoCredito) {
 			CartaoCredito cartaoC = (CartaoCredito) cartao;
-			return new ResponseEntity<>("Fatura atualizada. Pagamento feito retirando saldo da conta. \nNova fatura: R$" + cartaoC.getFatura() +
-			"\n Saldo da conta: R$" + conta.getSaldo(), HttpStatus.OK);
+			return new ResponseEntity<>("Fatura atualizada. Pagamento feito retirando saldo da conta. \nNova fatura: R$" + cartaoC.getFatura()
+			, HttpStatus.OK);
 		}
 		else {
 			return new ResponseEntity<>("Não foi possível pagar a fatura", HttpStatus.NOT_ACCEPTABLE);
