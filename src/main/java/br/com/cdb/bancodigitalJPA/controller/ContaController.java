@@ -109,20 +109,20 @@ public class ContaController {
 	}
 	
 	@PostMapping("/cliente-security/pix/{id}")
-	public ResponseEntity<String> pix(@PathVariable Long id, @RequestParam BigDecimal valor, @RequestParam String moeda) {
-		contaService.pix(id, valor, moeda);
+	public ResponseEntity<String> pix(@PathVariable Long id, @RequestParam BigDecimal valor, @RequestParam String moeda, @RequestParam String moedaDepositada) {
+		contaService.pix(id, valor, moeda, moedaDepositada);
 		return new ResponseEntity<>("Pix de R$ " + valor +" realizado com sucesso!", HttpStatus.ACCEPTED);
 	}
 	
 	@PostMapping("/cliente-security/deposito/{id}")
-	public ResponseEntity<String> deposito(@PathVariable Long id, @RequestParam BigDecimal valor, @RequestParam String moeda) {
-		contaService.deposito(id, valor, moeda);
+	public ResponseEntity<String> deposito(@PathVariable Long id, @RequestParam BigDecimal valor, @RequestParam String moeda, @RequestParam String moedaDepositada) {
+		contaService.deposito(id, valor, moeda, moedaDepositada);
 		return new ResponseEntity<>("Depósito de R$ " + valor + " realizado com sucesso", HttpStatus.ACCEPTED);
 	}
 	
 	@PostMapping("/cliente-security/saque/{id}")
-	public ResponseEntity<String> saque(@PathVariable Long id, @RequestParam BigDecimal valor, @RequestParam String moeda) {
-		contaService.saque(id, valor, moeda);
+	public ResponseEntity<String> saque(@PathVariable Long id, @RequestParam BigDecimal valor, @RequestParam String moeda, @RequestParam String moedaDepositada) {
+		contaService.saque(id, valor, moeda, moedaDepositada);
 		return new ResponseEntity<>("Saque de R$ " + valor + " realizado com sucesso", HttpStatus.ACCEPTED);
 	}
 	
@@ -137,10 +137,5 @@ public class ContaController {
 		contaService.aplicarRendimento(id);
 		return new ResponseEntity<>("Taxa de rendimento aplicada", HttpStatus.OK);
 	}
-	
-	@GetMapping("/cliente-security/saldo-convertido/{id}")
-	public ResponseEntity<String> SaldoConvertido(@PathVariable Long id) {
-	return new ResponseEntity<>("Saldo Convertido: " + contaService.saldoConvertido(id), HttpStatus.OK);
-	}	
 
 }

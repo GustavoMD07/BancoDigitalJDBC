@@ -122,6 +122,8 @@ public class ContaService {
 		SaldoMoeda saldoOrigem = saldoMoedaRepository.findByMoedaAndContaId(moedaOrigem, origemid).orElseThrow(() ->
 		    new ObjetoNuloException("Saldo não encontrado para a conta de origem"));
 		
+		BigDecimal valorConvertido = converterMoeda(valor, moedaOrigem, moedaDestino);
+		
 		SaldoMoeda saldoDestino = saldoMoedaRepository.findByMoedaAndContaId(moedaDestino, destinoid).orElseGet(() -> {
 		        SaldoMoeda novo = new SaldoMoeda();
 		        novo.setConta(destino);
@@ -136,31 +138,10 @@ public class ContaService {
 			if (origem.getId() == destino.getId()) {
             throw new StatusNegadoException("Não é possível transferir para a mesma conta");
         }
-		if (valor.compareTo(saldoOrigem.getSaldo()) > 0) { // ele retorna 1 se o valor for maior que o saldo, e ai a gente
-														// compara
-			// se o valor for maior que o saldo, ele vai retornar 1 e comparar com o 0
+		if (valor.compareTo(saldoOrigem.getSaldo()) > 0) { // ele retorna 1 se o valor for maior que o saldo
 			throw new SaldoInsuficienteException("Saldo insuficiente na conta de origem, revise a sua moeda ");
 		}
 		
-		BigDecimal valorConvertido = valor;
-		
-		if(!moedaOrigem.equals(moedaDestino)) {
-			String url = "https://economia.awesomeapi.com.br/json/last/" + moedaOrigem + "-" + moedaDestino;
-			ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-
-	        if (!response.getStatusCode().is2xxSuccessful()) {
-	            throw new ApiBloqueadaException("Erro ao consultar taxa de câmbio.");
-	        }
-	        
-	        try {
-	            ObjectMapper mapper = new ObjectMapper();
-	            JsonNode root = mapper.readTree(response.getBody());
-	            double taxa = Double.parseDouble(root.path(moedaOrigem + moedaDestino).path("high").asText());
-	            valorConvertido = valor.multiply(BigDecimal.valueOf(taxa));
-	        } catch (Exception e) {
-	            throw new ApiBloqueadaException("Erro ao converter moeda.");
-	        }
-	    }
 
 	saldoOrigem.setSaldo(saldoOrigem.getSaldo().subtract(valor)); // subtrai o valor do saldo de origem usando BigDecimal;
 	saldoDestino.setSaldo(saldoDestino.getSaldo().add(valorConvertido));
@@ -176,51 +157,73 @@ public class ContaService {
 	// nada do saldo e retorna ao que era antes
 
 	@Transactional
-	public void pix(Long id, BigDecimal valor, String moeda) {
+	public void pix(Long id, BigDecimal valor, String moedaUsada, String moedaDepositada) {
 		
-		validarMoeda(moeda);
-		
-//		Conta conta = buscarContaPorId(id);
-		SaldoMoeda saldo = saldoMoedaRepository.findByMoedaAndContaId(moeda, id)
-				.orElseThrow(() -> new ObjetoNuloException("Saldo não encontrado"));
-		
-		if (valor.compareTo(saldo.getSaldo()) > 0) {
-			throw new SaldoInsuficienteException("Saldo insuficiente para fazer o pix");
+		if(valor.compareTo(BigDecimal.ZERO) <= 0) {
+			throw new StatusNegadoException("Não é possível fazer o pix de um valor negativo ou zero");
 		}
 		
-		saldo.setSaldo(saldo.getSaldo().subtract(valor));
-		saldoMoedaRepository.save(saldo);
+		validarMoeda(moedaUsada);
+		validarMoeda(moedaDepositada);
+		
+		BigDecimal valorConvertido = converterMoeda(valor, moedaUsada, moedaDepositada);
+
+	    SaldoMoeda saldo = saldoMoedaRepository.findByMoedaAndContaId(moedaDepositada, id)
+	        .orElseThrow(() -> new ObjetoNuloException("Saldo não encontrado"));
+
+	    if (valorConvertido.compareTo(saldo.getSaldo()) > 0) {
+	        throw new SaldoInsuficienteException("Saldo insuficiente para fazer o pix");
+	    }
+	   
+
+	    saldo.setSaldo(saldo.getSaldo().subtract(valorConvertido));
+	    saldoMoedaRepository.save(saldo);
 	}
 
 	@Transactional
-	public void deposito(Long id, BigDecimal valor, String moeda) {
+	public void deposito(Long id, BigDecimal valor, String moedaOrigem, String moedaDestino) {
+		validarMoeda(moedaDestino);
+		validarMoeda(moedaOrigem);
+		Conta conta = buscarContaPorId(id);
 		
 		if (valor.compareTo(BigDecimal.ZERO) < 0) {
 			throw new StatusNegadoException("Valor do depósito deve ser positivo");
 		}
 		
-		validarMoeda(moeda);
-//		Conta conta = buscarContaPorId(id);
-		SaldoMoeda saldo = saldoMoedaRepository.findByMoedaAndContaId(moeda, id)
-				.orElseThrow(() -> new ObjetoNuloException("Saldo não encontrado"));
-		saldo.setSaldo(saldo.getSaldo().add(valor));
+		BigDecimal valorConvertido = valor;
+		
+		if(!moedaOrigem.equals(moedaDestino)) {
+			valorConvertido = converterMoeda(valor, moedaOrigem, moedaDestino);
+		}
+		
+		 SaldoMoeda saldo = saldoMoedaRepository.findByMoedaAndContaId(moedaDestino, id).orElseGet(() -> {
+		 SaldoMoeda novo = new SaldoMoeda();
+		 novo.setConta(conta);
+		 novo.setMoeda(moedaDestino);
+		 novo.setSaldo(BigDecimal.ZERO);
+		 return novo;
+		});
+	
+		saldo.setSaldo(saldo.getSaldo().add(valorConvertido));
 		saldoMoedaRepository.save(saldo);
 	}
 
 	@Transactional
-	public void saque(Long id, BigDecimal valor, String moeda) {
-		validarMoeda(moeda);
+	public void saque(Long id, BigDecimal valor, String moedaUsada, String moedaDepositada) {
+		validarMoeda(moedaUsada);
+		validarMoeda(moedaDepositada);
 		
-//		Conta conta = buscarContaPorId(id);
-		SaldoMoeda saldo = saldoMoedaRepository.findByMoedaAndContaId(moeda, id)
-				.orElseThrow(() -> new ObjetoNuloException("Saldo não encontrado"));
-		
-		if (valor.compareTo(saldo.getSaldo()) > 0) {
-			throw new SaldoInsuficienteException("Saldo insuficiente para saque");
-		}
-		
-		saldo.setSaldo(saldo.getSaldo().subtract(valor));
-		saldoMoedaRepository.save(saldo);
+		BigDecimal valorConvertido = converterMoeda(valor, moedaUsada, moedaDepositada);
+
+	    SaldoMoeda saldo = saldoMoedaRepository.findByMoedaAndContaId(moedaDepositada, id)
+	        .orElseThrow(() -> new ObjetoNuloException("Saldo não encontrado"));
+
+	    if (valorConvertido.compareTo(saldo.getSaldo()) > 0) {
+	        throw new SaldoInsuficienteException("Saldo insuficiente para saque");
+	    }
+
+	    saldo.setSaldo(saldo.getSaldo().subtract(valorConvertido));
+	    saldoMoedaRepository.save(saldo);
 	}
 
 	@Transactional
@@ -270,40 +273,6 @@ public class ContaService {
 		saldoMoedaRepository.save(saldoBRL);
 	}
 
-	public SaldoConvertidoResponse saldoConvertido(Long id) {
-//		Conta conta = buscarContaPorId(id);
-				
-		SaldoMoeda saldoReais = saldoMoedaRepository.findByMoedaAndContaId("BRL", id)
-				.orElseThrow(() -> new ObjetoNuloException("Saldo em BRL não encontrado"));
-		
-		BigDecimal saldoBRL = saldoReais.getSaldo();
-
-		String url = "https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL";
-		ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-
-		if (!response.getStatusCode().is2xxSuccessful()) {
-			throw new ApiBloqueadaException("Erro ao consultar API de câmbio");
-		}
-		try {
-			ObjectMapper mapper = new ObjectMapper(); // converte o JSON em java normal, só pra ler a resposta da API
-			JsonNode root = mapper.readTree(response.getBody()); // transforma o JSON da resposta em uma "arvore de
-																	// dados"
-			// eu uso ele pra caminhar no JSON da URL, o path fala pra ele ir até USDBRL e
-			// me retornar como texto o campo high
-			double taxaUSD = Double.parseDouble(root.path("USDBRL").path("high").asText());
-			double taxaEUR = Double.parseDouble(root.path("EURBRL").path("high").asText());
-			// e retornando como texto, eu faço a conversão pra Double
-
-			// pego o saldo em reais, divido pela taxa em dolar, quero 2 casas decimais e
-			// arredondar pra cima só se for + 0.5 :)
-			BigDecimal saldoUSD = saldoBRL.divide(BigDecimal.valueOf(taxaUSD), 2, RoundingMode.HALF_UP);
-			BigDecimal saldoEUR = saldoBRL.divide(BigDecimal.valueOf(taxaEUR), 2, RoundingMode.HALF_UP);
-			return new SaldoConvertidoResponse(saldoBRL, saldoUSD, saldoEUR);
-
-		} catch (Exception e) {
-			throw new ApiBloqueadaException("Erro ao processar os dados de câmbio");
-		}
-	}
 	
 	private void validarMoeda(String moeda) {
 		
@@ -314,6 +283,29 @@ public class ContaService {
 		if (!moeda.equals("BRL") && !moeda.equals("USD") && !moeda.equals("EUR")) {
 	        throw new StatusNegadoException("Moeda inválida. Nesse momento trabalhamos apenas com: BRL, USD e EUR.");
 	    }
+	}
+	
+	private BigDecimal converterMoeda(BigDecimal valor, String moedaOrigem, String moedaDestino) {
+		if(moedaOrigem.equals(moedaDestino)) {
+			return valor;
+		} //se a moeda for a mesma, tudo igual
+		
+		String url = "https://economia.awesomeapi.com.br/json/last/" + moedaOrigem + "-" + moedaDestino;
+		ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+		
+	    if (!response.getStatusCode().is2xxSuccessful()) {
+	        throw new ApiBloqueadaException("Erro ao converter moeda");
+	    } //se não retornar o início do HTTPS.value 
+
+	    try {
+	        ObjectMapper mapper = new ObjectMapper();
+	        JsonNode root = mapper.readTree(response.getBody());
+	        double taxa = Double.parseDouble(root.path(moedaOrigem + moedaDestino).path("high").asText());
+	        return valor.multiply(BigDecimal.valueOf(taxa));
+	    } catch (Exception e) {
+	        throw new ApiBloqueadaException("Erro ao converter moeda.");
+	    }
+		//mesma coisa, duas casas decimais, arredonda pra cima...
 	}
 
 }
