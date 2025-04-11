@@ -171,44 +171,4 @@ public class ClienteService {
 		}
 	}
 
-//	public Cliente atualizarTipoDeCliente(Cliente clienteAtual, String novoTipo) {
-//
-//		// se o cliente não fez nada pra mudar o tipo dele, só retorna o mesmo
-//		if (clienteAtual.getTipoDeCliente().equalsIgnoreCase(novoTipo)) {
-//			return clienteAtual;
-//		}
-//
-//		clienteRepository.deleteById(clienteAtual.getId());
-//		clienteRepository.flush(); // força a exclusão no banco
-//		entityManager.clear(); // limpa o cache do Hibernate
-//
-//		Cliente novoCliente;
-//
-//		switch (novoTipo.toLowerCase()) {
-//		case "comum":
-//			novoCliente = new ClienteComum();
-//			break;
-//		case "super":
-//			novoCliente = new ClienteSuper();
-//			break;
-//		case "premium":
-//			novoCliente = new ClientePremium();
-//			break;
-//		default:
-//			throw new IllegalArgumentException("Tipo de cliente inválido: " + novoTipo);
-//		}
-//
-//		novoCliente.setNome(clienteAtual.getNome());
-//		novoCliente.setCpf(clienteAtual.getCpf());
-//		novoCliente.setDataNascimento(clienteAtual.getDataNascimento());
-//		novoCliente.setCep(clienteAtual.getCep());
-//		novoCliente.setCidade(clienteAtual.getCidade());
-//		novoCliente.setEstado(clienteAtual.getEstado());
-//		novoCliente.setBairro(clienteAtual.getBairro());
-//		novoCliente.setRua(clienteAtual.getRua());
-//		novoCliente.setContas(clienteAtual.getContas());
-//
-//		return clienteRepository.save(novoCliente);
-//	}
-
 }

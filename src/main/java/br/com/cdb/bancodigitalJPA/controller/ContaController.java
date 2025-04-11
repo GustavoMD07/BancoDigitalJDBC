@@ -135,6 +135,11 @@ public class ContaController {
 		contaService.aplicarRendimento(id);
 		return new ResponseEntity<>("Taxa de rendimento aplicada", HttpStatus.OK);
 	}
+	
+	@GetMapping("/cliente-security/saldo-convertido/{id}")
+	public ResponseEntity<String> getSaldoConvertido(@PathVariable Long id) {
+	return new ResponseEntity<>("Saldo Convertido: " + contaService.saldoConvertido(id), HttpStatus.OK);
+	}
 		
 
 }

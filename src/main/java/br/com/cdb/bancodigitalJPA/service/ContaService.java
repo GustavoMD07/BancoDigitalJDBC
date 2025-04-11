@@ -1,14 +1,23 @@
 package br.com.cdb.bancodigitalJPA.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import br.com.cdb.bancodigitalJPA.DTO.SaldoConvertidoResponse;
 import br.com.cdb.bancodigitalJPA.entity.Cartao;
 import br.com.cdb.bancodigitalJPA.entity.Cliente;
 import br.com.cdb.bancodigitalJPA.entity.Conta;
 import br.com.cdb.bancodigitalJPA.entity.ContaCorrente;
 import br.com.cdb.bancodigitalJPA.entity.ContaPoupanca;
+import br.com.cdb.bancodigitalJPA.exception.ApiBloqueadaException;
 import br.com.cdb.bancodigitalJPA.exception.ObjetoNuloException;
 import br.com.cdb.bancodigitalJPA.exception.QuantidadeExcedidaException;
 import br.com.cdb.bancodigitalJPA.exception.SaldoInsuficienteException;
@@ -33,6 +42,9 @@ public class ContaService {
 
 	@Autowired
 	private SeguroRepository seguroRepository;
+
+	@Autowired
+	private RestTemplate restTemplate;
 
 	// a conta puxa o cliente, e o cliente puxa o ID
 
@@ -167,6 +179,32 @@ public class ContaService {
 		contaP.setSaldo(rendimento);
 //		contaP.setSaldo(contaP.getSaldo() * (1 + taxa));
 		contaRepository.save(contaP);
+	}
+
+	public SaldoConvertidoResponse saldoConvertido(Long id) {
+		Conta conta = buscarContaPorId(id);
+		BigDecimal saldoBRL = conta.getSaldo();
+
+		String url = "https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL";
+		ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+		if (!response.getStatusCode().is2xxSuccessful()) {
+			throw new ApiBloqueadaException("Erro ao consultar API de câmbio");
+		}
+		try {
+			ObjectMapper mapper = new ObjectMapper(); // converte o JSON em java normal, só pra ler a resposta da API
+			JsonNode root = mapper.readTree(response.getBody());
+			double taxaUSD = Double.parseDouble(root.path("USDBRL").path("high").asText());
+			double taxaEUR = Double.parseDouble(root.path("EURBRL").path("high").asText());
+
+			BigDecimal saldoUSD = saldoBRL.divide(BigDecimal.valueOf(taxaUSD), 2, RoundingMode.HALF_UP);
+			BigDecimal saldoEUR = saldoBRL.divide(BigDecimal.valueOf(taxaEUR), 2, RoundingMode.HALF_UP);
+			return new SaldoConvertidoResponse(saldoBRL, saldoUSD, saldoEUR);
+			
+		} catch (Exception e) {
+			throw new ApiBloqueadaException("Erro ao processar os dados de câmbio");
+		}
+
 	}
 
 }
