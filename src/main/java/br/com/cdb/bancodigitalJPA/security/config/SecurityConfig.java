@@ -58,7 +58,7 @@ public class SecurityConfig { // autenticação, autorização, e gerencia o flu
 				.requestMatchers("/seguros/admin-security/**").hasRole("ADMIN")
 				.requestMatchers("/cliente-security/**").hasAnyRole("ADMIN", "CLIENTE")
 				.requestMatchers("/public/**", "/auth/**").permitAll()
-				.anyRequest().authenticated()
+				.anyRequest().authenticated() //se não for nada, ele só bloqueia
 			)
 			
 			.exceptionHandling(exception -> exception
@@ -68,7 +68,7 @@ public class SecurityConfig { // autenticação, autorização, e gerencia o flu
 
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			)
+			)	//stateless pra indicar que é feito por JWT, não tem sessão 
 
 			.authenticationProvider(authenticationProvider()) 
 
@@ -101,7 +101,7 @@ public class SecurityConfig { // autenticação, autorização, e gerencia o flu
 	    authProvider.setUserDetailsService(usuarioService); 
 	    authProvider.setPasswordEncoder(passwordEncoder());
 	    return authProvider;
-	}
+	} //verifica se o login/senha é valido msm
 
 	
 }

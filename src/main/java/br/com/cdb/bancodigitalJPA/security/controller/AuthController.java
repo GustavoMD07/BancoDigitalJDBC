@@ -44,8 +44,7 @@ public class AuthController { // aqui eu vou criar os endpoints de autenticaçã
 				    new UsernamePasswordAuthenticationToken(request.email(), request.senha()));
 			// usernamePassword carrega o email e a senha que o usuário digitou, ai se for válido, ele retorna a instância
 			
-			
-		
+
 			Usuario usuario = (Usuario) authentication.getPrincipal();	//cast
 			String token = jwtService.gerarToken(usuario); //gera o token
 			return new ResponseEntity<>(token, HttpStatus.OK);
@@ -61,9 +60,11 @@ public class AuthController { // aqui eu vou criar os endpoints de autenticaçã
 			return new ResponseEntity<>("Email já cadastrado!", HttpStatus.BAD_REQUEST);
 		} //evita duplicidade
 		
-		Usuario usuario = Usuario.builder().nome(request.nome()).email(request.email()).senha(
-		new BCryptPasswordEncoder().encode(request.senha())) //essa classe deixa a senha criptografada :), mais seguro
-		.role(Role.valueOf(request.role().toUpperCase())).build();
+		Usuario usuario = Usuario.builder()
+		.nome(request.nome())
+		.email(request.email())
+		.senha(new BCryptPasswordEncoder().encode(request.senha())) //essa classe deixa a senha criptografada :), mais seguro
+		.role(Role.valueOf(request.role().toUpperCase())).build();  //builder pra ficar mais organizado e clean
 
 		usuarioService.save(usuario);
 

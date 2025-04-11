@@ -20,7 +20,7 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 
-	private final String ChaveSecreta = Base64.getEncoder().encodeToString("m3uSegr3doSup3rF0rte!@#1234567890".getBytes());
+	private final String ChaveSecreta = Base64.getEncoder().encodeToString("mInh4Ch4v3sECrEt4@#1234567890".getBytes());
 	
 	private Key getChaveAssinatura() {
 		return Keys.hmacShaKeyFor(ChaveSecreta.getBytes());
@@ -34,8 +34,8 @@ public class JwtService {
 		return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(usuario.getEmail())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 horas
+                .setIssuedAt(new Date(System.currentTimeMillis()))	//segundos minutos horas
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24 horas pra expirar o token
                 .signWith(getChaveAssinatura(), SignatureAlgorithm.HS256)
                 .compact();
 	}
