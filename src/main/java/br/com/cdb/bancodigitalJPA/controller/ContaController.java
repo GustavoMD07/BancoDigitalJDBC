@@ -137,8 +137,17 @@ public class ContaController {
 	}
 	
 	@GetMapping("/cliente-security/saldo-convertido/{id}")
-	public ResponseEntity<String> getSaldoConvertido(@PathVariable Long id) {
+	public ResponseEntity<String> SaldoConvertido(@PathVariable Long id) {
 	return new ResponseEntity<>("Saldo Convertido: " + contaService.saldoConvertido(id), HttpStatus.OK);
+	}
+	
+	@PostMapping("/cliente-security/transf-internacional/{id}")
+	public ResponseEntity<String> transferenciaInternacional(@PathVariable Long id, @RequestParam Long destinoId, 
+			@RequestParam BigDecimal valor, @RequestParam String moedaDestino) {
+		contaService.transferirInternacional(id, destinoId, valor, moedaDestino);
+		return new ResponseEntity<>("Transferência internacional de R$ " + valor + " concluída com sucesso"
+				+ "\n | Moeda destinada : " + moedaDestino, HttpStatus.ACCEPTED);
+		
 	}
 		
 

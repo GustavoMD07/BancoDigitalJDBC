@@ -7,10 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import br.com.cdb.bancodigitalJPA.DTO.SaldoConvertidoResponse;
 import br.com.cdb.bancodigitalJPA.entity.Cartao;
 import br.com.cdb.bancodigitalJPA.entity.Cliente;
@@ -21,6 +19,7 @@ import br.com.cdb.bancodigitalJPA.exception.ApiBloqueadaException;
 import br.com.cdb.bancodigitalJPA.exception.ObjetoNuloException;
 import br.com.cdb.bancodigitalJPA.exception.QuantidadeExcedidaException;
 import br.com.cdb.bancodigitalJPA.exception.SaldoInsuficienteException;
+import br.com.cdb.bancodigitalJPA.exception.StatusNegadoException;
 import br.com.cdb.bancodigitalJPA.exception.SubClasseDiferenteException;
 import br.com.cdb.bancodigitalJPA.repository.CartaoRepository;
 import br.com.cdb.bancodigitalJPA.repository.ClienteRepository;
@@ -108,6 +107,8 @@ public class ContaService {
 		contaRepository.save(origem);
 		contaRepository.save(destino); // atualizando as informações
 	}
+	
+	
 	// por que usar o @Transactional? 1- ele indica que o método vai ser tratado
 	// como transação
 	// se no meio do processo algo dá errado, por exemplo em saque, ele não modifica
@@ -207,7 +208,51 @@ public class ContaService {
 		} catch (Exception e) {
 			throw new ApiBloqueadaException("Erro ao processar os dados de câmbio");
 		}
+	}
+	
+	@Transactional
+	public void transferirInternacional(Long origemid, Long destinoid, BigDecimal valor, String moedaDestino) {
+		Conta origem = buscarContaPorId(origemid);
+		Conta destino = buscarContaPorId(destinoid);
 
+		
+		
+		if (valor.compareTo(origem.getSaldo()) > 0) { // ele retorna 1 se o valor for maior que o saldo, e ai a gente
+													  // compara  se o valor for maior que o saldo, ele vai retornar 1 e comparar com o 0
+			throw new SaldoInsuficienteException("Saldo insuficiente na conta de origem");
+		}
+		
+		String url = "https://economia.awesomeapi.com.br/json/last/" + moedaDestino + "-BRL";
+		ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+		 if (!response.getStatusCode().is2xxSuccessful()) {
+		        throw new ApiBloqueadaException("Erro ao consultar taxa de câmbio.");
+		    }
+		 
+		 if(!moedaDestino.equals("USD") && !moedaDestino.equals("EUR")) {
+			 throw new StatusNegadoException("Nosso sistema só permite a conversão para euro e dólar por enquanto.");
+		 }
+		 
+		 try {
+			 
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode root = mapper.readTree(response.getBody());
+			double taxa = Double.parseDouble(root.path(moedaDestino + "BRL").path("high").asText());
+			
+			BigDecimal valorConvertido = valor.divide(BigDecimal.valueOf(taxa), 2, RoundingMode.HALF_UP);
+			
+			origem.setSaldo(origem.getSaldo().subtract(valor));
+			destino.setSaldo(destino.getSaldo().add(valorConvertido));			
+			
+			//se eu pagar com o meu dinheiro em reais, o usuário de fora recebe o valor em dolar
+			
+			contaRepository.save(origem);
+			contaRepository.save(destino); // atualizando as informações
+		 } catch(Exception e) {
+			 throw new ApiBloqueadaException("Erro ao realizar a conversão da moeda para a transferência. Moedas disponíveis: BRL, USD, EUR");
+		 }
+
+		
 	}
 
 }
