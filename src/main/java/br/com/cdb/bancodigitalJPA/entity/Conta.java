@@ -1,11 +1,14 @@
 package br.com.cdb.bancodigitalJPA.entity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -27,7 +30,8 @@ public abstract class Conta {
 	@GeneratedValue(strategy = GenerationType.IDENTITY) //ID vai ser incremento (1 a 1)
 	private Long id;
 	
-	private BigDecimal saldo = BigDecimal.ZERO;	//BigDecimal pra valores monetários e inicializando com 0;
+	@OneToMany(mappedBy = "conta", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<SaldoMoeda> saldos = new ArrayList();
 	
 	//ManyToOne - posso ter mais de uma conta, mas todas elas vão ter que ser relacionadas a um só objeto
 	//o cliente :)
