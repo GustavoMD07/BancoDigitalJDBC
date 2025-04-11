@@ -12,6 +12,6 @@ public class ClienteSecurityController {
 
 	@GetMapping("/area")
 	public ResponseEntity<String> areaCliente() {
-		return new ResponseEntity<>("Bem vindo a Role Cliente", HttpStatus.OK);
+		return new ResponseEntity<>("Bem vindo a Role Cliente. Você tem acesso a algumas requisições", HttpStatus.OK);
 	} //apenas um teste pra verificar as roles
 }

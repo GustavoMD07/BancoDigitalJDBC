@@ -59,8 +59,7 @@ public class AuthController { // aqui eu vou criar os endpoints de autenticaçã
 		
 		if (usuarioService.existePorEmail(request.email())) {
 			return new ResponseEntity<>("Email já cadastrado!", HttpStatus.BAD_REQUEST);
-		}
-		
+		} //evita duplicidade
 		
 		Usuario usuario = Usuario.builder().nome(request.nome()).email(request.email()).senha(
 		new BCryptPasswordEncoder().encode(request.senha())) //essa classe deixa a senha criptografada :), mais seguro

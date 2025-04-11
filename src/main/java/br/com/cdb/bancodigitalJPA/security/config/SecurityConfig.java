@@ -31,7 +31,7 @@ public class SecurityConfig { // autenticação, autorização, e gerencia o flu
 	private final UsuarioService usuarioService;
 	
 	private final CustomAccessDeniedHandler accessDeniedHandler;
-    private final CustomAuthenticationEntryPointHandler authenticationEntryPointHandler;
+    private final CustomAuthenticationEntryPointHandler authenticationEntryPointHandler; //Handlers
 
 	// a notação Bean diz mais ou menos pro Spring criar o objeto, guardar e
 	// retornar ele
@@ -42,7 +42,7 @@ public class SecurityConfig { // autenticação, autorização, e gerencia o flu
 	// mas eu não tenho 100% de controle delas, o Spring cuida disso ai
 	
 	
-	//eu crio o "painel de controle"
+	//aqui eu defino as permissões de cada Role. Tipo um painel de controle 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http
@@ -64,7 +64,7 @@ public class SecurityConfig { // autenticação, autorização, e gerencia o flu
 			.exceptionHandling(exception -> exception
 		            .authenticationEntryPoint(authenticationEntryPointHandler)
 		            .accessDeniedHandler(accessDeniedHandler)
-		        )
+		        ) //aqui eu retorno os tratamentos de erros que eu criei no pacote Handler
 
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -92,12 +92,13 @@ public class SecurityConfig { // autenticação, autorização, e gerencia o flu
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder(); // é só um criptografador de senha padrão, mas é seguro tbm
-	}
+	}	//Bcrypt é um dos algoritmos mais usados pra armazenar senhas com segurança, ele não deixa a senha pura 
+		//no banco de dados
 	
 	@Bean
 	public AuthenticationProvider authenticationProvider() {
 	    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-	    authProvider.setUserDetailsService(usuarioService); // ou o seu UserDetailsService
+	    authProvider.setUserDetailsService(usuarioService); 
 	    authProvider.setPasswordEncoder(passwordEncoder());
 	    return authProvider;
 	}

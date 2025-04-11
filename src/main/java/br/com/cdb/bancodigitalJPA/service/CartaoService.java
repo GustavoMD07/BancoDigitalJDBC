@@ -5,6 +5,7 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import br.com.cdb.bancodigitalJPA.entity.Cartao;
 import br.com.cdb.bancodigitalJPA.entity.CartaoCredito;
@@ -26,6 +27,9 @@ public class CartaoService {
 
 	@Autowired
 	private ContaRepository contaRepository;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	private static final int QntdsNum = 15;
 	private SecureRandom random = new SecureRandom(); // secureRandom pra gerar os números aleatórios
@@ -84,10 +88,20 @@ public class CartaoService {
 		return cartaoRepository.save(cartao);
 	}
 
-	public void realizarPagamento(Long id, BigDecimal valor) {
+	public void realizarPagamento(Long id, BigDecimal valor, String senha) {
 		Cartao cartao = cartaoRepository.findById(id)
 				.orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
 
+		String senhaEncontrada = cartao.getSenha();
+		
+		if (senha == null) {
+			throw new StatusNegadoException("Digite sua senha");
+		}
+		
+		if (!passwordEncoder.matches(senha, senhaEncontrada)) {
+		    throw new StatusNegadoException("Senha inválida!");
+		}
+		
 		if (valor.compareTo(BigDecimal.ZERO) < 0) {
 			throw new StatusNegadoException("Não é possível realizar o pagamento de um valor menor que 0");
 		}
