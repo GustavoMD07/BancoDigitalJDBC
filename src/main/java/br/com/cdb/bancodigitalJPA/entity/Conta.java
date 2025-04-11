@@ -28,6 +28,7 @@ public abstract class Conta {
 	private Long id;
 						//se eu deletar a conta, ele já deleta, ai é menos dor de cabeça
 	@OneToMany(mappedBy = "conta", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
 	private List<SaldoMoeda> saldos = new ArrayList<>();
 	
 	
@@ -37,14 +38,14 @@ public abstract class Conta {
 	//o cliente :)
 	//O JoinColumn é responsável por criar a Foreing Key
 	@ManyToOne
-	@JoinColumn(name = "cliente_id")		//BackReference pra ele não ficar infinito no JSON
+	@JoinColumn(name = "cliente_id")		
 	@JsonBackReference
 	private Cliente cliente;
 	//esse atributo eu mapeio ele no cliente, depois passo o nome dele no Cliente
 	
 
 	@OneToMany(mappedBy = "conta", fetch = FetchType.EAGER)
-	@JsonManagedReference
+	@JsonManagedReference 		
 	private List<Cartao> cartoes;
 	
 	

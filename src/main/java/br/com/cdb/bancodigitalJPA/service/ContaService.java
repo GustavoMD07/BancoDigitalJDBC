@@ -1,10 +1,10 @@
 package br.com.cdb.bancodigitalJPA.service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import br.com.cdb.bancodigitalJPA.DTO.SaldoConvertidoResponse;
+
+import br.com.cdb.bancodigitalJPA.DTO.SaldoResponse;
 import br.com.cdb.bancodigitalJPA.entity.Cartao;
 import br.com.cdb.bancodigitalJPA.entity.Cliente;
 import br.com.cdb.bancodigitalJPA.entity.Conta;
@@ -65,9 +66,13 @@ public class ContaService {
 		if (cliente.getContas().size() >= 2) {
 			throw new QuantidadeExcedidaException("O cliente já possui duas contas");
 		}
+		
+		
 
 		conta.setCliente(cliente);
-		return contaRepository.save(conta);
+		Conta contaSalva = contaRepository.save(conta);
+		inicializarSaldos(contaSalva);
+		return contaSalva;
 	}
 
 	public Conta removerConta(Long id) {
@@ -95,20 +100,16 @@ public class ContaService {
 		return contaRepository.findAll();
 	}
 
-	public Map<String, BigDecimal> verificarSaldos(Long id) {
+	public List<SaldoResponse> verificarSaldos(Long id) {
 		List<SaldoMoeda> saldos = saldoMoedaRepository.findByContaId(id);
 		
 		if (saldos.isEmpty()) {
 			throw new ObjetoNuloException("Nenhum saldo encontrado para esta conta");
 		}
 
-		Map<String, BigDecimal> saldosMap = new HashMap<>();
-
-		for (SaldoMoeda saldo : saldos) {
-			saldosMap.put(saldo.getMoeda(), saldo.getSaldo());
-		}
-
-		return saldosMap;
+		 return saldos.stream()
+			        .map(s -> new SaldoResponse(s.getMoeda(), s.getSaldo()))
+			        .collect(Collectors.toList());
 	}
 
 	@Transactional
@@ -157,26 +158,23 @@ public class ContaService {
 	// nada do saldo e retorna ao que era antes
 
 	@Transactional
-	public void pix(Long id, BigDecimal valor, String moedaUsada, String moedaDepositada) {
+	public void pix(Long id, BigDecimal valor, String moedaUsada) {
 		
 		if(valor.compareTo(BigDecimal.ZERO) <= 0) {
 			throw new StatusNegadoException("Não é possível fazer o pix de um valor negativo ou zero");
 		}
 		
 		validarMoeda(moedaUsada);
-		validarMoeda(moedaDepositada);
-		
-		BigDecimal valorConvertido = converterMoeda(valor, moedaUsada, moedaDepositada);
 
-	    SaldoMoeda saldo = saldoMoedaRepository.findByMoedaAndContaId(moedaDepositada, id)
+	    SaldoMoeda saldo = saldoMoedaRepository.findByMoedaAndContaId(moedaUsada, id)
 	        .orElseThrow(() -> new ObjetoNuloException("Saldo não encontrado"));
 
-	    if (valorConvertido.compareTo(saldo.getSaldo()) > 0) {
+	    if (valor.compareTo(saldo.getSaldo()) > 0) {
 	        throw new SaldoInsuficienteException("Saldo insuficiente para fazer o pix");
 	    }
 	   
 
-	    saldo.setSaldo(saldo.getSaldo().subtract(valorConvertido));
+	    saldo.setSaldo(saldo.getSaldo().subtract(valor));
 	    saldoMoedaRepository.save(saldo);
 	}
 
@@ -209,13 +207,13 @@ public class ContaService {
 	}
 
 	@Transactional
-	public void saque(Long id, BigDecimal valor, String moedaUsada, String moedaDepositada) {
+	public void saque(Long id, BigDecimal valor, String moedaUsada, String moedaSacada) {
 		validarMoeda(moedaUsada);
-		validarMoeda(moedaDepositada);
+		validarMoeda(moedaSacada);
 		
-		BigDecimal valorConvertido = converterMoeda(valor, moedaUsada, moedaDepositada);
+		BigDecimal valorConvertido = converterMoeda(valor, moedaUsada, moedaSacada);
 
-	    SaldoMoeda saldo = saldoMoedaRepository.findByMoedaAndContaId(moedaDepositada, id)
+	    SaldoMoeda saldo = saldoMoedaRepository.findByMoedaAndContaId(moedaSacada, id)
 	        .orElseThrow(() -> new ObjetoNuloException("Saldo não encontrado"));
 
 	    if (valorConvertido.compareTo(saldo.getSaldo()) > 0) {
@@ -307,5 +305,16 @@ public class ContaService {
 	    }
 		//mesma coisa, duas casas decimais, arredonda pra cima...
 	}
+	
+	private void inicializarSaldos(Conta conta) {
+	    List<String> moedas = List.of("BRL", "USD", "EUR");
 
+	    for (String moeda : moedas) {
+	        SaldoMoeda saldo = new SaldoMoeda();
+	        saldo.setConta(conta);
+	        saldo.setMoeda(moeda);
+	        saldo.setSaldo(BigDecimal.ZERO);
+	        saldoMoedaRepository.save(saldo);
+	    }//criando a lista de saldos, por enquanto só esses três mesmo
+	}
 }

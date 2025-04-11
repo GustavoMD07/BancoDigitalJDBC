@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import br.com.cdb.bancodigitalJPA.DTO.ContaDTO;
+import br.com.cdb.bancodigitalJPA.DTO.SaldoResponse;
 import br.com.cdb.bancodigitalJPA.entity.Cliente;
 import br.com.cdb.bancodigitalJPA.entity.Conta;
 import br.com.cdb.bancodigitalJPA.entity.ContaCorrente;
@@ -96,8 +97,8 @@ public class ContaController {
 	}
 	
 	@GetMapping("cliente-security/saldo/{id}")
-	public ResponseEntity<String> verificarSaldo(@PathVariable Long id) {
-		return new ResponseEntity<>("Saldo: R$" + contaService.verificarSaldos(id), HttpStatus.OK);
+	public ResponseEntity<List<SaldoResponse>> verificarSaldo(@PathVariable Long id) {
+		return new ResponseEntity<>(contaService.verificarSaldos(id), HttpStatus.OK);
 	}
 	
 	@PostMapping("/cliente-security/transf/{id}")
@@ -109,9 +110,9 @@ public class ContaController {
 	}
 	
 	@PostMapping("/cliente-security/pix/{id}")
-	public ResponseEntity<String> pix(@PathVariable Long id, @RequestParam BigDecimal valor, @RequestParam String moeda, @RequestParam String moedaDepositada) {
-		contaService.pix(id, valor, moeda, moedaDepositada);
-		return new ResponseEntity<>("Pix de R$ " + valor +" realizado com sucesso!", HttpStatus.ACCEPTED);
+	public ResponseEntity<String> pix(@PathVariable Long id, @RequestParam BigDecimal valor, @RequestParam String moeda) {
+		contaService.pix(id, valor, moeda);
+		return new ResponseEntity<>("Pix de R$ " + valor +" realizado com sucesso!\n | Moeda paga: " + moeda, HttpStatus.ACCEPTED);
 	}
 	
 	@PostMapping("/cliente-security/deposito/{id}")
@@ -121,9 +122,10 @@ public class ContaController {
 	}
 	
 	@PostMapping("/cliente-security/saque/{id}")
-	public ResponseEntity<String> saque(@PathVariable Long id, @RequestParam BigDecimal valor, @RequestParam String moeda, @RequestParam String moedaDepositada) {
-		contaService.saque(id, valor, moeda, moedaDepositada);
-		return new ResponseEntity<>("Saque de R$ " + valor + " realizado com sucesso", HttpStatus.ACCEPTED);
+	public ResponseEntity<String> saque(@PathVariable Long id, @RequestParam BigDecimal valor, @RequestParam String moeda, @RequestParam String moedaSacada) {
+		contaService.saque(id, valor, moeda, moedaSacada);
+		
+		return new ResponseEntity<>("Saque de R$ " + valor + " realizado com sucesso\n", HttpStatus.ACCEPTED);
 	}
 	
 	@PutMapping("/admin-security/manutencao/{id}")
