@@ -9,7 +9,7 @@ Esse projeto é uma API REST de um banco Digital, desenvolvido em Java. O objeti
 ✅ Cadastro e gerenciamento de clientes  
 ✅ Abertura, consulta, atualização e exclusão de contas bancárias  
 ✅ Emissão e administração de cartões  
-✅ Realização de pagamentos e simulação de saldo  
+✅ Realização de pagamentos e simulação de saldo
 ✅ Tipos de clientes com vantagens  
 ✅ Tratamento de exceções personalizado  
 ✅ Persistência em banco de dados (H2 em memória)  
@@ -26,7 +26,31 @@ Esse projeto é uma API REST de um banco Digital, desenvolvido em Java. O objeti
 - **Postman** – Para testes dos endpoints REST
 - **SpringSecurity** - Segurança do Projeto com token JWT
 
-- ## 📂 Estrutura do Projeto
+# 💡 Diferenciais
+O projeto faz integraçaõ com duas API externas que potencializam o uso da APIREST  
+
+### 📍 Integração com API de Endereço via CEP  
+Ao cadastrar um cliente, o sistema utiliza a API BrasilAPI para preencher automaticamente o endereço com base no CEP informado.
+
+**✅Benefícios:**
+- Preenchimento automático de **rua**, **bairro**, **cidade** e **estado**
+- Redução de erros de digitação
+- Experiência de cadastro mais rápida e intuitiva
+
+---
+
+### 💱 Suporte a Múltiplas Moedas (Multiwallet)
+
+Simula uma carteira multimoeda, permitindo o gerenciamento de saldos em diversas moedas (BRL, USD, EUR). Isso é possível graças à integração com uma API de câmbio em tempo real, como a [AwesomeAPI](https://docs.awesomeapi.com.br/api-de-moedas).
+
+**Funcionalidades:**
+- Consulta de saldo em **BRL** (Real), **USD** (Dólar) e **EUR** (Euro)
+- Conversão automática de valores durante transferências
+- Suporte a operações internacionais, simulando uma verdadeira fintech
+- O usuário tem o poder de depositar seu dinheiro em outra moeda, fazendo a conversão automática
+---
+
+- # 📂 Estrutura do Projeto
 
 ```plaintext
 banco-digital
