@@ -93,7 +93,7 @@ public class SeguroService {
 
 	public void cancelarSeguro(Long id) {
 	    Seguro seguro = seguroRepository.findById(id)
-	        .orElseThrow(() -> new ObjetoNuloException("Seguro não encontrado"));
+	        .orElseThrow(() -> new ObjetoNuloException("Seguro não encontrado."));
 	    seguro.setAtivo(false);
 	    seguroRepository.save(seguro);
 	}
