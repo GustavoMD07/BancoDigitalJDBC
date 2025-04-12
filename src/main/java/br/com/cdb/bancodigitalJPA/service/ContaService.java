@@ -100,10 +100,12 @@ public class ContaService {
 		if (saldos.isEmpty()) {
 			throw new ObjetoNuloException("Nenhum saldo encontrado para esta conta");
 		}
-
+		//aqui eu uso Stream, pra transformar a lista de SaldoMoeda
+		//em uma lista de SaldoResponse
 		 return saldos.stream()
 			        .map(s -> new SaldoResponse(s.getMoeda(), s.getSaldo()))
 			        .collect(Collectors.toList());
+		 
 	}
 
 	@Transactional
@@ -278,6 +280,7 @@ public class ContaService {
 	}
 	
 	private BigDecimal converterMoeda(BigDecimal valor, String moedaOrigem, String moedaDestino) {
+		
 		if(moedaOrigem.equals(moedaDestino)) {
 			return valor;
 		} //se a moeda for a mesma, tudo igual
@@ -297,7 +300,8 @@ public class ContaService {
 	    } catch (Exception e) {
 	        throw new ApiBloqueadaException("Erro ao converter moeda.");
 	    }
-		//mesma coisa, duas casas decimais, arredonda pra cima...
+		//mesma coisa, transforma o JSON em um objeto mapper, ai eu navego por ele com o JsonNode, pego tudo que vier da requisição
+	    //depois eu pego a parte do high e retorno ela como Double
 	}
 	
 	private void inicializarSaldos(Conta conta) {

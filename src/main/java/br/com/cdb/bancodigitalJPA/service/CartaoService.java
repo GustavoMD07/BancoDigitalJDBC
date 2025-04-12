@@ -314,11 +314,12 @@ public class CartaoService {
 		for (int i = 0; i < 15; i++) {
 			num += random.nextInt(9);
 		}
+		
 		int digitoVerificador = calcularDigitoVerificador(num);
 		return num + digitoVerificador;
 	}
 
-	// Algoritmo de Luhn
+											// Algoritmo de Luhn
 
 	private int calcularDigitoVerificador(String num) {
 		int soma = 0;
