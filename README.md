@@ -45,8 +45,8 @@ banco-digital
 # 🔧 Como Executar o Projeto
 1️⃣ Clone o repositório:
 ```bash
-git clone https://github.com/seu-usuario/banco-digital.git
-cd banco-digital
+git clone https://github.com/GustavoMD07/BancoDigitalSpring
+cd BancoDigitalSpring
 ```
 
 2️⃣ Execute a aplicação:
