@@ -49,12 +49,21 @@ git clone https://github.com/GustavoMD07/BancoDigitalSpring
 cd BancoDigitalSpring
 ```
 
-2️⃣ Execute a aplicação:
-
+2️⃣ Execute a aplicação  
+Opção 1: via terminal com Maven Wrapper
+No Linux/macOS:
 ```bash
 ./mvnw spring-boot:run
-Ou, se preferir, execute a main() da classe principal em sua IDE favorita (IntelliJ, Eclipse, VS Code).
 ```
+No Windows:
+```bash
+mvnw spring-boot:run
+```
+
+Opção 2: via IDE (IntelliJ, Eclipse, VS Code)  
+
+Abra o projeto na sua IDE favorita e execute o método main() da classe principal **BancoDigitalSpringApplication.java**.
+
 
 3️⃣ Acesse o banco H2 (opcional):
 ```
