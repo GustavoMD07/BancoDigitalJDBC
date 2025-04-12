@@ -24,6 +24,7 @@ Esse projeto é uma API REST de um banco Digital, desenvolvido em Java. O objeti
 - **Lombok** – Geração automática de getters, setters, constructors, etc.  
 - **Maven** – Gerenciador de dependências e build  
 - **Postman** – Para testes dos endpoints REST
+- **SpringSecurity** - Segurança do Projeto com token JWT
 
 - ## 📂 Estrutura do Projeto
 
@@ -37,6 +38,7 @@ banco-digital
 ┃ ┣ 📂 service       # Regras de negócio e lógica de aplicação
 ┃ ┣ 📂 exceptions    # Exceções personalizadas para regras de negócio
 ┃ ┣ 📂 handler       # Manipulação global de erros com @ControllerAdvice
+┃ ┣ 📂 security      # Relação do SpringSecurity com o projeto
 ┣ 📄 README.md       # Documentação do projeto
 ┣ 📄 pom.xml         # Arquivo de build com dependências
 ```
@@ -75,7 +77,6 @@ Dessa forma, Qualquer erro de negócio ou validação retorna uma resposta clara
 # 📈 Melhorias Futuras
 
 🔹 Persistência com banco de dados real (PostgreSQL ou MySQL)  
-🔹 Autenticação com Spring Security (JWT ou Basic Auth)  
 🔹 Testes unitários com JUnit e Mockito  
 🔹 Documentação de API com Swagger  
 🔹 Interface frontend (React ou Angular) para visualização dos dados  
