@@ -5,7 +5,6 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import br.com.cdb.bancodigitalJPA.entity.Cartao;
 import br.com.cdb.bancodigitalJPA.entity.CartaoCredito;
@@ -29,9 +28,6 @@ public class CartaoService {
 
 	@Autowired
 	private ContaRepository contaRepository;
-	
-	@Autowired
-	private PasswordEncoder passwordEncoder;
 	
 	@Autowired
 	private SaldoMoedaRepository saldoMoedaRepository;
@@ -311,7 +307,7 @@ public class CartaoService {
 	public String gerarNumeroCartao() {
 		String num = "";
 
-		for (int i = 0; i < 15; i++) {
+		for (int i = 0; i < QntdsNum; i++) {
 			num += random.nextInt(9);
 		}
 		
