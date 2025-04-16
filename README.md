@@ -9,14 +9,16 @@ Esse projeto é uma API REST de um banco Digital, desenvolvido em Java. O objeti
 ✅ Cadastro e gerenciamento de clientes  
 ✅ Abertura, consulta, atualização e exclusão de contas bancárias  
 ✅ Emissão e administração de cartões  
-✅ Realização de pagamentos e simulação de saldo
+✅ Realização de pagamentos e simulação de saldo  
 ✅ Tipos de clientes com vantagens  
 ✅ Tratamento de exceções personalizado  
+✅ Saldo de conta em diferentes moedas (BRL, USD, EUR)  
+✅ Conversão monetária automática ao realizar ações  
 ✅ Persistência em banco de dados (H2 em memória)  
 ✅ Arquitetura baseada em camadas (Controller, Service, Repository, etc.)
 
 # 🛠️ Tecnologias Utilizadas
-- **Java 21**
+- **Java 21** - Versão do Java utilizada para o projeto
 - **Spring Boot** – Framework para facilitar o desenvolvimento e configuração  
 - **Spring Data JPA** – Alternativa para persistência de dados com JPA  
 - **H2 Database** – Banco de dados em memória para testes e desenvolvimento  
@@ -27,7 +29,7 @@ Esse projeto é uma API REST de um banco Digital, desenvolvido em Java. O objeti
 - **SpringSecurity** - Segurança do Projeto com token JWT
 
 # 💡 Diferenciais
-O projeto faz integraçaõ com duas API externas que potencializam o uso da APIREST  
+O projeto faz integração com duas API externas que potencializam o uso da APIREST  
 
 ### 📍 Integração com API de Endereço via CEP  
 Ao cadastrar um cliente, o sistema utiliza a API BrasilAPI para preencher automaticamente o endereço com base no CEP informado.
@@ -36,14 +38,14 @@ Ao cadastrar um cliente, o sistema utiliza a API BrasilAPI para preencher automa
 - Preenchimento automático de **rua**, **bairro**, **cidade** e **estado**
 - Redução de erros de digitação
 - Experiência de cadastro mais rápida e intuitiva
-
+- Otimização de tempo tanto pro sistema quanto pro usuário
 ---
 
 ### 💱 Suporte a Múltiplas Moedas (Multiwallet)
 
 Simula uma carteira multimoeda, permitindo o gerenciamento de saldos em diversas moedas (BRL, USD, EUR). Isso é possível graças à integração com uma API de câmbio em tempo real, como a [AwesomeAPI](https://docs.awesomeapi.com.br/api-de-moedas).
 
-**Funcionalidades:**
+**✅Funcionalidades:**
 - Consulta de saldo em **BRL** (Real), **USD** (Dólar) e **EUR** (Euro)
 - Conversão automática de valores durante transferências
 - Suporte a operações internacionais, simulando uma verdadeira fintech
