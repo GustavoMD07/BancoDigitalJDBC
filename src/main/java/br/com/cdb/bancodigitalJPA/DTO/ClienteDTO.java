@@ -2,7 +2,6 @@ package br.com.cdb.bancodigitalJPA.DTO;
 
 import java.time.LocalDate;
 import org.hibernate.validator.constraints.br.CPF;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
@@ -20,7 +19,6 @@ public class ClienteDTO {
 	@Pattern(regexp = "^[A-Za-zÀ-ÿ\\s]+$", message = "O nome deve conter apenas letras :)")
 	private String nome;
 	
-	@Column(unique = true)
 	@NotBlank(message = "O cpf não pode estar vazio.")
 	@CPF(message = "CPF inválido, deve conter 11 dígitos e ser válido!")
 	private String CPF;

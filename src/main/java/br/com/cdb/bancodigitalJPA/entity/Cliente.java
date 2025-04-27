@@ -8,34 +8,16 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorColumn;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.OneToMany;
-
-
 //no entity mesmo, ele já cria a tabela no banco de dados (h2) ele já "Mapeia"
 //a gente pensa no Entity como se fosse a "interface" da tabela do nosso banco, é o que você guarda
 
-@Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "tipo_de_cliente")
 public abstract class Cliente {
 
 	// gerando ID de forma icrementada
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY) // ID vai ser incremento (1 a 1)
 	private Long id;
 	//usando o Bean Validation, ele é um padrão de mercado, então é bom usar
 	
 	//cpf tem que ser único
-	@Column(unique = true)
 	private String cpf;
 	
 	private String nome;
@@ -54,11 +36,9 @@ public abstract class Cliente {
 	public abstract BigDecimal getTaxaRendimento();
 	public abstract BigDecimal getLimiteCredito();
 	
-	@OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER) //fetch pra toda vez que eu buscar o cliente, eu trago as contas dele também
 	@JsonManagedReference
 	private List<Conta> contas; 
 
-	
 	//por que usar? 1- Ele impede a criação de um cliente_id no cliente
 	//2- vai ser a Entidade Conta que vai ter o cliente_id
 	//estamos apontando que o cliente é dono da conta, que ele é o dono da Foreing Key

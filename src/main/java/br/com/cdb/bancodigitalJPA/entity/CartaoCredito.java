@@ -1,18 +1,8 @@
 package br.com.cdb.bancodigitalJPA.entity;
 
-
-
 import java.math.BigDecimal;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.PrimaryKeyJoinColumn;
 import lombok.NoArgsConstructor;
 
-
-@Entity
-@PrimaryKeyJoinColumn(name = "idCartao")
 @NoArgsConstructor
 public class CartaoCredito extends Cartao {
 	
@@ -41,9 +31,6 @@ public class CartaoCredito extends Cartao {
 		this.fatura = fatura;
 	}
 	
-	
-	@PrePersist
-    @PreUpdate
     //uso esse método e notações pra ele calcular o limite antes de colocar a entidade no banco
     //assim o H2 não fica zerado
     public void calcularLimiteAntesDeSalvar() {
