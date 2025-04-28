@@ -15,13 +15,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import br.com.cdb.bancodigitalJPA.DAO.ContaDAO;
 import br.com.cdb.bancodigitalJPA.DTO.CartaoDTO;
 import br.com.cdb.bancodigitalJPA.entity.Cartao;
 import br.com.cdb.bancodigitalJPA.entity.CartaoCredito;
 import br.com.cdb.bancodigitalJPA.entity.CartaoDebito;
 import br.com.cdb.bancodigitalJPA.entity.Conta;
 import br.com.cdb.bancodigitalJPA.exception.ListaVaziaException;
-import br.com.cdb.bancodigitalJPA.repository.ContaRepository;
 import br.com.cdb.bancodigitalJPA.service.CartaoService;
 import jakarta.validation.Valid;
 
@@ -34,12 +35,12 @@ public class CartaoController {
 	private CartaoService cartaoService;
 	
 	@Autowired
-	private ContaRepository contaRepository;
+	private ContaDAO contaDAO;
 	
 	
 	@PostMapping("/cliente-security/add")
 	public ResponseEntity<String> addCartao(@RequestBody @Valid CartaoDTO cartaoDto) {
-		Optional<Conta> contaProcurada = contaRepository.findById(cartaoDto.getContaId());
+		Optional<Conta> contaProcurada = contaDAO.findById(cartaoDto.getContaId());
 		
 		if(contaProcurada.isEmpty()) {
 			return new ResponseEntity<>("Crie uma Conta antes de pedir um cartão", HttpStatus.NOT_FOUND);

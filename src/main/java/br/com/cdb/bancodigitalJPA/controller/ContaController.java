@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import br.com.cdb.bancodigitalJPA.DAO.ClienteDAO;
 import br.com.cdb.bancodigitalJPA.DTO.ContaDTO;
 import br.com.cdb.bancodigitalJPA.DTO.SaldoResponse;
 import br.com.cdb.bancodigitalJPA.entity.Cliente;
@@ -22,7 +23,6 @@ import br.com.cdb.bancodigitalJPA.entity.Conta;
 import br.com.cdb.bancodigitalJPA.entity.ContaCorrente;
 import br.com.cdb.bancodigitalJPA.entity.ContaPoupanca;
 import br.com.cdb.bancodigitalJPA.exception.ListaVaziaException;
-import br.com.cdb.bancodigitalJPA.repository.ClienteRepository;
 import br.com.cdb.bancodigitalJPA.service.ContaService;
 import jakarta.validation.Valid;
 
@@ -34,12 +34,12 @@ public class ContaController {
 	@Autowired
 	private ContaService contaService;
 	@Autowired
-	private ClienteRepository clienteRepository;
+	private ClienteDAO clienteDAO;
 	
 	
 	@PostMapping("/cliente-security/add")
 	public ResponseEntity<String> addConta(@RequestBody @Valid ContaDTO contaDto) {
-		Optional<Cliente> clienteProcurado = clienteRepository.findById(contaDto.getClienteId());
+		Optional<Cliente> clienteProcurado = clienteDAO.findById(contaDto.getClienteId());
 		
 		if(clienteProcurado.isEmpty()) {
 			return new ResponseEntity<>("Cliente não encontrado", HttpStatus.NOT_FOUND);

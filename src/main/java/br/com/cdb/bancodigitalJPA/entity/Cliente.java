@@ -86,6 +86,10 @@ public abstract class Cliente {
 	public String getTipoDeCliente() {
 		return this.getClass().getSimpleName().replace("Cliente", "");
 	}
+	
+	public void setTipoDeCliente(String tipoDeCliente) {
+		
+	}
 
 	public LocalDate getDataNascimento() {
 		return dataNascimento;
