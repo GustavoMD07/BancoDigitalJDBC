@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import br.com.cdb.bancodigitalJPA.DAO.ClienteDAO;
+import br.com.cdb.bancodigitalJPA.DAO.ContaDAO;
 import br.com.cdb.bancodigitalJPA.DTO.ClienteDTO;
 import br.com.cdb.bancodigitalJPA.DTO.ClienteResponse;
 import br.com.cdb.bancodigitalJPA.DTO.EnderecoResponse;
@@ -35,10 +38,10 @@ public class ClienteService {
 	// com o AutoWired eu não preciso me preocupar com a criação desse objeto
 	// quando for construido o objeto do Repository, ele vai fazer um new quando precisar
 	@Autowired
-	private ClienteRepository clienteRepository;
+	private ClienteDAO clienteDAO;
 	
 	@Autowired
-	private ContaRepository contaRepository;
+	private ContaDAO contaDAO;
 	
 	private final RestTemplate restTemplate = new RestTemplate();
 	
@@ -103,11 +106,10 @@ public class ClienteService {
 	public Cliente removerCliente(Long id) {
 		Cliente cliente = buscarClientePorId(id);
 		contaRepository.deleteAll(cliente.getContas());
-		clienteRepository.deleteById(id);
+		clienteDAO.delete(id);
 		return cliente;
 	}
 
-	@Transactional
 	public Cliente atualizarCliente(Long id, ClienteDTO clienteDto) {
 	    Cliente cliente = buscarClientePorId(id);
 

@@ -6,6 +6,9 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import br.com.cdb.bancodigitalJPA.DAO.CartaoDAO;
+import br.com.cdb.bancodigitalJPA.DAO.SeguroDAO;
 import br.com.cdb.bancodigitalJPA.DTO.SeguroDTO;
 import br.com.cdb.bancodigitalJPA.DTO.SeguroResponse;
 import br.com.cdb.bancodigitalJPA.entity.Cartao;
@@ -23,14 +26,14 @@ public class SeguroService {
 	private static final int qntd = 10;
 	
 	@Autowired
-	private SeguroRepository seguroRepository;
+	private SeguroDAO seguroDAO;
 
 	@Autowired
-	private CartaoService cartaoService;
+	private CartaoDAO cartaoDAO;
 
 	public SeguroResponse contratarSeguro(SeguroDTO seguroDto) {
 		
-		Cartao cartao = cartaoService.buscarCartaoPorId(seguroDto.getCartaoId());
+		Cartao cartao = cartaoDAO.findById(seguroDto.getCartaoId());
 		
 		if (!(cartao instanceof CartaoCredito)) {
 		    throw new SubClasseDiferenteException("Seguros só podem ser aplicados a cartões de crédito!");
@@ -66,20 +69,20 @@ public class SeguroService {
 		}
 		
 		seguro.setAtivo(true);
-		seguroRepository.save(seguro);
+		seguroDAO.save(seguro);
 		return SeguroResponse.fromEntity(seguro);
 		 //aqui eu salvo o seguro Entity mas retorno o Response, pro usuário conseguir visualizar as informações
 	}
 	
 	public SeguroResponse buscarSeguroPorId(Long id) {
-	    Seguro seguro = seguroRepository.findById(id)
+	    Seguro seguro = seguroDAO.findById(id)
 	        .orElseThrow(() -> new ObjetoNuloException("Seguro não encontrado"));
 	    return SeguroResponse.fromEntity(seguro); // com esse orElseThrow, eu não preciso criar um Optional
 	}
 
 	public List<SeguroResponse> listarSeguros() {
 	    
-		List<Seguro> seguros = seguroRepository.findAll();
+		List<Seguro> seguros = seguroDAO.findAll();
 		if(seguros.isEmpty()) {
 			throw new ObjetoNuloException("Não foram encontrados seguros no sistema");
 		}
@@ -92,10 +95,10 @@ public class SeguroService {
 	}
 
 	public void cancelarSeguro(Long id) {
-	    Seguro seguro = seguroRepository.findById(id)
+	    Seguro seguro = seguroDAO.findById(id)
 	        .orElseThrow(() -> new ObjetoNuloException("Seguro não encontrado."));
 	    seguro.setAtivo(false);
-	    seguroRepository.save(seguro);
+	    seguroDAO.save(seguro);
 	}
 
 	private String gerarNumApolice() {

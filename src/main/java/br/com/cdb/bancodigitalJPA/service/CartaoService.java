@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import br.com.cdb.bancodigitalJPA.DAO.CartaoDAO;
+import br.com.cdb.bancodigitalJPA.DAO.ContaDAO;
+import br.com.cdb.bancodigitalJPA.DAO.SaldoMoedaDAO;
 import br.com.cdb.bancodigitalJPA.entity.Cartao;
 import br.com.cdb.bancodigitalJPA.entity.CartaoCredito;
 import br.com.cdb.bancodigitalJPA.entity.CartaoDebito;
@@ -16,27 +19,24 @@ import br.com.cdb.bancodigitalJPA.exception.QuantidadeExcedidaException;
 import br.com.cdb.bancodigitalJPA.exception.SaldoInsuficienteException;
 import br.com.cdb.bancodigitalJPA.exception.StatusNegadoException;
 import br.com.cdb.bancodigitalJPA.exception.SubClasseDiferenteException;
-import br.com.cdb.bancodigitalJPA.repository.CartaoRepository;
-import br.com.cdb.bancodigitalJPA.repository.ContaRepository;
-import br.com.cdb.bancodigitalJPA.repository.SaldoMoedaRepository;
 
 @Service
 public class CartaoService {
 
 	@Autowired
-	private CartaoRepository cartaoRepository;
+	private CartaoDAO cartaoDAO;
 
 	@Autowired
-	private ContaRepository contaRepository;
+	private ContaDAO contaDAO;
 	
 	@Autowired
-	private SaldoMoedaRepository saldoMoedaRepository;
+	private SaldoMoedaDAO saldoMoedaDAO;
 
 	private static final int QntdsNum = 15;
 	private SecureRandom random = new SecureRandom(); // secureRandom pra gerar os números aleatórios
 
 	public Cartao addCartao(Cartao cartao) {
-		Optional<Conta> contaEncontrada = contaRepository.findById(cartao.getConta().getId());
+		Optional<Conta> contaEncontrada = contaDAO.findById(cartao.getConta().getId());
 
 		if (contaEncontrada.isEmpty()) {
 			throw new ObjetoNuloException("Conta não encontrada");
@@ -53,11 +53,11 @@ public class CartaoService {
 	}
 
 	public List<Cartao> listarCartoes() {
-		return cartaoRepository.findAll();
+		return cartaoDAO.findAll();
 	}
 
 	public Cartao desativarCartao(Long id, String senha) {
-		Cartao cartao = cartaoRepository.findById(id)
+		Cartao cartao = cartaoDAO.findById(id)
 				.orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
 
 		String senhaEncontrada = cartao.getSenha();
@@ -89,7 +89,7 @@ public class CartaoService {
 
 	public Cartao ativarCartao(Long id, String senha) {
 
-		Cartao cartao = cartaoRepository.findById(id)
+		Cartao cartao = cartaoDAO.findById(id)
 				.orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
 		
 		String senhaEncontrada = cartao.getSenha();
@@ -110,7 +110,7 @@ public class CartaoService {
 	}
 
 	public void realizarPagamento(Long id, BigDecimal valor, String senha) {
-		Cartao cartao = cartaoRepository.findById(id)
+		Cartao cartao = cartaoDAO.findById(id)
 				.orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
 
 		String senhaEncontrada = cartao.getSenha();
@@ -153,16 +153,16 @@ public class CartaoService {
 			cartaoC.setFatura(cartaoC.getFatura().add(valor));
 		}
 
-		cartaoRepository.save(cartao);
+		cartaoDAO.save(cartao);
 	}
 
 	public void pagarFatura(Long id, BigDecimal valor) {
 
-		Cartao cartao = cartaoRepository.findById(id)
+		Cartao cartao = cartaoDAO.findById(id)
 				.orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
 
 		Conta conta = cartao.getConta();
-		SaldoMoeda saldo = saldoMoedaRepository.findByMoedaAndContaId("BRL", conta.getId()).orElseThrow(() -> 
+		SaldoMoeda saldo = saldoMoedaDAO.findByMoedaAndContaId("BRL", conta.getId()).orElseThrow(() -> 
 		new ObjetoNuloException("Saldo em BRL não encontrado para essa conta"));
 		
 
@@ -190,17 +190,17 @@ public class CartaoService {
 
 		saldo.setSaldo(saldo.getSaldo().subtract(valor));
 		cartaoC.setFatura(cartaoC.getFatura().subtract(valor));
-		cartaoRepository.save(cartaoC);
+		cartaoDAO.save(cartaoC);
 
 	}
 
 	public Cartao buscarCartaoPorId(Long id) {
-		return cartaoRepository.findById(id).orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
+		return cartaoDAO.findById(id).orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
 	}
 
 	public void alterarLimiteDiario(Long id, BigDecimal novoLimite) {
 
-		Cartao cartao = cartaoRepository.findById(id)
+		Cartao cartao = cartaoDAO.findById(id)
 				.orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
 
 		if (!cartao.isStatus()) {
@@ -226,7 +226,7 @@ public class CartaoService {
 		}
 		// aqui eu verifico se o limite é maior que 0 e menor que 10.000,00
 
-		Cartao cartao = cartaoRepository.findById(id)
+		Cartao cartao = cartaoDAO.findById(id)
 				.orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
 
 		if (!cartao.isStatus()) {
@@ -238,12 +238,12 @@ public class CartaoService {
 		}
 		CartaoCredito cartaoC = (CartaoCredito) cartao;
 		cartaoC.setLimiteCredito(novoLimite);
-		cartaoRepository.save(cartaoC);
+		cartaoDAO.save(cartaoC);
 	}
 
 	public BigDecimal verificarFatura(Long id) {
 
-		Cartao cartao = cartaoRepository.findById(id)
+		Cartao cartao = cartaoDAO.findById(id)
 				.orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
 
 		if (cartao instanceof CartaoDebito) {
@@ -256,7 +256,7 @@ public class CartaoService {
 
 	public void alterarSenha(Long id, String senhaAntiga, String novaSenha) {
 
-		Cartao cartao = cartaoRepository.findById(id)
+		Cartao cartao = cartaoDAO.findById(id)
 				.orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
 
 		if (!cartao.isStatus()) {
@@ -301,7 +301,7 @@ public class CartaoService {
 		}
 
 		cartao.setSenha(novaSenha);
-		cartaoRepository.save(cartao);
+		cartaoDAO.save(cartao);
 	}
 
 	public String gerarNumeroCartao() {

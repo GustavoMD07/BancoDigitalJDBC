@@ -2,11 +2,8 @@ package br.com.cdb.bancodigitalJPA.DAO;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-
-import br.com.cdb.bancodigitalJPA.entity.Cliente;
 import br.com.cdb.bancodigitalJPA.entity.Conta;
 import lombok.AllArgsConstructor;
 
@@ -16,7 +13,8 @@ public class ContaDAO {
 	private final JdbcTemplate jdbcTemplate;
 	
 	public void save(Conta conta) {
-		
+		String sql = "INSERT INTO conta()";
+		jdbcTemplate.update(sql );
 	}
 	
 	public void delete(Long id) {
