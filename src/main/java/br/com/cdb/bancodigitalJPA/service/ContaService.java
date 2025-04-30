@@ -9,6 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import br.com.cdb.bancodigitalJPA.DAO.CartaoDAO;
+import br.com.cdb.bancodigitalJPA.DAO.ClienteDAO;
+import br.com.cdb.bancodigitalJPA.DAO.ContaDAO;
+import br.com.cdb.bancodigitalJPA.DAO.SaldoMoedaDAO;
+import br.com.cdb.bancodigitalJPA.DAO.SeguroDAO;
 import br.com.cdb.bancodigitalJPA.DTO.SaldoResponse;
 import br.com.cdb.bancodigitalJPA.entity.Cartao;
 import br.com.cdb.bancodigitalJPA.entity.Cliente;
@@ -33,19 +39,19 @@ import jakarta.transaction.Transactional;
 public class ContaService {
 
 	@Autowired
-	private ContaRepository contaRepository;
+	private ContaDAO contaDAO;
 
 	@Autowired
-	private ClienteRepository clienteRepository;
+	private ClienteDAO clienteDAO;
 
 	@Autowired
-	private CartaoRepository cartaoRepository;
+	private CartaoDAO cartaoDAO;
 
 	@Autowired
-	private SeguroRepository seguroRepository;
+	private SeguroDAO seguroDAO;
 
 	@Autowired
-	private SaldoMoedaRepository saldoMoedaRepository;
+	private SaldoMoedaDAO saldoMoedaDAO;
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -56,7 +62,7 @@ public class ContaService {
 	public Conta addConta(Conta conta) {
 
 		// Recupera o cliente da conta
-		Cliente cliente = clienteRepository.findById(conta.getCliente().getId()).orElseThrow(
+		Cliente cliente = clienteDAO.findById(conta.getCliente().getId()).orElseThrow(
 				() -> new ObjetoNuloException("Cliente com ID " + conta.getCliente().getId() + " não encontrado!"));
 
 		if (cliente.getContas().size() >= 2) {
@@ -64,7 +70,7 @@ public class ContaService {
 		}
 		
 		conta.setCliente(cliente);
-		Conta contaSalva = contaRepository.save(conta);
+		Conta contaSalva = contaDAO.save(conta);
 		inicializarSaldos(contaSalva);
 		return contaSalva;
 	}
@@ -75,27 +81,27 @@ public class ContaService {
 		if (conta.getCartoes() != null && !conta.getCartoes().isEmpty()) {
 			for (Cartao cartao : conta.getCartoes()) {
 				if (cartao.getSeguros() != null && !cartao.getSeguros().isEmpty()) {
-					seguroRepository.deleteAll(cartao.getSeguros());
+					seguroDAO.deleteAll(cartao.getSeguros());
 				}
 			}
-			cartaoRepository.deleteAll(conta.getCartoes());
+			cartaoDAO.deleteAll(conta.getCartoes());
 
 		}
 
-		contaRepository.deleteById(id);
+		contaDAO.delete(id);
 		return conta;
 	}
 
 	public Conta buscarContaPorId(Long id) {
-		return contaRepository.findById(id).orElseThrow(() -> new ObjetoNuloException("Conta não encontrada"));
+		return contaDAO.findById(id).orElseThrow(() -> new ObjetoNuloException("Conta não encontrada"));
 	}
 
 	public List<Conta> listarContas() {
-		return contaRepository.findAll();
+		return contaDAO.findAll();
 	}
 
 	public List<SaldoResponse> verificarSaldos(Long id) {
-		List<SaldoMoeda> saldos = saldoMoedaRepository.findByContaId(id);
+		List<SaldoMoeda> saldos = saldoMoedaDAO.findByContaId(id);
 		
 		if (saldos.isEmpty()) {
 			throw new ObjetoNuloException("Nenhum saldo encontrado para esta conta");
@@ -108,7 +114,6 @@ public class ContaService {
 		 
 	}
 
-	@Transactional
 	public void transferir(Long origemid, Long destinoid, BigDecimal valor, String moedaOrigem, String moedaDestino) {
 		Conta origem = buscarContaPorId(origemid);
 		Conta destino = buscarContaPorId(destinoid);
@@ -143,8 +148,8 @@ public class ContaService {
 	saldoOrigem.setSaldo(saldoOrigem.getSaldo().subtract(valor)); // subtrai o valor do saldo de origem usando BigDecimal;
 	saldoDestino.setSaldo(saldoDestino.getSaldo().add(valorConvertido));
 
-	saldoMoedaRepository.save(saldoOrigem);
-	saldoMoedaRepository.save(saldoDestino);
+	saldoMoedaDAO.save(saldoOrigem);
+	saldoMoedaDAO.save(saldoDestino);
 
 	}
 
@@ -153,7 +158,6 @@ public class ContaService {
 	// se no meio do processo algo dá errado, por exemplo em saque, ele não modifica
 	// nada do saldo e retorna ao que era antes
 
-	@Transactional
 	public void pix(Long id, BigDecimal valor, String moedaUsada) {
 		
 		if(valor.compareTo(BigDecimal.ZERO) <= 0) {
@@ -174,7 +178,6 @@ public class ContaService {
 	    saldoMoedaRepository.save(saldo);
 	}
 
-	@Transactional
 	public void deposito(Long id, BigDecimal valor, String moedaOrigem, String moedaDestino) {
 		validarMoeda(moedaDestino);
 		validarMoeda(moedaOrigem);
@@ -202,7 +205,6 @@ public class ContaService {
 		saldoMoedaRepository.save(saldo);
 	}
 
-	@Transactional
 	public void saque(Long id, BigDecimal valor, String moedaUsada, String moedaSacada) {
 		validarMoeda(moedaUsada);
 		validarMoeda(moedaSacada);
@@ -220,7 +222,6 @@ public class ContaService {
 	    saldoMoedaRepository.save(saldo);
 	}
 
-	@Transactional
 	public void aplicarTaxaManutencao(Long id) {
 		Conta conta = buscarContaPorId(id);
 
@@ -244,7 +245,6 @@ public class ContaService {
 		saldoMoedaRepository.save(saldoBRL);
 	}
 
-	@Transactional
 	public void aplicarRendimento(Long id) {
 		Conta conta = buscarContaPorId(id);
 

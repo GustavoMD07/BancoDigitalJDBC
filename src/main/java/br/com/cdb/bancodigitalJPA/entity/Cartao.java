@@ -10,7 +10,6 @@ public abstract class Cartao {
 	private String senha;
 	private boolean status;
 	
-	
 	private String numCartao;
 	
 	@JsonBackReference

@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import br.com.cdb.bancodigitalJPA.DAO.CartaoDAO;
 import br.com.cdb.bancodigitalJPA.DAO.SeguroDAO;
 import br.com.cdb.bancodigitalJPA.DTO.SeguroDTO;
@@ -17,7 +16,6 @@ import br.com.cdb.bancodigitalJPA.entity.ClientePremium;
 import br.com.cdb.bancodigitalJPA.entity.Seguro;
 import br.com.cdb.bancodigitalJPA.exception.ObjetoNuloException;
 import br.com.cdb.bancodigitalJPA.exception.SubClasseDiferenteException;
-import br.com.cdb.bancodigitalJPA.repository.SeguroRepository;
 
 @Service
 public class SeguroService {

@@ -2,6 +2,7 @@ package br.com.cdb.bancodigitalJPA.DAO;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -21,16 +22,25 @@ public class SeguroDAO {
 	}
 	
 	public void delete (Long id) {
+		String sql = "DELETE FROM seguro WHERE id = ?";
+		jdbcTemplate.update(sql, id);
+	}
+	
+	public void deleteAll(List<Seguro> seguros) {
+		String sql = "DELETE FROM seguro WHERE id = ?";
 		
+		for(Seguro seguro : seguros ) {
+			jdbcTemplate.update(sql, seguro.getId());
+		}
 	}
 	
 	public void update (Long id) {
 		
 	}
 	
-	public Seguro findById(Long id) {
+	public Optional<Seguro> findById(Long id) {
 		Seguro seguro = null;
-		return seguro;
+		return Optional.ofNullable(seguro);
 	}
 	
 	public List<Seguro> findAll() {

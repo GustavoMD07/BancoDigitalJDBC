@@ -3,8 +3,6 @@ package br.com.cdb.bancodigitalJPA.rowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
-
-import br.com.cdb.bancodigitalJPA.entity.Cliente;
 import br.com.cdb.bancodigitalJPA.entity.Conta;
 import br.com.cdb.bancodigitalJPA.entity.ContaCorrente;
 import br.com.cdb.bancodigitalJPA.entity.ContaPoupanca;
@@ -32,9 +30,6 @@ public class ContaRowMapper implements RowMapper<Conta> {
 		default:
 			throw new SubClasseDiferenteException("Tipo de conta inválida: " + tipo);
 		}
-		Cliente cliente; //não sei o que fazer
-        cliente.setId(rs.getLong("cliente_id"));
-        conta.setCliente(cliente);
 		
 		conta.setId(rs.getLong("id"));
 		return conta;
