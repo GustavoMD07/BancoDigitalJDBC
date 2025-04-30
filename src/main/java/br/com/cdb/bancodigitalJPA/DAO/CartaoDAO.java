@@ -1,10 +1,10 @@
 package br.com.cdb.bancodigitalJPA.DAO;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import br.com.cdb.bancodigitalJPA.entity.Cartao;
+import br.com.cdb.bancodigitalJPA.rowMapper.CartaoRowMapper;
 import lombok.AllArgsConstructor;
 
 @Repository
@@ -35,12 +35,13 @@ public class CartaoDAO {
 	}
 	
 	public Cartao findById(Long id) {
-		Cartao cartao = null;
-		return cartao;
+		String sql = "SELECT * FROM cartao WHERE id = ?";
+		return jdbcTemplate.queryForObject(sql, new CartaoRowMapper(), id);
 	}
+	//queryForObject só me retorna um resultado, o query retorna uma lista
 	
 	public List<Cartao> findAll() {
-		List<Cartao> cartoes = new ArrayList<>();
-		return cartoes;
+		String sql = "SELECT * FROM cartao";
+		return jdbcTemplate.query(sql, new CartaoRowMapper());
 	}
 }
