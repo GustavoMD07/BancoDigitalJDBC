@@ -4,10 +4,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
 import br.com.cdb.bancodigitalJPA.security.model.Usuario;
 import br.com.cdb.bancodigitalJPA.security.repository.UsuarioDAO;
-import br.com.cdb.bancodigitalJPA.security.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
