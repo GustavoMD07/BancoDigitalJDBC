@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
 import br.com.cdb.bancodigitalJPA.DAO.ClienteDAO;
 import br.com.cdb.bancodigitalJPA.DAO.ContaDAO;
 import br.com.cdb.bancodigitalJPA.DTO.ClienteDTO;
@@ -22,18 +21,9 @@ import br.com.cdb.bancodigitalJPA.exception.CpfDuplicadoException;
 import br.com.cdb.bancodigitalJPA.exception.IdadeInsuficienteException;
 import br.com.cdb.bancodigitalJPA.exception.ObjetoNuloException;
 import br.com.cdb.bancodigitalJPA.exception.SubClasseDiferenteException;
-import br.com.cdb.bancodigitalJPA.repository.ClienteRepository;
-import br.com.cdb.bancodigitalJPA.repository.ContaRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 
 @Service
 public class ClienteService {
-
-	@PersistenceContext
-	private EntityManager entityManager;
-	// classe do Jakarta
 
 	// com o AutoWired eu não preciso me preocupar com a criação desse objeto
 	// quando for construido o objeto do Repository, ele vai fazer um new quando precisar
@@ -80,7 +70,7 @@ public class ClienteService {
 		cliente.setCpf(clienteDto.getCPF());
 		cliente.setNome(clienteDto.getNome());
 		cliente.setDataNascimento(clienteDto.getDataNascimento());
-		if (clienteRepository.findByCpf(cliente.getCpf()).isPresent()) {
+		if (clienteDAO.findByCPF(cliente.getCpf()).equals(clienteDto.getCPF())) {
 			throw new CpfDuplicadoException("Já existe um cliente com este CPF cadastrado.");
 		}
 
@@ -92,7 +82,7 @@ public class ClienteService {
 		cliente.setBairro(endereco.getBairro());
 		cliente.setRua(endereco.getRua());
 
-		return clienteRepository.save(cliente);
+		return clienteDAO.save(cliente);
 		// esse .save é um método do próprio JPA, por isso ele facilita TANTO a vida do
 		// programador
 		// antes eu só preciso criar o objeto Cliente ( você só cria o objeto UMA VEZ) e
@@ -105,7 +95,7 @@ public class ClienteService {
 	// que o método de erro, ele
 	public Cliente removerCliente(Long id) {
 		Cliente cliente = buscarClientePorId(id);
-		contaRepository.deleteAll(cliente.getContas());
+		contaDAO.deleteAll(cliente.getContas());
 		clienteDAO.delete(id);
 		return cliente;
 	}
@@ -138,11 +128,11 @@ public class ClienteService {
 	    cliente.setBairro(endereco.getBairro());
 	    cliente.setRua(endereco.getRua());
 
-	    return clienteRepository.save(cliente);
+	    return clienteDAO.save(cliente);
 	}
 
 	public List<ClienteResponse> getAllClientes() {
-		List<Cliente> clientes = clienteRepository.findAll();
+		List<Cliente> clientes = clienteDAO.findAll();
 		return clientes.stream().map(ClienteResponse::fromEntity).toList();
 		// stream pra poder mexer na lista, map pega todos os elementos clientes e chama
 		// o método converter
@@ -150,7 +140,7 @@ public class ClienteService {
 	}
 
 	public Cliente buscarClientePorId(Long id) {
-		return clienteRepository.findById(id).orElseThrow(() -> new ObjetoNuloException("Cliente não encontrado"));
+		return clienteDAO.findById(id).orElseThrow(() -> new ObjetoNuloException("Cliente não encontrado"));
 	}
 
 	private EnderecoResponse buscarEnderecoPorCep(String cep) {

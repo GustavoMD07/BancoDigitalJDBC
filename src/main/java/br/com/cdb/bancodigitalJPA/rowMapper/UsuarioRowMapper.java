@@ -12,6 +12,7 @@ public class UsuarioRowMapper implements RowMapper<Usuario> {
 	//ele lê as linhas do database e transforma em objeto java, assim
 	//com ele é possível retornar um findAll ou findById.
 	//sempre algo que eu precise retornar
+	//linha de dados = ResultSet
 	
 	@Override
 	public Usuario mapRow(ResultSet rs, int rowNum) throws SQLException {

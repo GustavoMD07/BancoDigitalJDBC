@@ -20,5 +20,8 @@ public class ContaPoupanca extends Conta {
             this.taxaRendimento = getCliente().getTaxaRendimento();
         }
     }
-
+    
+	public void setTaxaRendimento(BigDecimal taxaRendimento) {
+        this.taxaRendimento = taxaRendimento;
+	}
 }
