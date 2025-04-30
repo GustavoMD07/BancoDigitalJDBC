@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import br.com.cdb.bancodigitalJPA.DAO.CartaoDAO;
 import br.com.cdb.bancodigitalJPA.DAO.ClienteDAO;
 import br.com.cdb.bancodigitalJPA.DAO.ContaDAO;
@@ -28,12 +27,6 @@ import br.com.cdb.bancodigitalJPA.exception.QuantidadeExcedidaException;
 import br.com.cdb.bancodigitalJPA.exception.SaldoInsuficienteException;
 import br.com.cdb.bancodigitalJPA.exception.StatusNegadoException;
 import br.com.cdb.bancodigitalJPA.exception.SubClasseDiferenteException;
-import br.com.cdb.bancodigitalJPA.repository.CartaoRepository;
-import br.com.cdb.bancodigitalJPA.repository.ClienteRepository;
-import br.com.cdb.bancodigitalJPA.repository.ContaRepository;
-import br.com.cdb.bancodigitalJPA.repository.SaldoMoedaRepository;
-import br.com.cdb.bancodigitalJPA.repository.SeguroRepository;
-import jakarta.transaction.Transactional;
 
 @Service
 public class ContaService {
@@ -121,12 +114,12 @@ public class ContaService {
 		validarMoeda(moedaOrigem);
 		validarMoeda(moedaDestino);
 		
-		SaldoMoeda saldoOrigem = saldoMoedaRepository.findByMoedaAndContaId(moedaOrigem, origemid).orElseThrow(() ->
+		SaldoMoeda saldoOrigem = saldoMoedaDAO.findByMoedaAndContaId(moedaOrigem, origemid).orElseThrow(() ->
 		    new ObjetoNuloException("Saldo não encontrado para a conta de origem"));
 		
 		BigDecimal valorConvertido = converterMoeda(valor, moedaOrigem, moedaDestino);
 		
-		SaldoMoeda saldoDestino = saldoMoedaRepository.findByMoedaAndContaId(moedaDestino, destinoid).orElseGet(() -> {
+		SaldoMoeda saldoDestino = saldoMoedaDAO.findByMoedaAndContaId(moedaDestino, destinoid).orElseGet(() -> {
 		        SaldoMoeda novo = new SaldoMoeda();
 		        novo.setConta(destino);
 		        novo.setMoeda(moedaDestino);
@@ -166,8 +159,8 @@ public class ContaService {
 		
 		validarMoeda(moedaUsada);
 
-	    SaldoMoeda saldo = saldoMoedaRepository.findByMoedaAndContaId(moedaUsada, id)
-	        .orElseThrow(() -> new ObjetoNuloException("Saldo não encontrado"));
+	    SaldoMoeda saldo = saldoMoedaDAO.findByMoedaAndContaId(moedaUsada, id).orElseThrow(() ->
+	    new ObjetoNuloException("Saldo não encontrado para a conta de origem"));;
 
 	    if (valor.compareTo(saldo.getSaldo()) > 0) {
 	        throw new SaldoInsuficienteException("Saldo insuficiente para fazer o pix");
@@ -175,7 +168,7 @@ public class ContaService {
 	   
 
 	    saldo.setSaldo(saldo.getSaldo().subtract(valor));
-	    saldoMoedaRepository.save(saldo);
+	    saldoMoedaDAO.save(saldo);
 	}
 
 	public void deposito(Long id, BigDecimal valor, String moedaOrigem, String moedaDestino) {
@@ -193,7 +186,7 @@ public class ContaService {
 			valorConvertido = converterMoeda(valor, moedaOrigem, moedaDestino);
 		}
 		
-		 SaldoMoeda saldo = saldoMoedaRepository.findByMoedaAndContaId(moedaDestino, id).orElseGet(() -> {
+		 SaldoMoeda saldo = saldoMoedaDAO.findByMoedaAndContaId(moedaDestino, id).orElseGet(() -> {
 		 SaldoMoeda novo = new SaldoMoeda();
 		 novo.setConta(conta);
 		 novo.setMoeda(moedaDestino);
@@ -202,7 +195,7 @@ public class ContaService {
 		});
 	
 		saldo.setSaldo(saldo.getSaldo().add(valorConvertido));
-		saldoMoedaRepository.save(saldo);
+		saldoMoedaDAO.save(saldo);
 	}
 
 	public void saque(Long id, BigDecimal valor, String moedaUsada, String moedaSacada) {
@@ -211,15 +204,15 @@ public class ContaService {
 		
 		BigDecimal valorConvertido = converterMoeda(valor, moedaUsada, moedaSacada);
 
-	    SaldoMoeda saldo = saldoMoedaRepository.findByMoedaAndContaId(moedaSacada, id)
-	        .orElseThrow(() -> new ObjetoNuloException("Saldo não encontrado"));
+	    SaldoMoeda saldo = saldoMoedaDAO.findByMoedaAndContaId(moedaSacada, id).orElseThrow(() ->
+	    new ObjetoNuloException("Saldo não encontrado "));;
 
 	    if (valorConvertido.compareTo(saldo.getSaldo()) > 0) {
 	        throw new SaldoInsuficienteException("Saldo insuficiente para saque");
 	    }
 
 	    saldo.setSaldo(saldo.getSaldo().subtract(valorConvertido));
-	    saldoMoedaRepository.save(saldo);
+	    saldoMoedaDAO.save(saldo);
 	}
 
 	public void aplicarTaxaManutencao(Long id) {
@@ -234,15 +227,15 @@ public class ContaService {
 		// uma boa prática
 		BigDecimal taxa = contaC.getTaxaManutencao();
 		
-		SaldoMoeda saldoBRL = saldoMoedaRepository.findByMoedaAndContaId("BRL", id)
-				.orElseThrow(() -> new ObjetoNuloException("Saldo em BRL não encontrado"));
+		SaldoMoeda saldoBRL = saldoMoedaDAO.findByMoedaAndContaId("BRL", id).orElseThrow(() ->
+	    new ObjetoNuloException("Saldo não encontrado "));
 
 		if (taxa.compareTo(saldoBRL.getSaldo()) > 0) {
 			throw new SaldoInsuficienteException("Saldo insuficiente para aplicar taxa");
 		}
 
 		saldoBRL.setSaldo(saldoBRL.getSaldo().subtract(taxa));
-		saldoMoedaRepository.save(saldoBRL);
+		saldoMoedaDAO.save(saldoBRL);
 	}
 
 	public void aplicarRendimento(Long id) {
@@ -255,8 +248,8 @@ public class ContaService {
 		ContaPoupanca contaP = (ContaPoupanca) conta;
 		BigDecimal taxa = contaP.getTaxaRendimento();
 		
-		SaldoMoeda saldoBRL = saldoMoedaRepository.findByMoedaAndContaId("BRL", id)
-				.orElseThrow(() -> new ObjetoNuloException("Saldo em BRL não encontrado"));
+		SaldoMoeda saldoBRL = saldoMoedaDAO.findByMoedaAndContaId("BRL", id).orElseThrow(() ->
+	    new ObjetoNuloException("Saldo não encontrado"));;
 
 		if (saldoBRL.getSaldo().compareTo(BigDecimal.ZERO) == 0) { // não posso usar + ou * com BigDecimal
 			throw new SaldoInsuficienteException("Não é possível aplicar rendimento a um saldo nulo");
@@ -264,7 +257,7 @@ public class ContaService {
 
 		BigDecimal rendimento = saldoBRL.getSaldo().multiply(BigDecimal.ONE.add(taxa));
 		saldoBRL.setSaldo(rendimento);
-		saldoMoedaRepository.save(saldoBRL);
+		saldoMoedaDAO.save(saldoBRL);
 	}
 
 	
@@ -312,7 +305,7 @@ public class ContaService {
 	        saldo.setConta(conta);
 	        saldo.setMoeda(moeda);
 	        saldo.setSaldo(BigDecimal.ZERO);
-	        saldoMoedaRepository.save(saldo);
+	        saldoMoedaDAO.save(saldo);
 	    }//criando a lista de saldos, por enquanto só esses três mesmo
 	}
 }
