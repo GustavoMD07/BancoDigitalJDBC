@@ -31,7 +31,8 @@ public class SeguroService {
 
 	public SeguroResponse contratarSeguro(SeguroDTO seguroDto) {
 		
-		Cartao cartao = cartaoDAO.findById(seguroDto.getCartaoId());
+		Cartao cartao = cartaoDAO.findById(seguroDto.getCartaoId()).orElseThrow(() ->
+	    new ObjetoNuloException("Cartão não encontrado"));
 		
 		if (!(cartao instanceof CartaoCredito)) {
 		    throw new SubClasseDiferenteException("Seguros só podem ser aplicados a cartões de crédito!");

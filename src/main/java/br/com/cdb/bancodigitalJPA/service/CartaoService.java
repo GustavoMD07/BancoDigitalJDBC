@@ -49,7 +49,7 @@ public class CartaoService {
 		}
 
 		cartao.setConta(conta);
-		return cartaoRepository.save(cartao);
+		return cartaoDAO.save(cartao);
 	}
 
 	public List<Cartao> listarCartoes() {
@@ -84,7 +84,7 @@ public class CartaoService {
 		}
 		
 		cartao.setStatus(false);
-		return cartaoRepository.save(cartao);
+		return cartaoDAO.save(cartao);
 	}
 
 	public Cartao ativarCartao(Long id, String senha) {
@@ -106,7 +106,7 @@ public class CartaoService {
 			throw new StatusNegadoException("Seu cartão já está ativado!");
 		}
 		cartao.setStatus(true);
-		return cartaoRepository.save(cartao);
+		return cartaoDAO.save(cartao);
 	}
 
 	public void realizarPagamento(Long id, BigDecimal valor, String senha) {
@@ -212,7 +212,7 @@ public class CartaoService {
 		}
 		CartaoDebito cartaoD = (CartaoDebito) cartao;
 		cartaoD.setLimiteDiario(novoLimite);
-		cartaoRepository.save(cartaoD);
+		cartaoDAO.save(cartaoD);
 	}
 
 	public void alterarLimiteCredito(Long id, BigDecimal novoLimite) {
