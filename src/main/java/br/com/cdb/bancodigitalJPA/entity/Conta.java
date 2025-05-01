@@ -18,7 +18,7 @@ public abstract class Conta {
 	//esse atributo eu mapeio ele no cliente, depois passo o nome dele no Cliente
 	
 	@JsonManagedReference 		
-	private List<Cartao> cartoes;
+	private List<Cartao> cartoes = new ArrayList<>(); //melhor do que null, só uma lista vazia :D
 	
 	
 	public Long getId() {

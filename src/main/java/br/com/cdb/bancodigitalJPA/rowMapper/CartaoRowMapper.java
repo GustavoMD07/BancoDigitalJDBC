@@ -3,11 +3,14 @@ package br.com.cdb.bancodigitalJPA.rowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
+
 import br.com.cdb.bancodigitalJPA.entity.Cartao;
 import br.com.cdb.bancodigitalJPA.entity.CartaoCredito;
 import br.com.cdb.bancodigitalJPA.entity.CartaoDebito;
 import br.com.cdb.bancodigitalJPA.exception.SubClasseDiferenteException;
 
+@Component
 public class CartaoRowMapper implements RowMapper<Cartao>{
 
 	@Override

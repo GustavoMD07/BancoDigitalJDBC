@@ -76,6 +76,9 @@ public class ContaService {
 	    
 	    List<SaldoMoeda> saldos = saldoMoedaDAO.findByContaId(contaSalva.getId());
 	    contaSalva.setSaldos(saldos);
+	    
+	    List<Cartao> cartoes = cartaoDAO.findByContaId(contaSalva.getId());
+	    contaSalva.setCartao(cartoes);	    
 	    return contaSalva;
 	}
 
