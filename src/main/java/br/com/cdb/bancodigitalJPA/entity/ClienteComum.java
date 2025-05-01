@@ -2,6 +2,7 @@ package br.com.cdb.bancodigitalJPA.entity;
 
 import java.math.BigDecimal;
 
+
 public class ClienteComum extends Cliente {
 
 	private BigDecimal limiteCredito = BigDecimal.valueOf(1000);

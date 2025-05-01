@@ -18,11 +18,11 @@ public class UsuarioDAO {
 
 	public Usuario save(Usuario usuario) {
 		
-		String SQL = "INSERT INTO usuario (nome, emaill, senha, role) "
+		String SQL = "INSERT INTO usuario (nome, email, senha, role) "
 		+ "VALUES (?,?,?, ?)";
 		
 		jdbcTemplate.update(SQL, usuario.getNome(), usuario.getEmail(),
-			usuario.getSenha(), usuario.getRole());
+			usuario.getSenha(), usuario.getRole().name());
 		
 		return usuario;
 	}
