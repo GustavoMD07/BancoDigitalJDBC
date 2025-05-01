@@ -20,6 +20,6 @@ public class Seguro {
 	private boolean ativo;
 	
 	@JsonBackReference
-	private CartaoCredito cartao;
+	private Cartao cartao;
 	
 }

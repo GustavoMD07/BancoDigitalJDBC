@@ -97,7 +97,7 @@ public class SeguroService {
 	    Seguro seguro = seguroDAO.findById(id)
 	        .orElseThrow(() -> new ObjetoNuloException("Seguro não encontrado."));
 	    seguro.setAtivo(false);
-	    seguroDAO.save(seguro);
+	    seguroDAO.delete(id);
 	}
 
 	private String gerarNumApolice() {
