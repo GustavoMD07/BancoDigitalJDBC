@@ -3,6 +3,8 @@ package br.com.cdb.bancodigitalJPA.service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -70,8 +72,9 @@ public class ClienteService {
 		cliente.setCpf(clienteDto.getCPF());
 		cliente.setNome(clienteDto.getNome());
 		cliente.setDataNascimento(clienteDto.getDataNascimento());
-		if (clienteDAO.findByCPF(cliente.getCpf()).equals(clienteDto.getCPF())) {
-			throw new CpfDuplicadoException("Já existe um cliente com este CPF cadastrado.");
+		Optional<Cliente> clienteExistente = clienteDAO.findByCPF(cliente.getCpf());
+		if (clienteExistente.isPresent()) {
+		    throw new CpfDuplicadoException("Já existe um cliente com este CPF cadastrado.");
 		}
 
 		EnderecoResponse endereco = buscarEnderecoPorCep(clienteDto.getCep());
