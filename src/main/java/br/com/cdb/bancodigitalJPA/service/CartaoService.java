@@ -84,7 +84,8 @@ public class CartaoService {
 		}
 		
 		cartao.setStatus(false);
-		return cartaoDAO.save(cartao);
+		cartaoDAO.update(cartao);
+		return cartao;
 	}
 
 	public Cartao ativarCartao(Long id, String senha) {
@@ -106,7 +107,8 @@ public class CartaoService {
 			throw new StatusNegadoException("Seu cartão já está ativado!");
 		}
 		cartao.setStatus(true);
-		return cartaoDAO.save(cartao);
+		cartaoDAO.update(cartao);
+		return cartao;
 	}
 
 	public void realizarPagamento(Long id, BigDecimal valor, String senha) {
@@ -153,7 +155,7 @@ public class CartaoService {
 			cartaoC.setFatura(cartaoC.getFatura().add(valor));
 		}
 
-		cartaoDAO.save(cartao);
+		cartaoDAO.update(cartao);
 	}
 
 	public void pagarFatura(Long id, BigDecimal valor) {
@@ -190,7 +192,7 @@ public class CartaoService {
 
 		saldo.setSaldo(saldo.getSaldo().subtract(valor));
 		cartaoC.setFatura(cartaoC.getFatura().subtract(valor));
-		cartaoDAO.save(cartaoC);
+		cartaoDAO.update(cartao);
 
 	}
 
@@ -212,7 +214,7 @@ public class CartaoService {
 		}
 		CartaoDebito cartaoD = (CartaoDebito) cartao;
 		cartaoD.setLimiteDiario(novoLimite);
-		cartaoDAO.save(cartaoD);
+		cartaoDAO.update(cartao);
 	}
 
 	public void alterarLimiteCredito(Long id, BigDecimal novoLimite) {
@@ -238,7 +240,7 @@ public class CartaoService {
 		}
 		CartaoCredito cartaoC = (CartaoCredito) cartao;
 		cartaoC.setLimiteCredito(novoLimite);
-		cartaoDAO.save(cartaoC);
+		cartaoDAO.update(cartao);
 	}
 
 	public BigDecimal verificarFatura(Long id) {
@@ -301,7 +303,7 @@ public class CartaoService {
 		}
 
 		cartao.setSenha(novaSenha);
-		cartaoDAO.save(cartao);
+		cartaoDAO.update(cartao);
 	}
 
 	public String gerarNumeroCartao() {

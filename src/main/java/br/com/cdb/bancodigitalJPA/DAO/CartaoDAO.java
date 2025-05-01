@@ -27,18 +27,16 @@ public class CartaoDAO {
 	        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 	        """;
 
-	    Object fatura = null, limiteCredito = null, limiteDiario = null;
+	    Object fatura = null, limiteDiario = null;
 	    //tava bugando, erro de não ser inicializado
 	    if (cartao instanceof CartaoCredito) {
 	        CartaoCredito cc = (CartaoCredito) cartao;
 	        fatura        = cc.getFatura();
-	        limiteCredito = cc.getLimiteCredito();
-	        // limiteDiario fica null
 	    }
 	    else if (cartao instanceof CartaoDebito) {
 	        CartaoDebito cd = (CartaoDebito) cartao;
 	        limiteDiario = cd.getLimiteDiario();
-	        // fatura e limiteCredito ficam null
+	       
 	    } else {
 	        throw new SubClasseDiferenteException("Tipo de cartão inválido: " 
 	            + cartao.getTipoDeCartao());
@@ -51,7 +49,7 @@ public class CartaoDAO {
 	        cartao.getTipoDeCartao(),
 	        cartao.getConta().getId(),
 	        fatura,
-	        limiteCredito,
+	        cartao.getConta().getCliente().getLimiteCredito(),
 	        limiteDiario
 	    );
 
@@ -61,6 +59,44 @@ public class CartaoDAO {
 	public void delete(Long id) {
 		String sql = "DELETE FROM cartao WHERE id = ?";
 		jdbcTemplate.update(sql, id);
+	}
+	
+	public void update(Cartao cartao) {
+	    String sql = """
+	        UPDATE cartao
+	           SET tipo_de_cartao  = ?,
+	               num_cartao       = ?,
+	               senha            = ?,
+	               status           = ?,
+	               conta_id         = ?,
+	               fatura           = ?,
+	               limite_credito   = ?,
+	               limite_diario    = ?
+	         WHERE id = ?
+	        """;
+
+	    Object fatura        = null;
+	    Object limiteDebito  = null;
+
+	    if (cartao instanceof CartaoCredito) {
+	        CartaoCredito cc = (CartaoCredito) cartao;
+	        fatura        = cc.getFatura();
+	    }
+	    else if (cartao instanceof CartaoDebito) {
+	        CartaoDebito cd = (CartaoDebito) cartao;
+	        limiteDebito = cd.getLimiteDiario();  // ou getLimiteDebito(), conforme seu getter
+	    }
+	    jdbcTemplate.update(sql,
+	        cartao.getTipoDeCartao(),
+	        cartao.getNumCartao(),
+	        cartao.getSenha(),
+	        cartao.isStatus(),
+	        cartao.getConta().getId(),
+	        fatura,
+	        cartao.getConta().getCliente().getLimiteCredito(),
+	        limiteDebito,
+	        cartao.getId()
+	    );
 	}
 
 	public void deleteAll(List<Cartao> cartoes) {

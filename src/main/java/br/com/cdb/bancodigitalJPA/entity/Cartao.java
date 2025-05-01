@@ -26,6 +26,10 @@ public abstract class Cartao {
 	public String getSenha() {
 		return senha;
 	}
+	
+	public Boolean getStatus() {
+		return status;
+	}
 
 	public String getNumCartao() {
 		return numCartao;

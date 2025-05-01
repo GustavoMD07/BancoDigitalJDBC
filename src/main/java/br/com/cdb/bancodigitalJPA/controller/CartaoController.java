@@ -135,7 +135,7 @@ public class CartaoController {
 		
 		if(cartao instanceof CartaoCredito) {
 			CartaoCredito cartaoC = (CartaoCredito) cartao;
-			return new ResponseEntity<>("Pagamento de valor: R$" + valor + " realizado\n fatura: R$" + 
+			return new ResponseEntity<>("Pagamento de valor: R$" + valor + " realizado\n fatura antiga: R$" + 
 			cartaoC.getFatura(), HttpStatus.OK);
 		}
 		

@@ -13,10 +13,13 @@ import lombok.AllArgsConstructor;
 public class SeguroDAO {
 
 	private final JdbcTemplate jdbcTemplate;
+	private final SeguroRowMapper seguroRowMapper;
 	
 	public void save(Seguro seguro) {
-		String sql = "INSER INTO seguro (numeroApolice, dataContratacao, tipoDeSeguro, descricao, valorApolice, ativo)";
-		jdbcTemplate.update(sql);
+		String sql = "INSER INTO seguro (numeroApolice, dataContratacao, tipoDeSeguro, descricao, valorApolice, ativo, cartao_id)"
+				+ " VALUES (?, ?, ?, ?, ?, ?, ?)";
+		jdbcTemplate.update(sql, seguro.getNumeroApolice(), seguro.getDataContratacao(), seguro.getTipoDeSeguro(),
+				seguro.getDescricao(), seguro.getValorApolice(), seguro.isAtivo(), seguro.getCartao().getId());
 	}
 	
 	public void delete (Long id) {
@@ -35,12 +38,17 @@ public class SeguroDAO {
 	
 	public Optional<Seguro> findById(Long id) {
 		String sql = "SELECT * FROM seguro WHERE id = ?";
-		List<Seguro> seguro = jdbcTemplate.query(sql, new SeguroRowMapper(), id);
+		List<Seguro> seguro = jdbcTemplate.query(sql, seguroRowMapper, id);
 		return seguro.isEmpty() ? Optional.empty() : Optional.of(seguro.get(0));
 	}
 	
 	public List<Seguro> findAll() {
 		String sql = "SELECT * FROM seguro";
-		return jdbcTemplate.query(sql, new SeguroRowMapper());
+		return jdbcTemplate.query(sql, seguroRowMapper);
 	}
+	
+	public List<Seguro> findByCartaoId(Long cartaoId) {
+	    String sql = "SELECT * FROM seguro WHERE cartao_id = ?";
+	    return jdbcTemplate.query(sql, seguroRowMapper, cartaoId);
+	} 
 }
