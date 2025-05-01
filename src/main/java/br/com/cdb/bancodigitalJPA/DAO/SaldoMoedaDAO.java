@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 public class SaldoMoedaDAO {
 
 	private final JdbcTemplate jdbcTemplate;
+	private final SaldoMoedaRowMapper saldoMapper;
 	
 	 // inserir novo saldo
     public void save(SaldoMoeda saldo) {
@@ -27,7 +28,7 @@ public class SaldoMoedaDAO {
 
     public List<SaldoMoeda> findByContaId(Long contaId) {
         String sql = "SELECT * FROM saldo_moeda WHERE conta_id = ?";
-        return jdbcTemplate.query(sql, new SaldoMoedaRowMapper(), contaId);
+        return jdbcTemplate.query(sql, saldoMapper, contaId);
     }
 
     // apagar todos os saldos de uma conta
@@ -38,7 +39,7 @@ public class SaldoMoedaDAO {
     
    public Optional<SaldoMoeda> findByMoedaAndContaId(String moeda, Long contaId) {
 	   String sql = "SELECT * FROM saldo_moeda WHERE conta_id = ? AND moeda = ?";
-	   List<SaldoMoeda> saldo = jdbcTemplate.query(sql, new SaldoMoedaRowMapper(), moeda, contaId);
+	   List<SaldoMoeda> saldo = jdbcTemplate.query(sql, saldoMapper, moeda, contaId);
 	   return saldo.isEmpty() ? Optional.empty() : Optional.of(saldo.get(0));
 	   
    }

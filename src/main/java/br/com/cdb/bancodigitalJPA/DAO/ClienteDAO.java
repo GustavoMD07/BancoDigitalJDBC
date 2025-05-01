@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 public class ClienteDAO {
 
 	private final JdbcTemplate jdbcTemplate;
+	private final ClienteRowMapper clienteRowMapper;
 
 	public Cliente save(Cliente cliente) {
 
@@ -45,18 +46,18 @@ public class ClienteDAO {
 
 	public List<Cliente> findAll() {
 		String sql = "SELECT * FROM cliente";
-		return jdbcTemplate.query(sql, new ClienteRowMapper());
+		return jdbcTemplate.query(sql, clienteRowMapper);
 	}
 
 	public Optional<Cliente> findById(Long id) {
 		String sql = "SELECT * FROM cliente WHERE id = ?";
-		List<Cliente> clientes = jdbcTemplate.query(sql, new ClienteRowMapper(), id);
+		List<Cliente> clientes = jdbcTemplate.query(sql, clienteRowMapper, id);
 		return clientes.isEmpty() ? Optional.empty() : Optional.of(clientes.get(0));
 	}
 
 	public Optional<Cliente> findByCPF(String cpf) {
 		String sql = "SELECT * FROM cliente WHERE cpf = ?";
-		List<Cliente> clientes = jdbcTemplate.query(sql, new ClienteRowMapper(), cpf);
+		List<Cliente> clientes = jdbcTemplate.query(sql, clienteRowMapper, cpf);
 		return clientes.isEmpty() ? Optional.empty() : Optional.of(clientes.get(0));
 		// se estiver vazia, retorna q tá... se não, retorna o primeiro pegando o index
 	}
