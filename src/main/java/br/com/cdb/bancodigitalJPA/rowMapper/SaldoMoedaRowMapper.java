@@ -15,7 +15,6 @@ public class SaldoMoedaRowMapper implements RowMapper<SaldoMoeda> {
 	        saldo.setId(rs.getLong("id"));
 	        saldo.setMoeda(rs.getString("moeda"));
 	        saldo.setSaldo(rs.getBigDecimal("saldo"));
-	       
 	        return saldo;
 		
 	}

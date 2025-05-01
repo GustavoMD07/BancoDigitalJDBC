@@ -8,6 +8,7 @@ import br.com.cdb.bancodigitalJPA.entity.ContaCorrente;
 import br.com.cdb.bancodigitalJPA.entity.ContaPoupanca;
 import br.com.cdb.bancodigitalJPA.exception.SubClasseDiferenteException;
 
+
 public class ContaRowMapper implements RowMapper<Conta> {
 
 	@Override

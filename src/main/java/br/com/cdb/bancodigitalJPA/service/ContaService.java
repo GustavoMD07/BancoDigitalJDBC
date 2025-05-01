@@ -73,6 +73,9 @@ public class ContaService {
 
 	    Conta contaSalva = contaDAO.save(conta);
 	    inicializarSaldos(contaSalva);
+	    
+	    List<SaldoMoeda> saldos = saldoMoedaDAO.findByContaId(contaSalva.getId());
+	    contaSalva.setSaldos(saldos);
 	    return contaSalva;
 	}
 

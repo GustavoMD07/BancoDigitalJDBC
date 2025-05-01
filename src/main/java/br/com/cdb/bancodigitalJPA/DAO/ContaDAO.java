@@ -15,10 +15,18 @@ public class ContaDAO {
 	
 	public Conta save(Conta conta) {
 		String sql = "INSERT INTO conta(cliente_id, tipo_de_conta, taxa_rendimento, taxa_manutencao) "
-				+ "VALUES (?, ?, ?, ?)";
-		jdbcTemplate.update(sql, conta.getCliente().getId(), conta.getTipoDeConta(),
-		conta.getCliente().getTaxaRendimento(), conta.getCliente().getTaxaManutencao());
-		return conta;
+				+ "VALUES (?, ?, ?, ?) RETURNING id" ;
+		Long id = jdbcTemplate.queryForObject(sql, Long.class,
+		        conta.getCliente().getId(),
+		        conta.getTipoDeConta().toUpperCase(),
+		        conta.getCliente().getTaxaRendimento(),
+		        conta.getCliente().getTaxaManutencao()
+		    );
+		    conta.setId(id);
+		    return conta;
+//		jdbcTemplate.update(sql, conta.getCliente().getId(), conta.getTipoDeConta(),
+//		conta.getCliente().getTaxaRendimento(), conta.getCliente().getTaxaManutencao());
+//		return conta;
 	}
 	
 	public void delete(Long id) {
