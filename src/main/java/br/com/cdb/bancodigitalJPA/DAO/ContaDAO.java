@@ -11,7 +11,9 @@ import lombok.AllArgsConstructor;
 @Repository
 @AllArgsConstructor
 public class ContaDAO {
+	
 	private final JdbcTemplate jdbcTemplate;
+	private final ContaRowMapper contaRowMapper;
 	
 	public Conta save(Conta conta) {
 		String sql = "INSERT INTO conta(cliente_id, tipo_de_conta, taxa_rendimento, taxa_manutencao) "
@@ -42,13 +44,13 @@ public class ContaDAO {
 	
 	public Optional<Conta> findById(Long id) {
 		String sql = "SELECT * FROM conta WHERE ID = ?";
-		List<Conta> contas = jdbcTemplate.query(sql,new ContaRowMapper(), id);
+		List<Conta> contas = jdbcTemplate.query(sql, contaRowMapper, id);
 		return contas.isEmpty() ? Optional.empty() : Optional.of(contas.get(0));
 	}
 	
 	public List<Conta> findAll() {
 		String sql = "SELECT * FROM conta";
-		return jdbcTemplate.query(sql, new ContaRowMapper());
+		return jdbcTemplate.query(sql, contaRowMapper);
 	}
 	
 	public void deleteAll(List<Conta> contas) {
@@ -61,6 +63,6 @@ public class ContaDAO {
 	
 	public List<Conta> findByClienteId(Long clienteId) {
 	    String sql = "SELECT * FROM conta WHERE cliente_id = ?";
-	    return jdbcTemplate.query(sql, new ContaRowMapper(), clienteId);
+	    return jdbcTemplate.query(sql, contaRowMapper, clienteId);
 	}
 }
