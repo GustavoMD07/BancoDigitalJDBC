@@ -19,6 +19,4 @@ public class ContaDTO {
 	
 	@NotBlank(message = "Informe o tipo de conta: Corrente || Poupança")
 	private String tipoDeConta;
-	
-	
 }

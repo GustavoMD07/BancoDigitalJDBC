@@ -1,6 +1,5 @@
 package br.com.cdb.bancodigitalJPA.controller;
 
-import java.util.Optional;
 import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import br.com.cdb.bancodigitalJPA.DAO.ClienteDAO;
 import br.com.cdb.bancodigitalJPA.DTO.ContaDTO;
 import br.com.cdb.bancodigitalJPA.DTO.SaldoResponse;
-import br.com.cdb.bancodigitalJPA.entity.Cliente;
 import br.com.cdb.bancodigitalJPA.entity.Conta;
-import br.com.cdb.bancodigitalJPA.entity.ContaCorrente;
-import br.com.cdb.bancodigitalJPA.entity.ContaPoupanca;
 import br.com.cdb.bancodigitalJPA.exception.ListaVaziaException;
 import br.com.cdb.bancodigitalJPA.service.ContaService;
 import jakarta.validation.Valid;
@@ -33,35 +28,16 @@ public class ContaController {
 	 
 	@Autowired
 	private ContaService contaService;
-	@Autowired
-	private ClienteDAO clienteDAO;
 	
 	
 	@PostMapping("/cliente-security/add")
 	public ResponseEntity<String> addConta(@RequestBody @Valid ContaDTO contaDto) {
-		Optional<Cliente> clienteProcurado = clienteDAO.findById(contaDto.getClienteId());
-		
-		if(clienteProcurado.isEmpty()) {
-			return new ResponseEntity<>("Cliente não encontrado", HttpStatus.NOT_FOUND);
-		}
-		Conta conta;
-		
-		if(contaDto.getTipoDeConta().equalsIgnoreCase("Corrente")) {
-			conta = new ContaCorrente();
-		}
-		else if (contaDto.getTipoDeConta().equalsIgnoreCase("Poupança")) {
-			conta = new ContaPoupanca();
-		}
-		else {
-			return new ResponseEntity<>("Por favor, selecione um tipo de conta correto: Corrente | Poupança", HttpStatus.BAD_REQUEST);
-		}
-		
-		conta.setCliente(clienteProcurado.get());
-		contaService.addConta(conta);
-		return new ResponseEntity<>("Conta "+ contaDto.getTipoDeConta() +" adicionada com sucesso", 
-				HttpStatus.CREATED);
-		
+	   contaService.addConta(contaDto);
+	    return ResponseEntity
+	        .status(HttpStatus.CREATED)
+	        .body("Conta " + contaDto.getTipoDeConta() + " adicionada com sucesso");
 	}
+
 	
 	@DeleteMapping("/admin-security/remove/{id}")
 	public ResponseEntity<String> removerConta(@PathVariable Long id) {

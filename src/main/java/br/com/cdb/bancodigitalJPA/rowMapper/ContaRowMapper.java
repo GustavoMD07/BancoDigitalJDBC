@@ -32,6 +32,7 @@ public class ContaRowMapper implements RowMapper<Conta> {
 		}
 		
 		conta.setId(rs.getLong("id"));
+		
 		return conta;
 	}
 

@@ -14,6 +14,7 @@ import br.com.cdb.bancodigitalJPA.DAO.ClienteDAO;
 import br.com.cdb.bancodigitalJPA.DAO.ContaDAO;
 import br.com.cdb.bancodigitalJPA.DAO.SaldoMoedaDAO;
 import br.com.cdb.bancodigitalJPA.DAO.SeguroDAO;
+import br.com.cdb.bancodigitalJPA.DTO.ContaDTO;
 import br.com.cdb.bancodigitalJPA.DTO.SaldoResponse;
 import br.com.cdb.bancodigitalJPA.entity.Cartao;
 import br.com.cdb.bancodigitalJPA.entity.Cliente;
@@ -52,21 +53,29 @@ public class ContaService {
 
 	// a conta puxa o cliente, e o cliente puxa o ID
 
-	public Conta addConta(Conta conta) {
+	public Conta addConta(ContaDTO dto) {
+	   
+	    Cliente cliente = clienteDAO.findById(dto.getClienteId())
+	        .orElseThrow(() -> new ObjetoNuloException("Cliente não encontrado"));
+	    cliente.setContas(contaDAO.findByClienteId(cliente.getId()));
 
-		// Recupera o cliente da conta
-		Cliente cliente = clienteDAO.findById(conta.getCliente().getId()).orElseThrow(
-				() -> new ObjetoNuloException("Cliente com ID " + conta.getCliente().getId() + " não encontrado!"));
+	    Conta conta;
+	    if (dto.getTipoDeConta().equalsIgnoreCase("Corrente")) {
+	        conta = new ContaCorrente();
+	    } else {
+	        conta = new ContaPoupanca();
+	    }
+	    conta.setCliente(cliente);
 
-		if (cliente.getContas().size() >= 2) {
-			throw new QuantidadeExcedidaException("O cliente já possui duas contas");
-		}
-		
-		conta.setCliente(cliente);
-		Conta contaSalva = contaDAO.save(conta);
-		inicializarSaldos(contaSalva);
-		return contaSalva;
+	    if (cliente.getContas().size() >= 2) {
+	        throw new QuantidadeExcedidaException("O cliente já possui duas contas");
+	    }
+
+	    Conta contaSalva = contaDAO.save(conta);
+	    inicializarSaldos(contaSalva);
+	    return contaSalva;
 	}
+
 
 	public Conta removerConta(Long id) {
 		Conta conta = buscarContaPorId(id);

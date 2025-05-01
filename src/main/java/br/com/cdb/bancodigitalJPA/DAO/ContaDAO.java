@@ -14,8 +14,10 @@ public class ContaDAO {
 	private final JdbcTemplate jdbcTemplate;
 	
 	public Conta save(Conta conta) {
-		String sql = "INSERT INTO conta(cliente_id, tipo_de_conta) VALUES (?, ?)";
-		jdbcTemplate.update(sql, conta.getCliente().getId(), conta.getTipoDeConta());
+		String sql = "INSERT INTO conta(cliente_id, tipo_de_conta, taxa_rendimento, taxa_manutencao) "
+				+ "VALUES (?, ?, ?, ?)";
+		jdbcTemplate.update(sql, conta.getCliente().getId(), conta.getTipoDeConta(),
+		conta.getCliente().getTaxaRendimento(), conta.getCliente().getTaxaManutencao());
 		return conta;
 	}
 	
@@ -31,7 +33,7 @@ public class ContaDAO {
 	}
 	
 	public Optional<Conta> findById(Long id) {
-		String sql = "SELECT * FROM conta WHERE ID  ?";
+		String sql = "SELECT * FROM conta WHERE ID = ?";
 		List<Conta> contas = jdbcTemplate.query(sql,new ContaRowMapper(), id);
 		return contas.isEmpty() ? Optional.empty() : Optional.of(contas.get(0));
 	}
