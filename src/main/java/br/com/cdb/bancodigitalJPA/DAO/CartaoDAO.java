@@ -76,11 +76,13 @@ public class CartaoDAO {
 	        """;
 
 	    Object fatura        = null;
+	    Object limiteCredito = null;
 	    Object limiteDebito  = null;
 
 	    if (cartao instanceof CartaoCredito) {
 	        CartaoCredito cc = (CartaoCredito) cartao;
-	        fatura        = cc.getFatura();
+	        fatura = cc.getFatura();
+	        limiteCredito = cc.getLimiteCredito();
 	    }
 	    else if (cartao instanceof CartaoDebito) {
 	        CartaoDebito cd = (CartaoDebito) cartao;
@@ -93,7 +95,7 @@ public class CartaoDAO {
 	        cartao.isStatus(),
 	        cartao.getConta().getId(),
 	        fatura,
-	        cartao.getConta().getCliente().getLimiteCredito(),
+	        limiteCredito,
 	        limiteDebito,
 	        cartao.getId()
 	    );
