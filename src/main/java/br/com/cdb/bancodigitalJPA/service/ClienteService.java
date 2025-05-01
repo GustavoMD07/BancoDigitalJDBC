@@ -18,6 +18,7 @@ import br.com.cdb.bancodigitalJPA.entity.Cliente;
 import br.com.cdb.bancodigitalJPA.entity.ClienteComum;
 import br.com.cdb.bancodigitalJPA.entity.ClientePremium;
 import br.com.cdb.bancodigitalJPA.entity.ClienteSuper;
+import br.com.cdb.bancodigitalJPA.entity.Conta;
 import br.com.cdb.bancodigitalJPA.exception.ApiBloqueadaException;
 import br.com.cdb.bancodigitalJPA.exception.CpfDuplicadoException;
 import br.com.cdb.bancodigitalJPA.exception.IdadeInsuficienteException;
@@ -98,41 +99,49 @@ public class ClienteService {
 	// que o método de erro, ele
 	public Cliente removerCliente(Long id) {
 		Cliente cliente = buscarClientePorId(id);
-		contaDAO.deleteAll(cliente.getContas());
+		List<Conta> contas = contaDAO.findByClienteId(cliente.getId());
+		contaDAO.deleteAll(contas);
 		clienteDAO.delete(id);
 		return cliente;
 	}
 
-	public Cliente atualizarCliente(Long id, ClienteDTO clienteDto) {
-	    Cliente cliente = buscarClientePorId(id);
+	 public Cliente atualizarCliente(Long id, ClienteDTO dto) {
+	   
+	        buscarClientePorId(id);
 
-	    String tipoAtual = cliente.getClass().getSimpleName().toUpperCase().replace("CLIENTE", "");
-	    String tipoNovo = clienteDto.getTipoDeCliente().toUpperCase();
+	        
+	        Cliente cliente;
+	        String tipo = dto.getTipoDeCliente().toUpperCase();
+	        switch (tipo) {
+	            case "COMUM":
+	            	cliente = new ClienteComum();
+	                break;
+	            case "SUPER":
+	            	cliente = new ClienteSuper();
+	                break;
+	            case "PREMIUM":
+	            	cliente = new ClientePremium();
+	                break;
+	            default:
+	                throw new SubClasseDiferenteException("Selecione o tipo de cliente: Comum, Super ou Premium");
+	        }
+	        cliente.setId(id);
 
-	    if (!tipoAtual.equals(tipoNovo)) {
-	        throw new SubClasseDiferenteException("Não é possível alterar o tipo de cliente.");
-	    }
+	        // 3) Copia os outros campos
+	        cliente.setNome(dto.getNome());
+	        cliente.setCpf(dto.getCPF());
+	        cliente.setDataNascimento(dto.getDataNascimento());
 
-	    // Agora atualiza os dados normalmente
-	    cliente.setNome(clienteDto.getNome());
-	    cliente.setCpf(clienteDto.getCPF());
-	    cliente.setDataNascimento(clienteDto.getDataNascimento());
+	        EnderecoResponse end = buscarEnderecoPorCep(dto.getCep());
+	        cliente.setCep(end.getCep());
+	        cliente.setRua(end.getRua());
+	        cliente.setBairro(end.getBairro());
+	        cliente.setCidade(end.getCidade());
+	        cliente.setEstado(end.getEstado());
 
-	    Integer idade = Period.between(clienteDto.getDataNascimento(), LocalDate.now()).getYears();
-	    if (idade < 18) {
-	        throw new IdadeInsuficienteException("Apenas maiores de idade podem criar conta");
-	    }
-
-	    EnderecoResponse endereco = buscarEnderecoPorCep(clienteDto.getCep());
-
-	    cliente.setCep(endereco.getCep());
-	    cliente.setCidade(endereco.getCidade());
-	    cliente.setEstado(endereco.getEstado());
-	    cliente.setBairro(endereco.getBairro());
-	    cliente.setRua(endereco.getRua());
-
-	    return clienteDAO.save(cliente);
-	}
+	        // 4) Atualiza no banco
+	        return clienteDAO.update(cliente);
+	 }
 
 	public List<ClienteResponse> getAllClientes() {
 		List<Cliente> clientes = clienteDAO.findAll();

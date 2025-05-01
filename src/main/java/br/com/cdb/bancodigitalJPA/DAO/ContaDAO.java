@@ -48,4 +48,9 @@ public class ContaDAO {
 			jdbcTemplate.update(sql, conta.getId());
 		}
 	}
+	
+	public List<Conta> findByClienteId(Long clienteId) {
+	    String sql = "SELECT * FROM conta WHERE cliente_id = ?";
+	    return jdbcTemplate.query(sql, new ContaRowMapper(), clienteId);
+	}
 }
