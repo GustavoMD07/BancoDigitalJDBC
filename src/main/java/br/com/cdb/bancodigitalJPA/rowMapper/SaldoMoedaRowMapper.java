@@ -4,9 +4,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import br.com.cdb.bancodigitalJPA.entity.SaldoMoeda;
 
+@Component
 public class SaldoMoedaRowMapper implements RowMapper<SaldoMoeda> {
 
 	@Override

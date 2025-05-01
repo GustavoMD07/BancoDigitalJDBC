@@ -25,6 +25,14 @@ public class SaldoMoedaDAO {
             saldo.getConta().getId()
         );
     }
+    
+    public void update(SaldoMoeda saldo) {
+        String sql = "UPDATE saldo_moeda SET saldo = ? WHERE id = ?";
+        jdbcTemplate.update(sql,
+            saldo.getSaldo(),
+            saldo.getId()
+        );
+    }
 
     public List<SaldoMoeda> findByContaId(Long contaId) {
         String sql = "SELECT * FROM saldo_moeda WHERE conta_id = ?";
@@ -39,7 +47,7 @@ public class SaldoMoedaDAO {
     
    public Optional<SaldoMoeda> findByMoedaAndContaId(String moeda, Long contaId) {
 	   String sql = "SELECT * FROM saldo_moeda WHERE conta_id = ? AND moeda = ?";
-	   List<SaldoMoeda> saldo = jdbcTemplate.query(sql, saldoMapper, moeda, contaId);
+	   List<SaldoMoeda> saldo = jdbcTemplate.query(sql, saldoMapper,contaId, moeda );
 	   return saldo.isEmpty() ? Optional.empty() : Optional.of(saldo.get(0));
 	   
    }

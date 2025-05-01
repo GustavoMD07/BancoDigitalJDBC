@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import br.com.cdb.bancodigitalJPA.entity.Cliente;
 import br.com.cdb.bancodigitalJPA.entity.ClienteComum;
@@ -11,6 +12,7 @@ import br.com.cdb.bancodigitalJPA.entity.ClientePremium;
 import br.com.cdb.bancodigitalJPA.entity.ClienteSuper;
 import br.com.cdb.bancodigitalJPA.exception.SubClasseDiferenteException;
 
+@Component
 public class ClienteRowMapper implements RowMapper<Cliente> {
 
 	@Override

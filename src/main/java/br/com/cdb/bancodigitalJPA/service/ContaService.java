@@ -153,8 +153,8 @@ public class ContaService {
 	saldoOrigem.setSaldo(saldoOrigem.getSaldo().subtract(valor)); // subtrai o valor do saldo de origem usando BigDecimal;
 	saldoDestino.setSaldo(saldoDestino.getSaldo().add(valorConvertido));
 
-	saldoMoedaDAO.save(saldoOrigem);
-	saldoMoedaDAO.save(saldoDestino);
+	saldoMoedaDAO.update(saldoOrigem);
+	saldoMoedaDAO.update(saldoDestino);
 
 	}
 
@@ -180,7 +180,7 @@ public class ContaService {
 	   
 
 	    saldo.setSaldo(saldo.getSaldo().subtract(valor));
-	    saldoMoedaDAO.save(saldo);
+	    saldoMoedaDAO.update(saldo);
 	}
 
 	public void deposito(Long id, BigDecimal valor, String moedaOrigem, String moedaDestino) {
@@ -207,7 +207,7 @@ public class ContaService {
 		});
 	
 		saldo.setSaldo(saldo.getSaldo().add(valorConvertido));
-		saldoMoedaDAO.save(saldo);
+		saldoMoedaDAO.update(saldo);
 	}
 
 	public void saque(Long id, BigDecimal valor, String moedaUsada, String moedaSacada) {
@@ -224,7 +224,7 @@ public class ContaService {
 	    }
 
 	    saldo.setSaldo(saldo.getSaldo().subtract(valorConvertido));
-	    saldoMoedaDAO.save(saldo);
+	    saldoMoedaDAO.update(saldo);
 	}
 
 	public void aplicarTaxaManutencao(Long id) {
@@ -247,7 +247,7 @@ public class ContaService {
 		}
 
 		saldoBRL.setSaldo(saldoBRL.getSaldo().subtract(taxa));
-		saldoMoedaDAO.save(saldoBRL);
+		saldoMoedaDAO.update(saldoBRL);
 	}
 
 	public void aplicarRendimento(Long id) {
@@ -269,7 +269,7 @@ public class ContaService {
 
 		BigDecimal rendimento = saldoBRL.getSaldo().multiply(BigDecimal.ONE.add(taxa));
 		saldoBRL.setSaldo(rendimento);
-		saldoMoedaDAO.save(saldoBRL);
+		saldoMoedaDAO.update(saldoBRL);
 	}
 
 	
