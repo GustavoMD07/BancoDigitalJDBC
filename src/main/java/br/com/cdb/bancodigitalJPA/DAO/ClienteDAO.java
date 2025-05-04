@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import br.com.cdb.bancodigitalJPA.entity.Cliente;
+import br.com.cdb.bancodigitalJPA.entity.Conta;
 import br.com.cdb.bancodigitalJPA.rowMapper.ClienteRowMapper;
 import lombok.AllArgsConstructor;
 
@@ -14,6 +15,7 @@ public class ClienteDAO {
 
 	private final JdbcTemplate jdbcTemplate;
 	private final ClienteRowMapper clienteRowMapper;
+	private final ContaDAO contaDAO;
 
 	public Cliente save(Cliente cliente) {
 
@@ -46,13 +48,22 @@ public class ClienteDAO {
 
 	public List<Cliente> findAll() {
 		String sql = "SELECT * FROM cliente";
-		return jdbcTemplate.query(sql, clienteRowMapper);
+		
+		List<Cliente> lista = jdbcTemplate.query(sql, clienteRowMapper);
+		for(Cliente c : lista) {
+			c.setContas(contaDAO.findByClienteId(c.getId()));
+		}
+		return lista;
 	}
 
 	public Optional<Cliente> findById(Long id) {
 		String sql = "SELECT * FROM cliente WHERE id = ?";
 		List<Cliente> clientes = jdbcTemplate.query(sql, clienteRowMapper, id);
-		return clientes.isEmpty() ? Optional.empty() : Optional.of(clientes.get(0));
+		Cliente c = clientes.get(0);
+		
+		List<Conta> contas = contaDAO.findByClienteId(id);
+		c.setContas(contas);
+		return Optional.of(c);
 	}
 
 	public Optional<Cliente> findByCPF(String cpf) {

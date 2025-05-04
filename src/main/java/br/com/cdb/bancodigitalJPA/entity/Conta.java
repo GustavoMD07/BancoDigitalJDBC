@@ -6,21 +6,22 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public abstract class Conta {							
-	
+public abstract class Conta {
+
 	private Long id;
-						
+
+	private Long clienteId;
+
 	@JsonManagedReference
 	private List<SaldoMoeda> saldos = new ArrayList<>();
-		
+
 	@JsonBackReference
 	private Cliente cliente;
-	//esse atributo eu mapeio ele no cliente, depois passo o nome dele no Cliente
-	
-	@JsonManagedReference 		
-	private List<Cartao> cartoes = new ArrayList<>(); //melhor do que null, só uma lista vazia :D
-	
-	
+	// esse atributo eu mapeio ele no cliente, depois passo o nome dele no Cliente
+
+	@JsonManagedReference
+	private List<Cartao> cartoes = new ArrayList<>(); // melhor do que null, só uma lista vazia :D
+
 	public Long getId() {
 		return id;
 	}
@@ -29,7 +30,6 @@ public abstract class Conta {
 		this.id = id;
 	}
 
-
 	public Cliente getCliente() {
 		return cliente;
 	}
@@ -37,7 +37,7 @@ public abstract class Conta {
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
 	}
-	
+
 	public List<Cartao> getCartoes() {
 		return cartoes;
 	}
@@ -45,7 +45,7 @@ public abstract class Conta {
 	public void setCartao(List<Cartao> cartoes) {
 		this.cartoes = cartoes;
 	}
-	
+
 	public List<SaldoMoeda> getSaldos() {
 		return saldos;
 	}
@@ -54,9 +54,16 @@ public abstract class Conta {
 		this.saldos = saldos;
 	}
 
-	
-	@JsonProperty		//JsonProperty garante que ele vá aparecer no PostMan
+	@JsonProperty // JsonProperty garante que ele vá aparecer no PostMan
 	public String getTipoDeConta() {
 		return this.getClass().getSimpleName().replace("Conta", "");
+	}
+
+	public Long getClienteId() {
+		return clienteId;
+	}
+
+	public void setClienteId(Long clienteId) {
+		this.clienteId = clienteId;
 	}
 }

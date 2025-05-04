@@ -7,6 +7,10 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 public abstract class Cartao {
 	private Long id;
 	
+	private Long contaId;
+	
+	
+
 	private String senha;
 	private boolean status;
 	
@@ -73,6 +77,14 @@ public abstract class Cartao {
 
 	public void setSeguros(List<Seguro> seguros) {
 		this.seguros = seguros;
+	}
+	
+	public Long getContaId() {
+		return contaId;
+	}
+
+	public void setContaId(Long contaId) {
+		this.contaId = contaId;
 	}
 	
 }

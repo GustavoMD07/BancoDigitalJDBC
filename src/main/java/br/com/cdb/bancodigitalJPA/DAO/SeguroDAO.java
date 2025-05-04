@@ -14,6 +14,7 @@ public class SeguroDAO {
 
 	private final JdbcTemplate jdbcTemplate;
 	private final SeguroRowMapper seguroRowMapper;
+	private final CartaoDAO cartaoDAO;
 	
 	public void save(Seguro seguro) {
 		String sql = "INSER INTO seguro (numeroApolice, dataContratacao, tipoDeSeguro, descricao, valorApolice, ativo, cartao_id)"
@@ -39,16 +40,28 @@ public class SeguroDAO {
 	public Optional<Seguro> findById(Long id) {
 		String sql = "SELECT * FROM seguro WHERE id = ?";
 		List<Seguro> seguro = jdbcTemplate.query(sql, seguroRowMapper, id);
-		return seguro.isEmpty() ? Optional.empty() : Optional.of(seguro.get(0));
+		if (seguro.isEmpty()) return Optional.empty(); //uma linha só, então sem {}
+		Seguro s = seguro.get(0);
+		cartaoDAO.findById(s.getCartaoId()).ifPresent(s::setCartao);
+		return Optional.of(s);
 	}
 	
 	public List<Seguro> findAll() {
 		String sql = "SELECT * FROM seguro";
-		return jdbcTemplate.query(sql, seguroRowMapper);
+		List<Seguro> lista = jdbcTemplate.query(sql, seguroRowMapper);
+		for(Seguro s : lista) {
+	    	cartaoDAO.findById(s.getCartaoId()).ifPresent(s::setCartao);
+	    }
+	    return lista;
 	}
 	
 	public List<Seguro> findByCartaoId(Long cartaoId) {
 	    String sql = "SELECT * FROM seguro WHERE cartao_id = ?";
-	    return jdbcTemplate.query(sql, seguroRowMapper, cartaoId);
+	    List<Seguro> lista = jdbcTemplate.query(sql, seguroRowMapper, cartaoId);
+	    for(Seguro s : lista) {
+	    	cartaoDAO.findById(s.getCartaoId()).ifPresent(s::setCartao);
+	    }
+	    return lista;
+	    
 	} 
 }

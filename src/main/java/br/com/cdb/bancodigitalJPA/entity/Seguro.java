@@ -12,6 +12,8 @@ public class Seguro {
 
 	private Long id;
 	
+	private Long cartaoId;
+	
 	private String numeroApolice;
 	private LocalDate dataContratacao;
 	private String tipoDeSeguro;

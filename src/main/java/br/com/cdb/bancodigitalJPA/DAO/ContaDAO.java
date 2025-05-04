@@ -14,6 +14,8 @@ public class ContaDAO {
 	
 	private final JdbcTemplate jdbcTemplate;
 	private final ContaRowMapper contaRowMapper;
+	private final ClienteDAO clienteDAO;
+	private final SaldoMoedaDAO saldoDAO;
 	
 	public Conta save(Conta conta) {
 		String sql = "INSERT INTO conta(cliente_id, tipo_de_conta, taxa_rendimento, taxa_manutencao) "
@@ -45,12 +47,21 @@ public class ContaDAO {
 	public Optional<Conta> findById(Long id) {
 		String sql = "SELECT * FROM conta WHERE ID = ?";
 		List<Conta> contas = jdbcTemplate.query(sql, contaRowMapper, id);
-		return contas.isEmpty() ? Optional.empty() : Optional.of(contas.get(0));
+		Conta c = contas.get(0);
+		if (contas.isEmpty()) return Optional.empty(); //uma linha só, então sem {}
+		clienteDAO.findById(c.getClienteId()).ifPresent(c::setCliente);
+		c.setSaldos(saldoDAO.findByContaId(c.getId()));
+		return Optional.of(c);
 	}
 	
 	public List<Conta> findAll() {
 		String sql = "SELECT * FROM conta";
-		return jdbcTemplate.query(sql, contaRowMapper);
+		List<Conta> lista = jdbcTemplate.query(sql, contaRowMapper);
+		for(Conta c : lista) {
+			clienteDAO.findById(c.getId()).ifPresent(c::setCliente);
+			c.setSaldos(saldoDAO.findByContaId(c.getId()));
+		}
+		return lista;
 	}
 	
 	public void deleteAll(List<Conta> contas) {
@@ -63,6 +74,11 @@ public class ContaDAO {
 	
 	public List<Conta> findByClienteId(Long clienteId) {
 	    String sql = "SELECT * FROM conta WHERE cliente_id = ?";
-	    return jdbcTemplate.query(sql, contaRowMapper, clienteId);
+	    List<Conta> lista = jdbcTemplate.query(sql, contaRowMapper, clienteId);
+	    for(Conta c : lista) {
+	    	clienteDAO.findById(c.getClienteId()).ifPresent(c::setCliente);
+	    	c.setSaldos(saldoDAO.findByContaId(c.getId()));
+	    }
+	    return lista;
 	}
 }
