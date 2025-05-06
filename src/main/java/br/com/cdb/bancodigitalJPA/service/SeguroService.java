@@ -7,12 +7,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import br.com.cdb.bancodigitalJPA.DAO.CartaoDAO;
+import br.com.cdb.bancodigitalJPA.DAO.ContaDAO;
 import br.com.cdb.bancodigitalJPA.DAO.SeguroDAO;
 import br.com.cdb.bancodigitalJPA.DTO.SeguroDTO;
 import br.com.cdb.bancodigitalJPA.DTO.SeguroResponse;
 import br.com.cdb.bancodigitalJPA.entity.Cartao;
 import br.com.cdb.bancodigitalJPA.entity.CartaoCredito;
 import br.com.cdb.bancodigitalJPA.entity.ClientePremium;
+import br.com.cdb.bancodigitalJPA.entity.Conta;
 import br.com.cdb.bancodigitalJPA.entity.Seguro;
 import br.com.cdb.bancodigitalJPA.exception.ObjetoNuloException;
 import br.com.cdb.bancodigitalJPA.exception.SubClasseDiferenteException;
@@ -28,6 +30,9 @@ public class SeguroService {
 
 	@Autowired
 	private CartaoDAO cartaoDAO;
+	
+	@Autowired
+	private ContaDAO contaDAO;
 
 	public SeguroResponse contratarSeguro(SeguroDTO seguroDto) {
 		
@@ -45,6 +50,10 @@ public class SeguroService {
 		seguro.setTipoDeSeguro(seguroDto.getTipoDeSeguro());
 		seguro.setDataContratacao(LocalDate.now());
 		seguro.setNumeroApolice(gerarNumApolice());
+		
+		Conta conta = contaDAO.findById(cartao.getConta().getId())
+			    .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+			cartao.setConta(conta);
 		
 		// regras de valor e descrição
 		if (seguroDto.getTipoDeSeguro().equalsIgnoreCase("viagem")) {

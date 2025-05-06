@@ -17,6 +17,7 @@ public class CartaoDAO {
 
 	private final JdbcTemplate jdbcTemplate;
 	private final CartaoRowMapper cartaoRowMapper;
+	private final ContaDAO contaDAO;
 
 	public Cartao save(Cartao cartao) {
 		String sql = """
@@ -35,11 +36,11 @@ public class CartaoDAO {
 		} else if (cartao instanceof CartaoDebito) {
 			CartaoDebito cd = (CartaoDebito) cartao;
 			limiteDiario = cd.getLimiteDiario();
-			
+
 		} else {
 			throw new SubClasseDiferenteException("Tipo de cartão inválido: " + cartao.getTipoDeCartao());
 		}
-		
+
 		jdbcTemplate.update(sql, cartao.getSenha(), cartao.isStatus(), cartao.getNumCartao(), cartao.getTipoDeCartao(),
 				cartao.getConta().getId(), fatura, limiteCredito, limiteDiario);
 
@@ -93,7 +94,12 @@ public class CartaoDAO {
 	public Optional<Cartao> findById(Long id) {
 		String sql = "SELECT * FROM cartao WHERE id = ?";
 		List<Cartao> lista = jdbcTemplate.query(sql, cartaoRowMapper, id);
-		return lista.isEmpty() ? Optional.empty() : Optional.of(lista.get(0));
+		if (lista.isEmpty())
+			return Optional.empty();
+
+		Cartao cartao = lista.get(0); // pega o primeiro (e único) que achar com o id
+        contaDAO.findById(cartao.getContaId()).ifPresent(cartao::setConta);;
+        return Optional.of(cartao);
 	}
 	// queryForObject só me retorna um resultado, o query retorna uma lista
 	// aqui ele retorna só o primeiro do indíce caso ele ache, por isso o uso do
@@ -101,7 +107,7 @@ public class CartaoDAO {
 
 	public List<Cartao> findAll() {
 		String sql = "SELECT * FROM cartao";
-		
+
 		return jdbcTemplate.query(sql, cartaoRowMapper);
 	}
 
