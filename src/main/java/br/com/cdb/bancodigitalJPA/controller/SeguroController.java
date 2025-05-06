@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import br.com.cdb.bancodigitalJPA.DTO.ClienteResponse;
 import br.com.cdb.bancodigitalJPA.DTO.SeguroDTO;
 import br.com.cdb.bancodigitalJPA.DTO.SeguroResponse;
+import br.com.cdb.bancodigitalJPA.entity.Seguro;
 import br.com.cdb.bancodigitalJPA.service.SeguroService;
 import jakarta.validation.Valid;
 
@@ -39,14 +42,16 @@ public class SeguroController {
 
     @GetMapping("/cliente-security/list/{id}")
     public ResponseEntity<SeguroResponse> buscarSeguroPorId(@PathVariable Long id) {
-        SeguroResponse response = seguroService.buscarSeguroPorId(id);
-        return new ResponseEntity<>(response, HttpStatus.FOUND);
+    	Seguro seguro = seguroService.buscarSeguroPorId(id); 
+        SeguroResponse response = SeguroResponse.fromEntity(seguro);
+        return ResponseEntity.ok(response); //tentando uma forma nova que eu vi na internet
     }
 
     @GetMapping("/admin-security/listAll")
     public ResponseEntity<List<SeguroResponse>> listarSeguros() {
-        List<SeguroResponse> lista = seguroService.listarSeguros();
-        return new ResponseEntity<>(lista, HttpStatus.FOUND);
+        List<Seguro> lista = seguroService.listarSeguros();
+        List<SeguroResponse> seguros = lista.stream().map(SeguroResponse::fromEntity).toList();
+        return new ResponseEntity<>(seguros, HttpStatus.FOUND);
     }
 
     @PutMapping("/admin-security/cancelar/{id}")

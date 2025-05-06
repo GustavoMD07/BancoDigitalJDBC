@@ -143,16 +143,20 @@ public class ClienteService {
 	        return clienteDAO.update(cliente);
 	 }
 
-	public List<ClienteResponse> getAllClientes() {
+	public List<Cliente> getAllClientes() {
 		List<Cliente> clientes = clienteDAO.findAll();
-		return clientes.stream().map(ClienteResponse::fromEntity).toList();
-		// stream pra poder mexer na lista, map pega todos os elementos clientes e chama
-		// o método converter
-		// e o método converter, converte pra ClienteResponse.
+		for (Cliente c : clientes) {
+			c.setContas(contaDAO.findByClienteId(c.getId()));
+		}
+		return clientes;
 	}
 
 	public Cliente buscarClientePorId(Long id) {
-		return clienteDAO.findById(id).orElseThrow(() -> new ObjetoNuloException("Cliente não encontrado"));
+		Cliente c = clienteDAO.findById(id).orElseThrow(() -> 
+			new ObjetoNuloException("Cliente não encontrado"));
+		List<Conta> contas = contaDAO.findByClienteId(c.getId());
+		c.setContas(contas);
+		return c;
 	}
 
 	private EnderecoResponse buscarEnderecoPorCep(String cep) {

@@ -73,26 +73,23 @@ public class SeguroService {
 		 //aqui eu salvo o seguro Entity mas retorno o Response, pro usuário conseguir visualizar as informações
 	}
 	
-	public SeguroResponse buscarSeguroPorId(Long id) {
-	    Seguro seguro = seguroDAO.findById(id)
-	        .orElseThrow(() -> new ObjetoNuloException("Seguro não encontrado"));
-	    return SeguroResponse.fromEntity(seguro); // com esse orElseThrow, eu não preciso criar um Optional
+	public Seguro buscarSeguroPorId(Long id) {
+		Seguro s = seguroDAO.findById(id)
+	            .orElseThrow(() -> new ObjetoNuloException("Seguro não encontrado"));
+	        Cartao c = cartaoDAO.findById(s.getCartaoId())
+	            .orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
+	        s.setCartao(c);
+	        return s; // com esse orElseThrow, eu não preciso criar um Optional
 	}
 
-	public List<SeguroResponse> listarSeguros() {
-	    
-		List<Seguro> seguros = seguroDAO.findAll();
-		if(seguros.isEmpty()) {
-			throw new ObjetoNuloException("Não foram encontrados seguros no sistema");
-		}
-		
-		return seguros.stream().map(SeguroResponse::fromEntity).toList();
-	    
-	    //o stream "processa" todos os dados
-	    //.map converte cada seguro em seguroResponse pelo fromEntity
-	    //toList retorna os dados em uma lista
+	public List<Seguro> listarSeguros() {
+        List<Seguro> lista = seguroDAO.findAll();
+        for (Seguro s : lista) {
+            cartaoDAO.findById(s.getCartaoId()).ifPresent(s::setCartao);
+        }
+        return lista;
 	}
-
+	
 	public void cancelarSeguro(Long id) {
 	    Seguro seguro = seguroDAO.findById(id)
 	        .orElseThrow(() -> new ObjetoNuloException("Seguro não encontrado."));

@@ -9,8 +9,6 @@ public abstract class Cartao {
 	
 	private Long contaId;
 	
-	
-
 	private String senha;
 	private boolean status;
 	

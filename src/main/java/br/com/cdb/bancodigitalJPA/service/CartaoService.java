@@ -3,17 +3,18 @@ package br.com.cdb.bancodigitalJPA.service;
 import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import br.com.cdb.bancodigitalJPA.DAO.CartaoDAO;
 import br.com.cdb.bancodigitalJPA.DAO.ContaDAO;
 import br.com.cdb.bancodigitalJPA.DAO.SaldoMoedaDAO;
+import br.com.cdb.bancodigitalJPA.DAO.SeguroDAO;
 import br.com.cdb.bancodigitalJPA.entity.Cartao;
 import br.com.cdb.bancodigitalJPA.entity.CartaoCredito;
 import br.com.cdb.bancodigitalJPA.entity.CartaoDebito;
 import br.com.cdb.bancodigitalJPA.entity.Conta;
 import br.com.cdb.bancodigitalJPA.entity.SaldoMoeda;
+import br.com.cdb.bancodigitalJPA.entity.Seguro;
 import br.com.cdb.bancodigitalJPA.exception.ObjetoNuloException;
 import br.com.cdb.bancodigitalJPA.exception.QuantidadeExcedidaException;
 import br.com.cdb.bancodigitalJPA.exception.SaldoInsuficienteException;
@@ -31,29 +32,44 @@ public class CartaoService {
 	
 	@Autowired
 	private SaldoMoedaDAO saldoMoedaDAO;
+	
+	@Autowired
+	private SeguroDAO seguroDAO;
 
 	private static final int QntdsNum = 15;
 	private SecureRandom random = new SecureRandom(); // secureRandom pra gerar os números aleatórios
 
 	public Cartao addCartao(Cartao cartao) {
-		Optional<Conta> contaEncontrada = contaDAO.findById(cartao.getConta().getId());
+		Conta contaEncontrada = contaDAO.findById(cartao.getContaId()).orElseThrow(() -> 
+		new ObjetoNuloException("Conta não encontrada"));;
 
-		if (contaEncontrada.isEmpty()) {
-			throw new ObjetoNuloException("Conta não encontrada");
-		}
-
-		Conta conta = contaEncontrada.get();
-
-		if (conta.getCartoes().size() >= 2) {
+		if (contaEncontrada.getCartoes().size() >= 2) {
 			throw new QuantidadeExcedidaException("O cliente já possui duas contas");
 		}
 
-		cartao.setConta(conta);
+		cartao.setConta(contaEncontrada);
+		
+		if (cartao instanceof CartaoCredito cc) {
+	        // aqui é seguro: conta já existe
+	        cc.setLimiteCredito(contaEncontrada.getCliente().getLimiteCredito());
+	    }
+		
+		List<Seguro> seguros = seguroDAO.findByCartaoId(cartao.getId());
+		cartao.setSeguros(seguros);
 		return cartaoDAO.save(cartao);
 	}
 
 	public List<Cartao> listarCartoes() {
-		return cartaoDAO.findAll();
+		List<Cartao> lista = cartaoDAO.findAll();
+        for (Cartao c : lista) {
+            Conta conta = contaDAO.findById(c.getContaId())
+                .orElseThrow(() -> new ObjetoNuloException("Conta não encontrada"));
+            c.setConta(conta);
+
+            List<Seguro> seguros = seguroDAO.findByCartaoId(c.getId());
+            c.setSeguros(seguros);
+        }
+        return lista;
 	}
 
 	public Cartao desativarCartao(Long id, String senha) {
@@ -197,7 +213,15 @@ public class CartaoService {
 	}
 
 	public Cartao buscarCartaoPorId(Long id) {
-		return cartaoDAO.findById(id).orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
+		 Cartao c = cartaoDAO.findById(id)
+		            .orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
+		        Conta conta = contaDAO.findById(c.getContaId())
+		            .orElseThrow(() -> new ObjetoNuloException("Conta não encontrada"));
+		        c.setConta(conta);
+
+		        List<Seguro> seguros = seguroDAO.findByCartaoId(c.getId());
+		        c.setSeguros(seguros);
+		        return c;
 	}
 
 	public void alterarLimiteDiario(Long id, BigDecimal novoLimite) {

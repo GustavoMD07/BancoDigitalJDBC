@@ -75,11 +75,13 @@ public class ClienteController {
 	
 	@GetMapping("/admin-security/listAll")
 	public ResponseEntity<List<ClienteResponse>> listarClientes() {
-		List<ClienteResponse> clientes = clienteService.getAllClientes();
+		List<Cliente> clientes = clienteService.getAllClientes();
+		
+		List<ClienteResponse> cliente = clientes.stream().map(ClienteResponse::fromEntity).toList();
 		if(clientes.isEmpty()) {
 			throw new ListaVaziaException("Não foram identificados clientes na lista");
 		}
-		return new ResponseEntity<>(clientes, HttpStatus.OK);
+		return new ResponseEntity<>(cliente, HttpStatus.OK);
 	}
 	
 	@GetMapping("/cliente-security/list/{id}")			//com o PathVariable, eu mostro que o LongId vai ser o que o usuário escreve
