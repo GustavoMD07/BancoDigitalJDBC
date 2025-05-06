@@ -2,12 +2,9 @@ package br.com.cdb.bancodigitalJPA.DAO;
 
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import br.com.cdb.bancodigitalJPA.entity.Cliente;
-import br.com.cdb.bancodigitalJPA.entity.Conta;
 import br.com.cdb.bancodigitalJPA.rowMapper.ClienteRowMapper;
 import lombok.AllArgsConstructor;
 

@@ -16,7 +16,7 @@ public class SeguroDAO {
 	private final SeguroRowMapper seguroRowMapper;
 	
 	public void save(Seguro seguro) {
-		String sql = "INSER INTO seguro (numeroApolice, dataContratacao, tipoDeSeguro, descricao, valorApolice, ativo, cartao_id)"
+		String sql = "INSERT INTO seguro (numero_apolice, data_contratacao, tipo_de_seguro, descricao, valor_apolice, ativo, cartao_id)"
 				+ " VALUES (?, ?, ?, ?, ?, ?, ?)";
 		jdbcTemplate.update(sql, seguro.getNumeroApolice(), seguro.getDataContratacao(), seguro.getTipoDeSeguro(),
 				seguro.getDescricao(), seguro.getValorApolice(), seguro.isAtivo(), seguro.getCartao().getId());
