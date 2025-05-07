@@ -14,14 +14,14 @@ Esse projeto é uma API REST de um banco Digital, desenvolvido em Java. O objeti
 ✅ Tratamento de exceções personalizado  
 ✅ Saldo de conta em diferentes moedas (BRL, USD, EUR)  
 ✅ Conversão monetária automática ao realizar ações  
-✅ Persistência em banco de dados (H2 em memória)  
-✅ Arquitetura baseada em camadas (Controller, Service, Repository, etc.)
+✅ Persistência em banco de dados (PostgreSQL)  
+✅ Arquitetura baseada em camadas (Controller, Service, DAO, etc.)
 
 # 🛠️ Tecnologias Utilizadas
 - **Java 21** - Versão do Java utilizada para o projeto
 - **Spring Boot** – Framework para facilitar o desenvolvimento e configuração  
-- **Spring Data JPA** – Alternativa para persistência de dados com JPA  
-- **H2 Database** – Banco de dados em memória para testes e desenvolvimento  
+- **Spring JDBC Template** – Aplicação para conectar e interagir com o banco de dados 
+- **PostgreSQL** – Banco de dados profissional para desenvolvimento  
 - **Bean Validation (Jakarta Validation)** – Validação de dados via anotações  
 - **Lombok** – Geração automática de getters, setters, constructors, etc.  
 - **Maven** – Gerenciador de dependências e build  
@@ -59,8 +59,8 @@ banco-digital
 ┣ 📂 src
 ┃ ┣ 📂 controller    # Endpoints da API 
 ┃ ┣ 📂 dto           # Objetos de transferência de dados 
-┃ ┣ 📂 entity        # Entidades JPA que representam as tabelas do banco 
-┃ ┣ 📂 repository    # Interfaces para acesso ao banco de dados com Spring Data JPA
+┃ ┣ 📂 entity        # Entidades que representam as tabelas do banco 
+┃ ┣ 📂 dao           # Interfaces para acesso ao banco de dados com Spring Data JDBC Template
 ┃ ┣ 📂 service       # Regras de negócio e lógica de aplicação
 ┃ ┣ 📂 exceptions    # Exceções personalizadas para regras de negócio
 ┃ ┣ 📂 handler       # Manipulação global de erros com @ControllerAdvice
@@ -71,8 +71,8 @@ banco-digital
 # 🔧 Como Executar o Projeto
 1️⃣ Clone o repositório:
 ```bash
-git clone https://github.com/GustavoMD07/BancoDigitalSpring
-cd BancoDigitalSpring
+git clone https://github.com/GustavoMD07/BancoDigitalJDBC
+cd BancoDigitalJDBC
 ```
 
 2️⃣ Execute a aplicação  
@@ -88,10 +88,10 @@ mvnw spring-boot:run
 
 Opção 2: via IDE (IntelliJ, Eclipse, VS Code)  
 
-Abra o projeto na sua IDE favorita e execute o método main() da classe principal **BancoDigitalSpringApplication.java**.
+Abra o projeto na sua IDE favorita e execute o método main() da classe principal **BancoDigitalApplication.java**.
 
 
-3️⃣ Acesse o banco H2 (opcional):
+3️⃣ Acesse o PostgreSQL (opcional):
 ```
 URL: http://localhost:8080/h2-console
 JDBC URL: jdbc:h2:mem:testdb
@@ -110,8 +110,7 @@ O projeto possui um sistema de tratamento de erros personalizado usando:
 Dessa forma, Qualquer erro de negócio ou validação retorna uma resposta clara e padronizada pro cliente da API.
 
 # 📈 Melhorias Futuras
-
-🔹 Persistência com banco de dados real (PostgreSQL ou MySQL)  
+  
 🔹 Testes unitários com JUnit e Mockito  
 🔹 Documentação de API com Swagger  
 🔹 Interface frontend (React ou Angular) para visualização dos dados  
