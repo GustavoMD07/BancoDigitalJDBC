@@ -35,8 +35,8 @@ public class JwtService {
                 .setClaims(claims)
                 .setSubject(usuario.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))	//segundos minutos horas
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24 horas pra expirar o token
-                .signWith(getChaveAssinatura(), SignatureAlgorithm.HS256)
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 90))
+                .signWith(getChaveAssinatura(), SignatureAlgorithm.HS256) //ms, s, min, h, dias
                 .compact();
 	}
 	
