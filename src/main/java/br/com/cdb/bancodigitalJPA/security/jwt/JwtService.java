@@ -35,7 +35,7 @@ public class JwtService {
                 .setClaims(claims)
                 .setSubject(usuario.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))	//segundos minutos horas
-                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 90))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 90)) // +/- 3 meses até o jwt expirar
                 .signWith(getChaveAssinatura(), SignatureAlgorithm.HS256) //ms, s, min, h, dias
                 .compact();
 	}

@@ -209,6 +209,7 @@ public class CartaoService {
 		saldo.setSaldo(saldo.getSaldo().subtract(valor));
 		cartaoC.setFatura(cartaoC.getFatura().subtract(valor));
 		cartaoDAO.update(cartao);
+		saldoMoedaDAO.update(saldo);
 
 	}
 

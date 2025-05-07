@@ -112,7 +112,7 @@ public class CartaoController {
 		}
 		
 		else {
-			return new ResponseEntity<>("Não foi possível verificar a fatura", HttpStatus.NOT_ACCEPTABLE);
+			return new ResponseEntity<>("Cartões de débito não possuem fatura", HttpStatus.NOT_ACCEPTABLE);
 		}
 	}
 	
@@ -122,9 +122,8 @@ public class CartaoController {
 		cartaoService.realizarPagamento(id, valor, senha);
 		
 		if(cartao instanceof CartaoCredito) {
-			CartaoCredito cartaoC = (CartaoCredito) cartao;
-			return new ResponseEntity<>("Pagamento de valor: R$" + valor + " realizado\n fatura antiga: R$" + 
-			cartaoC.getFatura(), HttpStatus.OK);
+			return new ResponseEntity<>("Pagamento de valor: R$" + valor + " realizado" 
+			, HttpStatus.OK);
 		}
 		
 		else if (cartao instanceof CartaoDebito) {
@@ -141,9 +140,7 @@ public class CartaoController {
 //		Conta conta = cartao.getConta();
 		cartaoService.pagarFatura(id, valor);
 		if(cartao instanceof CartaoCredito) {
-			CartaoCredito cartaoC = (CartaoCredito) cartao;
-			return new ResponseEntity<>("Fatura atualizada. Pagamento feito retirando saldo da conta. \nNova fatura: R$" + cartaoC.getFatura()
-			, HttpStatus.OK);
+			return new ResponseEntity<>("Fatura atualizada. Pagamento feito retirando saldo da conta", HttpStatus.OK);
 		}
 		else {
 			return new ResponseEntity<>("Não foi possível pagar a fatura", HttpStatus.NOT_ACCEPTABLE);
