@@ -94,7 +94,7 @@ Abra o projeto na sua IDE favorita e execute o método main() da classe principa
 3️⃣ Acesse o PostgreSQL (opcional):
 ```
 JDBC URL: jdbc:h2:mem:testdb
-Usuário: postgres
+Usuário: postgres (padrão pelo usuário ou qual for outro usuário)
 Senha: (definida pelo usuario)
 ```
 
