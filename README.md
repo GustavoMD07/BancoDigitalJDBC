@@ -95,7 +95,7 @@ Abra o projeto na sua IDE favorita e execute o método main() da classe principa
 ```
 JDBC URL: jdbc:h2:mem:testdb
 Usuário: postgres
-Senha: 123240307
+Senha: (definida pelo usuario)
 ```
 
 # 🛡️ Tratamento de Exceções
