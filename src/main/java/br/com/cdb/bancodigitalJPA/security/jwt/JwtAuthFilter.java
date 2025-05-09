@@ -1,6 +1,8 @@
 package br.com.cdb.bancodigitalJPA.security.jwt;
 
 import java.io.IOException;
+
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,8 +32,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 	
 	@Override     //esse método vai ser chamado toda vez que uma requisição for feita
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, 
-			FilterChain filterChain)
+	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, 
+			@NonNull FilterChain filterChain)
 			throws ServletException, IOException {
 		// aqui eu vou pegar o token do header da requisição
 		final String authHeader = request.getHeader("Authorization"); // pega o cabeçalho de autorização
