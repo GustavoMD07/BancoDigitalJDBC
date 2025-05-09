@@ -1,7 +1,6 @@
 package br.com.cdb.bancodigitaljdbc.service;
 
 import java.math.BigDecimal;
-import java.security.SecureRandom;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +19,8 @@ import br.com.cdb.bancodigitaljdbc.exception.QuantidadeExcedidaException;
 import br.com.cdb.bancodigitaljdbc.exception.SaldoInsuficienteException;
 import br.com.cdb.bancodigitaljdbc.exception.StatusNegadoException;
 import br.com.cdb.bancodigitaljdbc.exception.SubClasseDiferenteException;
+import br.com.cdb.bancodigitaljdbc.utils.CartaoUtils;
+import br.com.cdb.bancodigitaljdbc.utils.ContaUtils;
 
 @Service
 public class CartaoService {
@@ -36,12 +37,9 @@ public class CartaoService {
 	@Autowired
 	private SeguroDAO seguroDAO;
 
-	private static final int QntdsNum = 15;
-	private SecureRandom random = new SecureRandom(); // secureRandom pra gerar os números aleatórios
-
 	public Cartao addCartao(Cartao cartao) {
 		Conta contaEncontrada = contaDAO.findById(cartao.getContaId()).orElseThrow(() -> 
-		new ObjetoNuloException("Conta não encontrada"));;
+		new ObjetoNuloException(ContaUtils.erroConta));
 
 		if (contaEncontrada.getCartoes().size() >= 2) {
 			throw new QuantidadeExcedidaException("O cliente já possui duas contas");
@@ -63,7 +61,7 @@ public class CartaoService {
 		List<Cartao> lista = cartaoDAO.findAll();
         for (Cartao c : lista) {
             Conta conta = contaDAO.findById(c.getContaId())
-                .orElseThrow(() -> new ObjetoNuloException("Conta não encontrada"));
+                .orElseThrow(() -> new ObjetoNuloException(ContaUtils.erroConta));
             c.setConta(conta);
 
             List<Seguro> seguros = seguroDAO.findByCartaoId(c.getId());
@@ -74,7 +72,7 @@ public class CartaoService {
 
 	public Cartao desativarCartao(Long id, String senha) {
 		Cartao cartao = cartaoDAO.findById(id)
-				.orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
+				.orElseThrow(() -> new ObjetoNuloException(CartaoUtils.erroCartao));
 
 		String senhaEncontrada = cartao.getSenha();
 		
@@ -107,7 +105,7 @@ public class CartaoService {
 	public Cartao ativarCartao(Long id, String senha) {
 
 		Cartao cartao = cartaoDAO.findById(id)
-				.orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
+				.orElseThrow(() -> new ObjetoNuloException(CartaoUtils.erroCartao));
 		
 		String senhaEncontrada = cartao.getSenha();
 		
@@ -129,7 +127,7 @@ public class CartaoService {
 
 	public void realizarPagamento(Long id, BigDecimal valor, String senha) {
 		Cartao cartao = cartaoDAO.findById(id)
-				.orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
+				.orElseThrow(() -> new ObjetoNuloException(CartaoUtils.erroCartao));
 
 		String senhaEncontrada = cartao.getSenha();
 		
@@ -165,7 +163,7 @@ public class CartaoService {
 
 			if (cartaoC.getFatura().add(valor).compareTo(cartaoC.getLimiteCredito()) > 0 ) {
 				throw new SaldoInsuficienteException(
-						"Valor ultrapassa o limite de crédito, pague a fatura ou aumente o limite!");
+				"Valor ultrapassa o limite de crédito, pague a fatura ou aumente o limite!");
 			}
 
 			cartaoC.setFatura(cartaoC.getFatura().add(valor));
@@ -177,7 +175,7 @@ public class CartaoService {
 	public void pagarFatura(Long id, BigDecimal valor) {
 
 		Cartao cartao = cartaoDAO.findById(id)
-				.orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
+				.orElseThrow(() -> new ObjetoNuloException(CartaoUtils.erroCartao));
 
 		Conta conta = cartao.getConta();
 		SaldoMoeda saldo = saldoMoedaDAO.findByMoedaAndContaId("BRL", conta.getId()).orElseThrow(() -> 
@@ -215,9 +213,9 @@ public class CartaoService {
 
 	public Cartao buscarCartaoPorId(Long id) {
 		 Cartao c = cartaoDAO.findById(id)
-		            .orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
+		            .orElseThrow(() -> new ObjetoNuloException(CartaoUtils.erroCartao));
 		        Conta conta = contaDAO.findById(c.getContaId())
-		            .orElseThrow(() -> new ObjetoNuloException("Conta não encontrada"));
+		            .orElseThrow(() -> new ObjetoNuloException(ContaUtils.erroConta));
 		        c.setConta(conta);
 
 		        List<Seguro> seguros = seguroDAO.findByCartaoId(c.getId());
@@ -228,7 +226,7 @@ public class CartaoService {
 	public void alterarLimiteDiario(Long id, BigDecimal novoLimite) {
 
 		Cartao cartao = cartaoDAO.findById(id)
-				.orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
+				.orElseThrow(() -> new ObjetoNuloException(CartaoUtils.erroCartao));
 
 		if (!cartao.isStatus()) {
 			throw new StatusNegadoException("Seu cartão está desativado, ative-o para continuar");
@@ -254,7 +252,7 @@ public class CartaoService {
 		// aqui eu verifico se o limite é maior que 0 e menor que 10.000,00
 
 		Cartao cartao = cartaoDAO.findById(id)
-				.orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
+				.orElseThrow(() -> new ObjetoNuloException(CartaoUtils.erroCartao));
 
 		if (!cartao.isStatus()) {
 			throw new StatusNegadoException("Seu cartão está desativado, ative-o para continuar");
@@ -271,7 +269,7 @@ public class CartaoService {
 	public BigDecimal verificarFatura(Long id) {
 
 		Cartao cartao = cartaoDAO.findById(id)
-				.orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
+				.orElseThrow(() -> new ObjetoNuloException(CartaoUtils.erroCartao));
 
 		if (cartao instanceof CartaoDebito) {
 			throw new SubClasseDiferenteException("Cartão de Débito não possuí fatura!");
@@ -284,7 +282,7 @@ public class CartaoService {
 	public void alterarSenha(Long id, String senhaAntiga, String novaSenha) {
 
 		Cartao cartao = cartaoDAO.findById(id)
-				.orElseThrow(() -> new ObjetoNuloException("Cartão não encontrado"));
+				.orElseThrow(() -> new ObjetoNuloException(CartaoUtils.erroCartao));
 
 		if (!cartao.isStatus()) {
 			throw new StatusNegadoException("Seu cartão está desativado, ative-o para continuar");
@@ -332,40 +330,15 @@ public class CartaoService {
 	}
 
 	public String gerarNumeroCartao() {
-		String num = "";
-
-		for (int i = 0; i < QntdsNum; i++) {
-			num += random.nextInt(9);
-		}
 		
-		int digitoVerificador = calcularDigitoVerificador(num);
-		return num + digitoVerificador;
+		return CartaoUtils.gerarNumeroCartao();
 	}
-
 											// Algoritmo de Luhn
 
-	private int calcularDigitoVerificador(String num) {
-		int soma = 0;
-		boolean dobrar = true; // é tipo pegar os ingredientes e somar eles pra ver se tem o suficiente
-		// para fazer um bolo...???
-
-		for (int i = num.length() - 1; i >= 0; i--) {
-			int numero = Character.getNumericValue(num.charAt(i));
-
-			if (dobrar) {
-				numero *= 2;
-				if (numero > 9) {
-					numero -= 9;
-				}
-			}
-			soma += numero;
-			dobrar = !dobrar; // ele inverte o valor do dobrar, ai ele automaticamente vai dobrar um sim,
-								// outro não
-			// ele começa true, então ele já começa dobrando o último número
-		}
-		return (10 - (soma % 10));
-		// pega o resto da divisão da soma no (soma % 10) e o primeiro 10 subtrai pra
-		// ficar o número certo
+	public int calcularDigitoVerificador(String num) {
+		
+		return CartaoUtils.calcularDigitoVerificador(num);
+		
 	}
 	// pegar 15 números gerados e você vai do último número até o primeiro, a cada
 	// digito, dobra um

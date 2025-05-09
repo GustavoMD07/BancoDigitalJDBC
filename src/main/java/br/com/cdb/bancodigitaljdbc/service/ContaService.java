@@ -111,13 +111,13 @@ public class ContaService {
 
 	public List<Conta> listarContas() {
 		List<Conta> todas = contaDAO.findAll();
-        for (Conta c : todas) {
-            Cliente cli = clienteDAO.findById(c.getClienteId())
-                .orElseThrow(() -> new ObjetoNuloException("Cliente não encontrado"));
-            c.setCliente(cli);
-            c.setSaldos(saldoMoedaDAO.findByContaId(c.getId()));
-        }
-        return todas;
+		for (Conta c : todas) {
+			Cliente cli = clienteDAO.findById(c.getClienteId())
+					.orElseThrow(() -> new ObjetoNuloException("Cliente não encontrado"));
+			c.setCliente(cli);
+			c.setSaldos(saldoMoedaDAO.findByContaId(c.getId()));
+		}
+		return todas;
 	}
 
 	public List<SaldoResponse> verificarSaldos(Long id) {

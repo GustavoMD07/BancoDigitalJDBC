@@ -5,10 +5,7 @@ import java.time.Period;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
 import br.com.cdb.bancodigitaljdbc.DAO.ClienteDAO;
 import br.com.cdb.bancodigitaljdbc.DAO.ContaDAO;
 import br.com.cdb.bancodigitaljdbc.DTO.ClienteDTO;
@@ -18,11 +15,11 @@ import br.com.cdb.bancodigitaljdbc.entity.ClienteComum;
 import br.com.cdb.bancodigitaljdbc.entity.ClientePremium;
 import br.com.cdb.bancodigitaljdbc.entity.ClienteSuper;
 import br.com.cdb.bancodigitaljdbc.entity.Conta;
-import br.com.cdb.bancodigitaljdbc.exception.ApiBloqueadaException;
 import br.com.cdb.bancodigitaljdbc.exception.CpfDuplicadoException;
 import br.com.cdb.bancodigitaljdbc.exception.IdadeInsuficienteException;
 import br.com.cdb.bancodigitaljdbc.exception.ObjetoNuloException;
 import br.com.cdb.bancodigitaljdbc.exception.SubClasseDiferenteException;
+import br.com.cdb.bancodigitaljdbc.utils.ClienteUtils;
 
 @Service
 public class ClienteService {
@@ -34,11 +31,6 @@ public class ClienteService {
 	
 	@Autowired
 	private ContaDAO contaDAO;
-	
-	private final RestTemplate restTemplate = new RestTemplate();
-	
-	// RestTemplate é um "navegador", eu uso ele pra poder me comunicar com alguma
-	// API que seja externa ao meu sistemaz
 
 	// aqui então você precisa validar os campos primeiro
 	// geralmente você usa o próprio Objeto, é uma boa prática:)
@@ -137,8 +129,7 @@ public class ClienteService {
 	        cliente.setBairro(end.getBairro());
 	        cliente.setCidade(end.getCidade());
 	        cliente.setEstado(end.getEstado());
-
-	        // 4) Atualiza no banco
+	        
 	        return clienteDAO.update(cliente);
 	 }
 
@@ -159,23 +150,7 @@ public class ClienteService {
 	}
 
 	private EnderecoResponse buscarEnderecoPorCep(String cep) {
-		try {
-			String url = "https://brasilapi.com.br/api/cep/v1/" + cep;
-			ResponseEntity<EnderecoResponse> response = restTemplate.getForEntity(url, EnderecoResponse.class);
-			// pego o corpo do EnderecoResponse, a url é onde eu quero pegar os dados pra
-			// uso o restTemplate pra ele me trazer a resposta convertida pro tipo de EnderecoResponse
-
-			if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-				return response.getBody();
-				// dos HTTP, se o retorno começa com 2, eu posso continuar, então to verificando
-				// se eu consigo
-				// também verifico se o corpo é nulo, se for, tem algo errado
-			} else {
-				throw new ObjetoNuloException("CEP inválido");
-			}
-		} catch (Exception e) {
-			throw new ApiBloqueadaException("Erro ao integrar com a APi" + e.getMessage());
-		}
+		return ClienteUtils.buscarEndereco(cep);
 	}
 
 }

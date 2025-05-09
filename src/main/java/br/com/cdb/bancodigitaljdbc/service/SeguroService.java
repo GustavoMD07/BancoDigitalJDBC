@@ -1,12 +1,10 @@
 package br.com.cdb.bancodigitaljdbc.service;
 
 import java.math.BigDecimal;
-import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import br.com.cdb.bancodigitaljdbc.DAO.CartaoDAO;
 import br.com.cdb.bancodigitaljdbc.DAO.ContaDAO;
 import br.com.cdb.bancodigitaljdbc.DAO.SeguroDAO;
@@ -19,12 +17,10 @@ import br.com.cdb.bancodigitaljdbc.entity.Conta;
 import br.com.cdb.bancodigitaljdbc.entity.Seguro;
 import br.com.cdb.bancodigitaljdbc.exception.ObjetoNuloException;
 import br.com.cdb.bancodigitaljdbc.exception.SubClasseDiferenteException;
+import br.com.cdb.bancodigitaljdbc.utils.SeguroUtils;
 
 @Service
 public class SeguroService {
-
-	private SecureRandom random = new SecureRandom();
-	private static final int qntd = 10;
 	
 	@Autowired
 	private SeguroDAO seguroDAO;
@@ -109,12 +105,6 @@ public class SeguroService {
 
 	private String gerarNumApolice() {
 	    
-		String num = "";
-		
-		for(int i = 0; i < qntd; i++) {
-			num += random.nextInt(9);
-		}
-		
-		return "AP-" + num;
+		return SeguroUtils.gerarNumApolice();
 	}
 }
