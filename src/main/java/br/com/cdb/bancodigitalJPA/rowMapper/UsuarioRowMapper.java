@@ -3,6 +3,8 @@ package br.com.cdb.bancodigitalJPA.rowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.lang.NonNull;
+
 import br.com.cdb.bancodigitalJPA.security.model.Role;
 import br.com.cdb.bancodigitalJPA.security.model.Usuario;
 
@@ -15,7 +17,7 @@ public class UsuarioRowMapper implements RowMapper<Usuario> {
 	//linha de dados = ResultSet
 	
 	@Override
-	public Usuario mapRow(ResultSet rs, int rowNum) throws SQLException {
+	public Usuario mapRow(@NonNull ResultSet rs, int rowNum) throws SQLException {
 		Usuario usuario = new Usuario();
 		usuario.setId(rs.getLong("id"));
 		usuario.setNome(rs.getString("nome"));

@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import br.com.cdb.bancodigitalJPA.entity.Cliente;
@@ -16,7 +17,7 @@ import br.com.cdb.bancodigitalJPA.exception.SubClasseDiferenteException;
 public class ClienteRowMapper implements RowMapper<Cliente> {
 
 	@Override
-	public Cliente mapRow(ResultSet rs, int rowNum) throws SQLException {
+	public Cliente mapRow(@NonNull ResultSet rs, int rowNum) throws SQLException {
 
 		String tipo = rs.getString("tipo_de_cliente");
 

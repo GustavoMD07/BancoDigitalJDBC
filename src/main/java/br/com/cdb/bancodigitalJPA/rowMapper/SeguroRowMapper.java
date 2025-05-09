@@ -3,6 +3,7 @@ package br.com.cdb.bancodigitalJPA.rowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import br.com.cdb.bancodigitalJPA.entity.Seguro;
 
@@ -10,7 +11,7 @@ import br.com.cdb.bancodigitalJPA.entity.Seguro;
 public class SeguroRowMapper implements RowMapper<Seguro> {
 	
 	@Override
-	public Seguro mapRow(ResultSet rs, int rowNum) throws SQLException {
+	public Seguro mapRow(@NonNull ResultSet rs, int rowNum) throws SQLException {
 		
 		Seguro seguro = new Seguro();
 		seguro.setId(rs.getLong("id"));

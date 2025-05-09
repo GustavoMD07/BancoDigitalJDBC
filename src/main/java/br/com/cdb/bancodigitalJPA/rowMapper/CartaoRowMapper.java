@@ -3,6 +3,7 @@ package br.com.cdb.bancodigitalJPA.rowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import br.com.cdb.bancodigitalJPA.entity.Cartao;
 import br.com.cdb.bancodigitalJPA.entity.CartaoCredito;
@@ -13,7 +14,7 @@ import br.com.cdb.bancodigitalJPA.exception.SubClasseDiferenteException;
 public class CartaoRowMapper implements RowMapper<Cartao>{
 	
 	@Override
-	public Cartao mapRow(ResultSet rs, int rowNum) throws SQLException {
+	public Cartao mapRow(@NonNull ResultSet rs, int rowNum) throws SQLException {
 		
 		String tipo = rs.getString("tipo_de_cartao");
 		
