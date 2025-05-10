@@ -9,6 +9,8 @@ import br.com.cdb.bancodigitaljdbc.exception.ObjetoNuloException;
 public class ClienteUtils {
 
 	private static final RestTemplate restTemplate = new RestTemplate();
+	
+	public static final String erroCliente = "Cliente não encontrado";
 
 	public static EnderecoResponse buscarEndereco(String cep) {
 		//static por que só tem um método mesmo, facilita em vez de instanciar

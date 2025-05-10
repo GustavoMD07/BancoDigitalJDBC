@@ -46,7 +46,7 @@ public class SeguroService {
 		seguro.setCartao(cartaoCredito);
 		seguro.setTipoDeSeguro(seguroDto.getTipoDeSeguro());
 		seguro.setDataContratacao(LocalDate.now());
-		seguro.setNumeroApolice(gerarNumApolice());
+		seguro.setNumeroApolice(SeguroUtils.gerarNumApolice());
 		
 		Conta conta = contaDAO.findById(cartao.getConta().getId())
 			    .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
@@ -103,8 +103,4 @@ public class SeguroService {
 	    seguroDAO.delete(id);
 	}
 
-	private String gerarNumApolice() {
-	    
-		return SeguroUtils.gerarNumApolice();
-	}
 }

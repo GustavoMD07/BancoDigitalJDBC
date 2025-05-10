@@ -69,7 +69,7 @@ public class ClienteService {
 		    throw new CpfDuplicadoException("Já existe um cliente com este CPF cadastrado.");
 		}
 
-		EnderecoResponse endereco = buscarEnderecoPorCep(clienteDto.getCep());
+		EnderecoResponse endereco = ClienteUtils.buscarEndereco(clienteDto.getCep());
 
 		cliente.setCep(endereco.getCep());
 		cliente.setCidade(endereco.getCidade());
@@ -123,7 +123,7 @@ public class ClienteService {
 	        cliente.setCpf(dto.getCPF());
 	        cliente.setDataNascimento(dto.getDataNascimento());
 
-	        EnderecoResponse end = buscarEnderecoPorCep(dto.getCep());
+	        EnderecoResponse end = ClienteUtils.buscarEndereco(dto.getCep());
 	        cliente.setCep(end.getCep());
 	        cliente.setRua(end.getRua());
 	        cliente.setBairro(end.getBairro());
@@ -147,10 +147,6 @@ public class ClienteService {
 		List<Conta> contas = contaDAO.findByClienteId(c.getId());
 		c.setContas(contas);
 		return c;
-	}
-
-	private EnderecoResponse buscarEnderecoPorCep(String cep) {
-		return ClienteUtils.buscarEndereco(cep);
 	}
 
 }

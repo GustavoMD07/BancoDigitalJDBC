@@ -20,6 +20,7 @@ import br.com.cdb.bancodigitaljdbc.entity.CartaoCredito;
 import br.com.cdb.bancodigitaljdbc.entity.CartaoDebito;
 import br.com.cdb.bancodigitaljdbc.exception.ListaVaziaException;
 import br.com.cdb.bancodigitaljdbc.service.CartaoService;
+import br.com.cdb.bancodigitaljdbc.utils.CartaoUtils;
 import jakarta.validation.Valid;
 
 @Validated
@@ -48,7 +49,7 @@ public class CartaoController {
 		
 		cartao.setContaId(cartaoDto.getContaId());
 		cartao.setSenha(cartaoDto.getSenha());
-		cartao.setNumCartao(cartaoService.gerarNumeroCartao());
+		cartao.setNumCartao(CartaoUtils.gerarNumeroCartao());
 		cartao.setStatus(true);
 		cartaoService.addCartao(cartao);
 		return new ResponseEntity<>("Cartão do tipo " + cartaoDto.getTipoDeCartao() + " adicionado com sucesso",

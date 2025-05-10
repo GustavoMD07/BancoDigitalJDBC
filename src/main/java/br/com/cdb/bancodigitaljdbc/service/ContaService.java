@@ -4,12 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import br.com.cdb.bancodigitaljdbc.DAO.CartaoDAO;
 import br.com.cdb.bancodigitaljdbc.DAO.ClienteDAO;
 import br.com.cdb.bancodigitaljdbc.DAO.ContaDAO;
@@ -23,12 +18,13 @@ import br.com.cdb.bancodigitaljdbc.entity.Conta;
 import br.com.cdb.bancodigitaljdbc.entity.ContaCorrente;
 import br.com.cdb.bancodigitaljdbc.entity.ContaPoupanca;
 import br.com.cdb.bancodigitaljdbc.entity.SaldoMoeda;
-import br.com.cdb.bancodigitaljdbc.exception.ApiBloqueadaException;
 import br.com.cdb.bancodigitaljdbc.exception.ObjetoNuloException;
 import br.com.cdb.bancodigitaljdbc.exception.QuantidadeExcedidaException;
 import br.com.cdb.bancodigitaljdbc.exception.SaldoInsuficienteException;
 import br.com.cdb.bancodigitaljdbc.exception.StatusNegadoException;
 import br.com.cdb.bancodigitaljdbc.exception.SubClasseDiferenteException;
+import br.com.cdb.bancodigitaljdbc.utils.ClienteUtils;
+import br.com.cdb.bancodigitaljdbc.utils.ContaUtils;
 
 @Service
 public class ContaService {
@@ -48,15 +44,12 @@ public class ContaService {
 	@Autowired
 	private SaldoMoedaDAO saldoMoedaDAO;
 
-	@Autowired
-	private RestTemplate restTemplate;
-
 	// a conta puxa o cliente, e o cliente puxa o ID
 
 	public Conta addConta(ContaDTO dto) {
 
 		Cliente cliente = clienteDAO.findById(dto.getClienteId())
-				.orElseThrow(() -> new ObjetoNuloException("Cliente não encontrado"));
+				.orElseThrow(() -> new ObjetoNuloException(ClienteUtils.erroCliente));
 		cliente.setContas(contaDAO.findByClienteId(cliente.getId()));
 
 		Conta conta;
@@ -100,9 +93,9 @@ public class ContaService {
 	}
 
 	public Conta buscarContaPorId(Long id) {
-		Conta c = contaDAO.findById(id).orElseThrow(() -> new ObjetoNuloException("Conta não encontrada"));
+		Conta c = contaDAO.findById(id).orElseThrow(() -> new ObjetoNuloException(ContaUtils.erroConta));
 		Cliente cliente = clienteDAO.findById(c.getClienteId())
-				.orElseThrow(() -> new ObjetoNuloException("Cliente não encontrado"));
+				.orElseThrow(() -> new ObjetoNuloException(ClienteUtils.erroCliente));
 		c.setCliente(cliente);
 
 		c.setSaldos(saldoMoedaDAO.findByContaId(c.getId()));
@@ -113,7 +106,7 @@ public class ContaService {
 		List<Conta> todas = contaDAO.findAll();
 		for (Conta c : todas) {
 			Cliente cli = clienteDAO.findById(c.getClienteId())
-					.orElseThrow(() -> new ObjetoNuloException("Cliente não encontrado"));
+					.orElseThrow(() -> new ObjetoNuloException(ClienteUtils.erroCliente));
 			c.setCliente(cli);
 			c.setSaldos(saldoMoedaDAO.findByContaId(c.getId()));
 		}
@@ -136,13 +129,13 @@ public class ContaService {
 		Conta origem = buscarContaPorId(origemid);
 		Conta destino = buscarContaPorId(destinoid);
 
-		validarMoeda(moedaOrigem);
-		validarMoeda(moedaDestino);
+		ContaUtils.validarMoeda(moedaOrigem);
+		ContaUtils.validarMoeda(moedaDestino);
 
 		SaldoMoeda saldoOrigem = saldoMoedaDAO.findByMoedaAndContaId(moedaOrigem, origemid)
 				.orElseThrow(() -> new ObjetoNuloException("Saldo não encontrado para a conta de origem"));
 
-		BigDecimal valorConvertido = converterMoeda(valor, moedaOrigem, moedaDestino);
+		BigDecimal valorConvertido = ContaUtils.converterMoeda(valor, moedaOrigem, moedaDestino);
 
 		SaldoMoeda saldoDestino = saldoMoedaDAO.findByMoedaAndContaId(moedaDestino, destinoid).orElseGet(() -> {
 			SaldoMoeda novo = new SaldoMoeda();
@@ -164,7 +157,7 @@ public class ContaService {
 		}
 
 		saldoOrigem.setSaldo(saldoOrigem.getSaldo().subtract(valor)); // subtrai o valor do saldo de origem usando
-																		// BigDecimal;
+																		
 		saldoDestino.setSaldo(saldoDestino.getSaldo().add(valorConvertido));
 
 		saldoMoedaDAO.update(saldoOrigem);
@@ -183,7 +176,7 @@ public class ContaService {
 			throw new StatusNegadoException("Não é possível fazer o pix de um valor negativo ou zero");
 		}
 
-		validarMoeda(moedaUsada);
+		ContaUtils.validarMoeda(moedaUsada);
 
 		SaldoMoeda saldo = saldoMoedaDAO.findByMoedaAndContaId(moedaUsada, id)
 				.orElseThrow(() -> new ObjetoNuloException("Saldo não encontrado para a conta de origem"));
@@ -198,8 +191,8 @@ public class ContaService {
 	}
 
 	public void deposito(Long id, BigDecimal valor, String moedaOrigem, String moedaDestino) {
-		validarMoeda(moedaDestino);
-		validarMoeda(moedaOrigem);
+		ContaUtils.validarMoeda(moedaDestino);
+		ContaUtils.validarMoeda(moedaOrigem);
 		Conta conta = buscarContaPorId(id);
 
 		if (valor.compareTo(BigDecimal.ZERO) < 0) {
@@ -209,7 +202,7 @@ public class ContaService {
 		BigDecimal valorConvertido = valor;
 
 		if (!moedaOrigem.equals(moedaDestino)) {
-			valorConvertido = converterMoeda(valor, moedaOrigem, moedaDestino);
+			valorConvertido = ContaUtils.converterMoeda(valor, moedaOrigem, moedaDestino);
 		}
 
 		SaldoMoeda saldo = saldoMoedaDAO.findByMoedaAndContaId(moedaDestino, id).orElseGet(() -> {
@@ -225,10 +218,10 @@ public class ContaService {
 	}
 
 	public void saque(Long id, BigDecimal valor, String moedaUsada, String moedaSacada) {
-		validarMoeda(moedaUsada);
-		validarMoeda(moedaSacada);
+		ContaUtils.validarMoeda(moedaUsada);
+		ContaUtils.validarMoeda(moedaSacada);
 
-		BigDecimal valorConvertido = converterMoeda(valor, moedaUsada, moedaSacada);
+		BigDecimal valorConvertido = ContaUtils.converterMoeda(valor, moedaUsada, moedaSacada);
 
 		SaldoMoeda saldo = saldoMoedaDAO.findByMoedaAndContaId(moedaSacada, id)
 				.orElseThrow(() -> new ObjetoNuloException("Saldo não encontrado "));
@@ -286,43 +279,6 @@ public class ContaService {
 		BigDecimal rendimento = saldoBRL.getSaldo().multiply(BigDecimal.ONE.add(taxa));
 		saldoBRL.setSaldo(rendimento);
 		saldoMoedaDAO.update(saldoBRL);
-	}
-
-	private void validarMoeda(String moeda) {
-
-		if (moeda == null) {
-			throw new ObjetoNuloException("Moeda não pode ser nula");
-		}
-
-		if (!moeda.equals("BRL") && !moeda.equals("USD") && !moeda.equals("EUR")) {
-			throw new StatusNegadoException("Moeda inválida. Nesse momento trabalhamos apenas com: BRL, USD e EUR.");
-		}
-	}
-
-	private BigDecimal converterMoeda(BigDecimal valor, String moedaOrigem, String moedaDestino) {
-
-		if (moedaOrigem.equals(moedaDestino)) {
-			return valor;
-		} // se a moeda for a mesma, tudo igual
-
-		String url = "https://economia.awesomeapi.com.br/json/last/" + moedaOrigem + "-" + moedaDestino;
-		ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-
-		if (!response.getStatusCode().is2xxSuccessful()) {
-			throw new ApiBloqueadaException("Erro ao converter moeda");
-		} // se não retornar o início do HTTPS.value
-
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			JsonNode root = mapper.readTree(response.getBody());
-			double taxa = Double.parseDouble(root.path(moedaOrigem + moedaDestino).path("high").asText());
-			return valor.multiply(BigDecimal.valueOf(taxa));
-		} catch (Exception e) {
-			throw new ApiBloqueadaException("Erro ao converter moeda.");
-		}
-		// mesma coisa, transforma o JSON em um objeto mapper, ai eu navego por ele com
-		// o JsonNode, pego tudo que vier da requisição
-		// depois eu pego a parte do high e retorno ela como Double
 	}
 
 	private void inicializarSaldos(Conta conta) {

@@ -328,22 +328,4 @@ public class CartaoService {
 		cartao.setSenha(novaSenha);
 		cartaoDAO.update(cartao);
 	}
-
-	public String gerarNumeroCartao() {
-		
-		return CartaoUtils.gerarNumeroCartao();
-	}
-											// Algoritmo de Luhn
-
-	public int calcularDigitoVerificador(String num) {
-		
-		return CartaoUtils.calcularDigitoVerificador(num);
-		
-	}
-	// pegar 15 números gerados e você vai do último número até o primeiro, a cada
-	// digito, dobra um
-	// e não dobra o próximo, se o número dobrado for maior que 9, subtrai 9 dele
-	// soma o número (independente se for subtraido ou não), e repete esse ciclo
-	// o último digito é a quantidade que falta até entrar na casa do 0
-
 }
