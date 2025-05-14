@@ -3,6 +3,8 @@ package br.com.cdb.bancodigitaljdbc.service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import br.com.cdb.bancodigitaljdbc.DAO.CartaoDAO;
@@ -30,7 +32,8 @@ public class SeguroService {
 	
 	@Autowired
 	private ContaDAO contaDAO;
-
+	
+	private static final Logger logger = LoggerFactory.getLogger(SeguroService.class);
 	public SeguroResponse contratarSeguro(SeguroDTO seguroDto) {
 		
 		Cartao cartao = cartaoDAO.findById(seguroDto.getCartaoId()).orElseThrow(() ->
@@ -75,6 +78,7 @@ public class SeguroService {
 		
 		seguro.setAtivo(true);
 		seguroDAO.save(seguro);
+		logger.info("Seguro contratado com sucesso - {}", seguro.getNumeroApolice());
 		return SeguroResponse.fromEntity(seguro);
 		 //aqui eu salvo o seguro Entity mas retorno o Response, pro usuário conseguir visualizar as informações
 	}

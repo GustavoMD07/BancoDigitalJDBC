@@ -2,6 +2,8 @@ package br.com.cdb.bancodigitaljdbc.service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import br.com.cdb.bancodigitaljdbc.DAO.CartaoDAO;
@@ -36,6 +38,8 @@ public class CartaoService {
 	
 	@Autowired
 	private SeguroDAO seguroDAO;
+	
+	private static final Logger logger = LoggerFactory.getLogger(CartaoService.class);
 
 	public Cartao addCartao(Cartao cartao) {
 		Conta contaEncontrada = contaDAO.findById(cartao.getContaId()).orElseThrow(() -> 
@@ -263,6 +267,7 @@ public class CartaoService {
 		}
 		CartaoCredito cartaoC = (CartaoCredito) cartao;
 		cartaoC.setLimiteCredito(novoLimite);
+		logger.info("Limite de crédito do cartão{} alterado com sucesso", cartaoC.getId());
 		cartaoDAO.update(cartao);
 	}
 

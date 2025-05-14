@@ -3,6 +3,9 @@ package br.com.cdb.bancodigitaljdbc.service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import br.com.cdb.bancodigitaljdbc.DAO.CartaoDAO;
@@ -44,7 +47,7 @@ public class ContaService {
 	@Autowired
 	private SaldoMoedaDAO saldoMoedaDAO;
 
-	// a conta puxa o cliente, e o cliente puxa o ID
+	private static final Logger logger = LoggerFactory.getLogger(ContaService.class);
 
 	public Conta addConta(ContaDTO dto) {
 
@@ -262,6 +265,7 @@ public class ContaService {
 		Conta conta = buscarContaPorId(id);
 
 		if (conta instanceof ContaCorrente) {
+			logger.warn("Sub-classes diferentes taxa de rendimento disponível apenas para contas poupanças");
 			throw new SubClasseDiferenteException("Rendimento só pode ser aplicado a contas poupanças");
 		}
 
