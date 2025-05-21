@@ -28,8 +28,8 @@ public class UsuarioService implements UserDetailsService { // ele é responsáv
 		return usuarioDAO.findByEmail(email).isPresent();
 	}
 	
-	public Usuario save(Usuario usuario) {
-	    return usuarioDAO.save(usuario);
+	public void save(Usuario usuario) {
+	     usuarioDAO.save(usuario);
 	}
 
 }

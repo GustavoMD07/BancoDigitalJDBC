@@ -16,16 +16,13 @@ public class UsuarioDAO {
 	
 	private final JdbcTemplate jdbcTemplate;
 	
-
-	public Usuario save(Usuario usuario) {
+	public void save(Usuario usuario) {
 		
-		String SQL = "INSERT INTO usuario (nome, email, senha, role) "
-		+ "VALUES (?,?,?, ?)";
+		String SQL = "CALL inserri_usuario_v1 (?,?,?,?)";
 		
 		jdbcTemplate.update(SQL, usuario.getNome(), usuario.getEmail(),
 			usuario.getSenha(), usuario.getRole().name());
 		
-		return usuario;
 	}
 	//query é só um comando SQL
 	public Optional<Usuario> findByEmail(String email) {
