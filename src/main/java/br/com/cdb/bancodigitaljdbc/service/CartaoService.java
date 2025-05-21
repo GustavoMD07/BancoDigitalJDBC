@@ -46,7 +46,7 @@ public class CartaoService {
 		new ObjetoNuloException(ContaUtils.erroConta));
 
 		if (contaEncontrada.getCartoes().size() >= 2) {
-			throw new QuantidadeExcedidaException("O cliente já possui duas contas");
+			throw new QuantidadeExcedidaException("O cliente já possui dois cartões!");
 		}
 
 		cartao.setConta(contaEncontrada);
