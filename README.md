@@ -15,7 +15,8 @@ Esse projeto é uma API REST de um banco Digital, desenvolvido em Java. O objeti
 ✅ Saldo de conta em diferentes moedas (BRL, USD, EUR)  
 ✅ Conversão monetária automática ao realizar ações  
 ✅ Persistência em banco de dados (PostgreSQL)  
-✅ Arquitetura baseada em camadas (Controller, Service, DAO, etc.)
+✅ Arquitetura baseada em camadas (Controller, Service, DAO, etc.)  
+✅ Logs informativos para o Dev  
 
 # 🛠️ Tecnologias Utilizadas
 - **Java 21** - Versão do Java utilizada para o projeto
@@ -27,6 +28,7 @@ Esse projeto é uma API REST de um banco Digital, desenvolvido em Java. O objeti
 - **Maven** – Gerenciador de dependências e build  
 - **Postman** – Para testes dos endpoints REST
 - **SpringSecurity** - Segurança do Projeto com token JWT
+- **SLF4J + Logback** - Framework de Logs para entender o fluxo do código 
 
 # 💡 Diferenciais
 O projeto faz integração com duas API externas que potencializam o uso da APIREST  
