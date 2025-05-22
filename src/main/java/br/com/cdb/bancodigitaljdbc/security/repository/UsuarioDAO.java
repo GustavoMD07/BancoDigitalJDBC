@@ -18,7 +18,7 @@ public class UsuarioDAO {
 	
 	public void save(Usuario usuario) {
 		
-		String SQL = "CALL inserri_usuario_v1 (?,?,?,?)";
+		String SQL = "CALL inserir_usuario_v1 (?,?,?,?)";
 		
 		jdbcTemplate.update(SQL, usuario.getNome(), usuario.getEmail(),
 			usuario.getSenha(), usuario.getRole().name());

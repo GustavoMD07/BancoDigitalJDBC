@@ -83,6 +83,7 @@ public class ClienteService {
 		cliente.setBairro(endereco.getBairro());
 		cliente.setRua(endereco.getRua());
 
+		logger.info("Cliente cadastrado com sucesso");
 		return clienteDAO.save(cliente);
 		// esse .save é um método do próprio JPA, por isso ele facilita TANTO a vida do
 		// programador

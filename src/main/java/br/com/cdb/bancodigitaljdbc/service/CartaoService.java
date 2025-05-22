@@ -156,6 +156,7 @@ public class CartaoService {
 			CartaoDebito cartaoD = (CartaoDebito) cartao;
 
 			if (cartaoD.getLimiteDiario().compareTo(valor) < 0) {
+				logger.error("o Limite diário deve ser respeitado, redefina o limite");
 				throw new SaldoInsuficienteException("O valor excede o limite diário!");
 			}
 
@@ -187,6 +188,7 @@ public class CartaoService {
 		
 
 		if (cartao instanceof CartaoDebito) {
+			logger.info("Cartão de débito não possuí fatura");
 			throw new SubClasseDiferenteException("Cartão de débito não possuí fatura, fique tranquilo");
 		}
 
@@ -237,6 +239,7 @@ public class CartaoService {
 		}
 
 		if (cartao instanceof CartaoCredito) {
+			logger.warn("Cartão de crédito não tem limite diário!.");
 			throw new SubClasseDiferenteException("Opção indisponível para cartão de crédito");
 		}
 		CartaoDebito cartaoD = (CartaoDebito) cartao;
@@ -267,7 +270,7 @@ public class CartaoService {
 		}
 		CartaoCredito cartaoC = (CartaoCredito) cartao;
 		cartaoC.setLimiteCredito(novoLimite);
-		logger.info("Limite de crédito do cartão{} alterado com sucesso", cartaoC.getId());
+		logger.info("Limite de crédito do cartão de id {} alterado com sucesso", cartaoC.getId());
 		cartaoDAO.update(cartao);
 	}
 

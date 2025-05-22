@@ -105,6 +105,7 @@ public class SeguroService {
 	        .orElseThrow(() -> new ObjetoNuloException("Seguro não encontrado."));
 	    seguro.setAtivo(false);
 	    seguroDAO.delete(id);
+	    logger.warn("seguro cancelado e excluido do database");
 	}
 
 }

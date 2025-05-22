@@ -19,7 +19,7 @@ public class SaldoMoedaDAO {
 	
 	 // inserir novo saldo
     public void save(SaldoMoeda saldo) {
-        String sql = "INSERT INTO saldo_moeda (moeda, saldo, conta_id) VALUES (?, ?, ?)";
+        String sql = "CALL inserir_saldo_v1 (?, ?, ?)";
         jdbcTemplate.update(sql,
             saldo.getMoeda(),
             saldo.getSaldo(),

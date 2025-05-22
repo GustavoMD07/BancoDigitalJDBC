@@ -1,5 +1,7 @@
 package br.com.cdb.bancodigitaljdbc.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import br.com.cdb.bancodigitaljdbc.DTO.EnderecoResponse;
@@ -11,6 +13,8 @@ public class ClienteUtils {
 	private static final RestTemplate restTemplate = new RestTemplate();
 	
 	public static final String erroCliente = "Cliente não encontrado";
+	
+	private static final Logger logger = LoggerFactory.getLogger(ClienteUtils.class);
 
 	public static EnderecoResponse buscarEndereco(String cep) {
 		//static por que só tem um método mesmo, facilita em vez de instanciar
@@ -30,6 +34,7 @@ public class ClienteUtils {
 				throw new ObjetoNuloException("CEP inválido");
 			}
 		} catch (Exception e) {
+			logger.error("Erro na requisição da API", e);
 			throw new ApiBloqueadaException("Erro ao integrar com a APi" + e.getMessage());
 		}
 	}

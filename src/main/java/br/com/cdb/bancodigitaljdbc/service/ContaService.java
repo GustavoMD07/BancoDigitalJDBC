@@ -75,6 +75,7 @@ public class ContaService {
 
 		List<Cartao> cartoes = cartaoDAO.findByContaId(contaSalva.getId());
 		contaSalva.setCartao(cartoes);
+		logger.info("Conta com o id {} criada", contaSalva.getId());
 		return contaSalva;
 	}
 
@@ -120,6 +121,7 @@ public class ContaService {
 		List<SaldoMoeda> saldos = saldoMoedaDAO.findByContaId(id);
 
 		if (saldos.isEmpty()) {
+			logger.error("uma conta não pode ser inicializada sem saldos, verifique o código");
 			throw new ObjetoNuloException("Nenhum saldo encontrado para esta conta");
 		}
 		// aqui eu uso Stream, pra transformar a lista de SaldoMoeda
@@ -221,6 +223,7 @@ public class ContaService {
 	}
 
 	public void saque(Long id, BigDecimal valor, String moedaUsada, String moedaSacada) {
+		logger.info("Tentando sacar R${} da conta de id {}", valor, id);
 		ContaUtils.validarMoeda(moedaUsada);
 		ContaUtils.validarMoeda(moedaSacada);
 
@@ -242,6 +245,7 @@ public class ContaService {
 		Conta conta = buscarContaPorId(id);
 
 		if (conta instanceof ContaPoupanca) {
+			logger.warn("Sub-classes diferente, contaPoupança não pode ser retirada taxa de manutenção");
 			throw new SubClasseDiferenteException("A taxa de manutenção só pode ser aplicada para contas correntes");
 		}
 

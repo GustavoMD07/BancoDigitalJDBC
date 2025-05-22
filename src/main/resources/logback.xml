@@ -5,9 +5,17 @@
         </encoder>
     </appender>
 
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/app.log</file>
-        <append>true</append>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- padrão de nome: logs/app.2025-05-22.log -->
+            <fileNamePattern>logs/app.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <!-- mantém só os últimos 7 dias -->
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>

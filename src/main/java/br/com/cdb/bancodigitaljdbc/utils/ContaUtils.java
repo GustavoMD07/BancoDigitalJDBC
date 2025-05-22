@@ -2,6 +2,8 @@ package br.com.cdb.bancodigitaljdbc.utils;
 
 import java.math.BigDecimal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,6 +19,8 @@ public class ContaUtils {
 	public static final String erroConta = "Conta não encontrada";
 	
 	private static final RestTemplate restTemplate = new RestTemplate();
+	
+	private static final Logger logger = LoggerFactory.getLogger(ContaUtils.class);
 	
 	public static void validarMoeda(String moeda) {
 
@@ -48,6 +52,7 @@ public class ContaUtils {
 			double taxa = Double.parseDouble(root.path(moedaOrigem + moedaDestino).path("high").asText());
 			return valor.multiply(BigDecimal.valueOf(taxa));
 		} catch (Exception e) {
+			logger.error("Erro ao fazer requisiçaõ com a api {}", url, e);
 			throw new ApiBloqueadaException("Erro ao converter moeda.");
 		}
 		// mesma coisa, transforma o JSON em um objeto mapper, ai eu navego por ele com
