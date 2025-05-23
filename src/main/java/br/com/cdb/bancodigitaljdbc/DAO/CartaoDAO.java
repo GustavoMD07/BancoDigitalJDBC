@@ -21,7 +21,7 @@ public class CartaoDAO {
 	private final ContaDAO contaDAO;
 
 	public void save(Cartao cartao) {
-		String sql = "CALL inserir_cartao_v1 (?, ?, ?, ?, ?, ?, ?, ?)";
+		String sql = "SELECT inserir_cartao_v2 (?, ?, ?, ?, ?, ?, ?, ?)";
 
 		Object fatura = null, limiteDiario = null, limiteCredito = null;
 		// tava bugando, erro de não ser inicializado
@@ -37,8 +37,13 @@ public class CartaoDAO {
 			throw new SubClasseDiferenteException("Tipo de cartão inválido: " + cartao.getTipoDeCartao());
 		}
 
-		jdbcTemplate.update(sql, cartao.getSenha(), cartao.isStatus(), cartao.getNumCartao(), cartao.getTipoDeCartao(),
-				cartao.getConta().getId(), fatura, limiteCredito, limiteDiario);
+		Long id = jdbcTemplate.queryForObject(sql, Long.class,
+				cartao.getSenha(),cartao.isStatus(),
+				cartao.getNumCartao(),cartao.getTipoDeCartao(),
+				cartao.getConta().getId(), fatura,
+				limiteCredito, limiteDiario
+				);
+		cartao.setId(id);
 	}
 
 	public void delete(Long id) {
@@ -93,6 +98,8 @@ public class CartaoDAO {
 
 		Cartao cartao = lista.get(0); // pega o primeiro (e único) que achar com o id
         contaDAO.findById(cartao.getContaId()).ifPresent(cartao::setConta);;
+        
+        
         return Optional.of(cartao);
 	}
 	// queryForObject só me retorna um resultado, o query retorna uma lista

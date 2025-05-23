@@ -56,9 +56,13 @@ public class CartaoService {
 	        cc.setLimiteCredito(contaEncontrada.getCliente().getLimiteCredito());
 	    }
 		
+		cartaoDAO.save(cartao);
+		//só a partir desse momento que o ID existe
+		//depois que eu salvo o object no banco, ai eu pego o ID dele (que só é criado no db)
+		//ai sim, eu posso fazer as operações que eu quiser com o ID
+		
 		List<Seguro> seguros = seguroDAO.findByCartaoId(cartao.getId());
 		cartao.setSeguros(seguros);
-		cartaoDAO.save(cartao);
 		return cartao;
 	}
 

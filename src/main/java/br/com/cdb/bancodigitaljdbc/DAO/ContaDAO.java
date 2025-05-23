@@ -17,7 +17,7 @@ public class ContaDAO {
 	private final ContaRowMapper contaRowMapper;
 	private final ClienteDAO clienteDAO;
 	
-	public Conta save(Conta conta) {
+	public void save(Conta conta) {
 		String sql = "SELECT inserir_conta_v3 (?, ?, ?, ?) ";
 		
 		Long id = jdbcTemplate.queryForObject(sql, Long.class,
@@ -26,8 +26,8 @@ public class ContaDAO {
 		        conta.getCliente().getTaxaRendimento(),
 		        conta.getCliente().getTaxaManutencao()
 		    );
-		    conta.setId(id);
-		    return conta;
+		    conta.setId(id); //o id é gerado pelo banco, então preciso settar em java
+
 	}
 	
 	public void delete(Long id) {
