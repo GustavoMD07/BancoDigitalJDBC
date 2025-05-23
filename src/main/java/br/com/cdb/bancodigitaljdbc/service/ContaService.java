@@ -66,7 +66,9 @@ public class ContaService {
 		if (cliente.getContas().size() >= 2) {
 			throw new QuantidadeExcedidaException("O cliente já possui duas contas");
 		}
-
+		//eu preciso salvar no db antes, por que o ID tá sendo gerado pelo banco
+		//logo, se eu preciso dele posteriormente, eu preciso salvar ele no banco antes
+		//e só depois, poder usar o ID dele, por que assim ele já vai ter sido gerado
 		contaDAO.save(conta);
 		inicializarSaldos(conta);
 
@@ -75,6 +77,7 @@ public class ContaService {
 
 		List<Cartao> cartoes = cartaoDAO.findByContaId(conta.getId());
 		conta.setCartao(cartoes);
+		
 		logger.info("Conta com o id {} criada", conta.getId());
 		return conta;
 	}
@@ -113,7 +116,10 @@ public class ContaService {
 					.orElseThrow(() -> new ObjetoNuloException(ClienteUtils.erroCliente));
 			c.setCliente(cli);
 			c.setSaldos(saldoMoedaDAO.findByContaId(c.getId()));
-		}
+			
+			List<Cartao> cartoes = cartaoDAO.findByContaId(c.getId());
+			c.setCartao(cartoes);
+		}	//isso daqui que faz aparecer no Postman a relação dos dois, o cartão depende da conta
 		return todas;
 	}
 

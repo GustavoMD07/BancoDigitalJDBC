@@ -1,15 +1,20 @@
 package br.com.cdb.bancodigitaljdbc.utils;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.cdb.bancodigitaljdbc.DAO.SaldoMoedaDAO;
+import br.com.cdb.bancodigitaljdbc.entity.Conta;
+import br.com.cdb.bancodigitaljdbc.entity.SaldoMoeda;
 import br.com.cdb.bancodigitaljdbc.exception.ApiBloqueadaException;
 import br.com.cdb.bancodigitaljdbc.exception.ObjetoNuloException;
 import br.com.cdb.bancodigitaljdbc.exception.StatusNegadoException;
@@ -21,6 +26,9 @@ public class ContaUtils {
 	private static final RestTemplate restTemplate = new RestTemplate();
 	
 	private static final Logger logger = LoggerFactory.getLogger(ContaUtils.class);
+	
+	@Autowired
+	private static SaldoMoedaDAO saldoMoedaDAO;
 	
 	public static void validarMoeda(String moeda) {
 
@@ -58,6 +66,18 @@ public class ContaUtils {
 		// mesma coisa, transforma o JSON em um objeto mapper, ai eu navego por ele com
 		// o JsonNode, pego tudo que vier da requisição
 		// depois eu pego a parte do high e retorno ela como Double
+	}
+	
+	public static void inicializarSaldos(Conta conta) {
+		List<String> moedas = List.of("BRL", "USD", "EUR");
+
+		for (String moeda : moedas) {
+			SaldoMoeda saldo = new SaldoMoeda();
+			saldo.setConta(conta);
+			saldo.setMoeda(moeda);
+			saldo.setSaldo(BigDecimal.ZERO);
+			saldoMoedaDAO.save(saldo);
+		} // criando a lista de saldos, por enquanto só esses três mesmo
 	}
 	
 	

@@ -18,8 +18,13 @@ public class SeguroDAO {
 	
 	public void save(Seguro seguro) {
 		String sql = "CALL inserir_seguro_v1(?, ?, ?, ?, ?, ?, ?)";
-		jdbcTemplate.update(sql, seguro.getNumeroApolice(), seguro.getDataContratacao(), seguro.getTipoDeSeguro(),
-				seguro.getDescricao(), seguro.getValorApolice(), seguro.isAtivo(), seguro.getCartao().getId());
+		jdbcTemplate.update(sql, seguro.getNumeroApolice(), 
+				seguro.getDataContratacao(), 
+				seguro.getTipoDeSeguro(),
+				seguro.getDescricao(), 
+				seguro.getValorApolice(), 
+				seguro.isAtivo(), 
+				seguro.getCartao().getId());
 	}
 	
 	public void delete (Long id) {

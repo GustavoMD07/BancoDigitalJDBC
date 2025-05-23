@@ -138,7 +138,6 @@ public class CartaoController {
 	@PostMapping("/cliente-security/pagamento/fatura/{id}")
 	public ResponseEntity<String> pagarFatura(@PathVariable Long id, @RequestParam BigDecimal valor) {
 		Cartao cartao = cartaoService.buscarCartaoPorId(id);
-//		Conta conta = cartao.getConta();
 		cartaoService.pagarFatura(id, valor);
 		if(cartao instanceof CartaoCredito) {
 			return new ResponseEntity<>("Fatura atualizada. Pagamento feito retirando saldo da conta", HttpStatus.OK);

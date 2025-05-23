@@ -18,8 +18,8 @@ public class ContaDAO {
 	private final ClienteDAO clienteDAO;
 	
 	public Conta save(Conta conta) {
-		String sql = "INSERT INTO conta(cliente_id, tipo_de_conta, taxa_rendimento, taxa_manutencao) "
-				+ "VALUES (?, ?, ?, ?) RETURNING id" ;
+		String sql = "SELECT inserir_conta_v3 (?, ?, ?, ?) ";
+		
 		Long id = jdbcTemplate.queryForObject(sql, Long.class,
 		        conta.getCliente().getId(),
 		        conta.getTipoDeConta().toUpperCase(),
@@ -28,9 +28,6 @@ public class ContaDAO {
 		    );
 		    conta.setId(id);
 		    return conta;
-//		jdbcTemplate.update(sql, conta.getCliente().getId(), conta.getTipoDeConta(),
-//		conta.getCliente().getTaxaRendimento(), conta.getCliente().getTaxaManutencao());
-//		return conta;
 	}
 	
 	public void delete(Long id) {
@@ -55,10 +52,14 @@ public class ContaDAO {
         return Optional.of(conta);
     }
 
-	
 	public List<Conta> findAll() {
         String sql = "SELECT * FROM conta";
         return jdbcTemplate.query(sql, contaRowMapper);
+    }
+	
+	public List<Conta> findByClienteId(Long clienteId) {
+        String sql = "SELECT * FROM conta WHERE cliente_id = ?";
+        return jdbcTemplate.query(sql, contaRowMapper, clienteId);
     }
 	
 	public void deleteAll(List<Conta> contas) {
@@ -68,9 +69,4 @@ public class ContaDAO {
 			jdbcTemplate.update(sql, conta.getId());
 		}
 	}
-	
-	public List<Conta> findByClienteId(Long clienteId) {
-        String sql = "SELECT * FROM conta WHERE cliente_id = ?";
-        return jdbcTemplate.query(sql, contaRowMapper, clienteId);
-    }
 }

@@ -37,8 +37,6 @@ public class ContaController {
 	    		" adicionada com sucesso", HttpStatus.CREATED);
 	}
 	
-
-	
 	@DeleteMapping("/admin-security/remove/{id}")
 	public ResponseEntity<String> removerConta(@PathVariable Long id) {
 		Conta contaRemovida = contaService.removerConta(id);
@@ -69,7 +67,7 @@ public class ContaController {
 		if(contas.isEmpty()) {
 			throw new ListaVaziaException("Não foram encontradas Contas.");
 		}
-		return new ResponseEntity<List<Conta>>(contas, HttpStatus.OK);
+		return new ResponseEntity<>(contas, HttpStatus.OK);
 	}
 	
 	@GetMapping("cliente-security/saldo/{id}")
