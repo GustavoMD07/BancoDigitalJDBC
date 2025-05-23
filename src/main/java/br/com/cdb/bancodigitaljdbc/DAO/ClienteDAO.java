@@ -16,14 +16,12 @@ public class ClienteDAO {
 	private final JdbcTemplate jdbcTemplate;
 	private final ClienteRowMapper clienteRowMapper;
 
-	public Cliente save(Cliente cliente) {
+	public void save(Cliente cliente) {
 
-		String sql = "INSERT INTO cliente (nome, cpf, data_nascimento, cep, rua, bairro, cidade, estado, tipo_de_cliente) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String sql = "CALL inserir_cliente_v1 (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		jdbcTemplate.update(sql, cliente.getNome(), cliente.getCpf(), cliente.getDataNascimento(), cliente.getCep(),
 				cliente.getRua(), cliente.getBairro(), cliente.getCidade(), cliente.getEstado(),
 				cliente.getTipoDeCliente().toUpperCase());
-		return cliente;
 	}
 
 	public Cliente update(Cliente cliente) {

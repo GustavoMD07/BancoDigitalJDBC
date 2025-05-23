@@ -58,7 +58,8 @@ public class CartaoService {
 		
 		List<Seguro> seguros = seguroDAO.findByCartaoId(cartao.getId());
 		cartao.setSeguros(seguros);
-		return cartaoDAO.save(cartao);
+		cartaoDAO.save(cartao);
+		return cartao;
 	}
 
 	public List<Cartao> listarCartoes() {

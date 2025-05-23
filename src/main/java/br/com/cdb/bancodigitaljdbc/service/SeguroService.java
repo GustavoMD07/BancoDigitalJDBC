@@ -34,6 +34,7 @@ public class SeguroService {
 	private ContaDAO contaDAO;
 	
 	private static final Logger logger = LoggerFactory.getLogger(SeguroService.class);
+	
 	public SeguroResponse contratarSeguro(SeguroDTO seguroDto) {
 		
 		Cartao cartao = cartaoDAO.findById(seguroDto.getCartaoId()).orElseThrow(() ->

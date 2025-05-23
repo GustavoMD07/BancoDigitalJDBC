@@ -67,16 +67,16 @@ public class ContaService {
 			throw new QuantidadeExcedidaException("O cliente já possui duas contas");
 		}
 
-		Conta contaSalva = contaDAO.save(conta);
-		inicializarSaldos(contaSalva);
+		contaDAO.save(conta);
+		inicializarSaldos(conta);
 
-		List<SaldoMoeda> saldos = saldoMoedaDAO.findByContaId(contaSalva.getId());
-		contaSalva.setSaldos(saldos);
+		List<SaldoMoeda> saldos = saldoMoedaDAO.findByContaId(conta.getId());
+		conta.setSaldos(saldos);
 
-		List<Cartao> cartoes = cartaoDAO.findByContaId(contaSalva.getId());
-		contaSalva.setCartao(cartoes);
-		logger.info("Conta com o id {} criada", contaSalva.getId());
-		return contaSalva;
+		List<Cartao> cartoes = cartaoDAO.findByContaId(conta.getId());
+		conta.setCartao(cartoes);
+		logger.info("Conta com o id {} criada", conta.getId());
+		return conta;
 	}
 
 	public Conta removerConta(Long id) {

@@ -33,10 +33,10 @@ public class ContaController {
 	@PostMapping("/cliente-security/add")
 	public ResponseEntity<String> addConta(@RequestBody @Valid ContaDTO contaDto) {
 	   contaService.addConta(contaDto);
-	    return ResponseEntity
-	        .status(HttpStatus.CREATED)
-	        .body("Conta " + contaDto.getTipoDeConta() + " adicionada com sucesso");
+	    return new ResponseEntity<>("Conta " + contaDto.getTipoDeConta() +
+	    		" adicionada com sucesso", HttpStatus.CREATED);
 	}
+	
 
 	
 	@DeleteMapping("/admin-security/remove/{id}")

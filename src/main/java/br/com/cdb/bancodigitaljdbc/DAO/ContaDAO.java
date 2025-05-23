@@ -17,20 +17,16 @@ public class ContaDAO {
 	private final ContaRowMapper contaRowMapper;
 	private final ClienteDAO clienteDAO;
 	
-	public Conta save(Conta conta) {
-		String sql = "INSERT INTO conta(cliente_id, tipo_de_conta, taxa_rendimento, taxa_manutencao) "
-				+ "VALUES (?, ?, ?, ?) RETURNING id" ;
-		Long id = jdbcTemplate.queryForObject(sql, Long.class,
+	public void save(Conta conta) {
+		String sql = "CALL inserir_conta_v1(?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
 		        conta.getCliente().getId(),
 		        conta.getTipoDeConta().toUpperCase(),
 		        conta.getCliente().getTaxaRendimento(),
 		        conta.getCliente().getTaxaManutencao()
 		    );
-		    conta.setId(id);
-		    return conta;
-//		jdbcTemplate.update(sql, conta.getCliente().getId(), conta.getTipoDeConta(),
-//		conta.getCliente().getTaxaRendimento(), conta.getCliente().getTaxaManutencao());
-//		return conta;
+//		    conta.setId(id);
+//		    return conta;
 	}
 	
 	public void delete(Long id) {

@@ -20,13 +20,8 @@ public class CartaoDAO {
 	private final CartaoRowMapper cartaoRowMapper;
 	private final ContaDAO contaDAO;
 
-	public Cartao save(Cartao cartao) {
-		String sql = """
-				INSERT INTO cartao (
-				  senha, status, num_cartao, tipo_de_cartao, conta_id,
-				  fatura, limite_credito, limite_diario
-				) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-				""";
+	public void save(Cartao cartao) {
+		String sql = "CALL inserir_cartao_v1 (?, ?, ?, ?, ?, ?, ?, ?)";
 
 		Object fatura = null, limiteDiario = null, limiteCredito = null;
 		// tava bugando, erro de não ser inicializado
@@ -44,8 +39,6 @@ public class CartaoDAO {
 
 		jdbcTemplate.update(sql, cartao.getSenha(), cartao.isStatus(), cartao.getNumCartao(), cartao.getTipoDeCartao(),
 				cartao.getConta().getId(), fatura, limiteCredito, limiteDiario);
-
-		return cartao;
 	}
 
 	public void delete(Long id) {

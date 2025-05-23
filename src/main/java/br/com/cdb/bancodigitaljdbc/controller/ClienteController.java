@@ -33,6 +33,8 @@ public class ClienteController {
 	public ResponseEntity<String> addCliente(@RequestBody @Valid ClienteDTO clienteDto) {
 		Cliente clienteAdicionado = clienteService.addCliente(clienteDto);
 		
+		clienteService.addCliente(clienteDto);
+
 		if(clienteAdicionado != null) {
 			return new ResponseEntity<>("Cliente " + clienteAdicionado.getNome() + 
 			" do tipo: " + clienteDto.getTipoDeCliente() + ", adicionado com sucesso",
