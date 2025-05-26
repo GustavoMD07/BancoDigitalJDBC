@@ -28,32 +28,29 @@ public class SeguroDAO {
 	}
 	
 	public void delete (Long id) {
-		String sql = "DELETE FROM seguro WHERE id = ?";
+		String sql = "SELECT deletar_seguro_v1(?)";
 		jdbcTemplate.update(sql, id);
 	}
 	
 	public void deleteAll(List<Seguro> seguros) {
-		String sql = "DELETE FROM seguro WHERE id = ?";
-		
-		for(Seguro seguro : seguros ) {
-			jdbcTemplate.update(sql, seguro.getId());
-		}
+		String sql = "SELECT deletar_todos_seguro_v1()";
+		jdbcTemplate.execute(sql); //sem muito retorno
 	}
 	
-	
 	public Optional<Seguro> findById(Long id) {
-        String sql = "SELECT * FROM seguro WHERE id = ?";
+        String sql = "SELECT * FROM encontrar_seguro_v1(?)";
+        //aqui, eu retorno o objeto todo, então nessa function eu uso o returns table
         List<Seguro> lista = jdbcTemplate.query(sql, seguroRowMapper, id);
         return lista.isEmpty() ? Optional.empty() : Optional.of(lista.get(0));
     }
 	
 	public List<Seguro> findAll() {
-        String sql = "SELECT * FROM seguro";
+        String sql = "SELECT * FROM encontrar_todos_seguros_v1()";
         return jdbcTemplate.query(sql, seguroRowMapper);
     }
 
     public List<Seguro> findByCartaoId(Long cartaoId) {
-        String sql = "SELECT * FROM seguro WHERE cartao_id = ?";
+        String sql = "SELECT * FROM encontrar_seguro_por_cartao_v1";
         return jdbcTemplate.query(sql, seguroRowMapper, cartaoId);
     }
 }

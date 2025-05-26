@@ -1,0 +1,8 @@
+CREATE OR REPLACE FUNCTION public.deletar_todos_seguro_v1()
+RETURNS VOID
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+	DELETE FROM seguro;
+END;
+$BODY$;

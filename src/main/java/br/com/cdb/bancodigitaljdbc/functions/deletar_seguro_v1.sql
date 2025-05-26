@@ -1,0 +1,8 @@
+CREATE OR REPLACE FUNCTION public.deletar_seguro_v1(p_id BIGINT)
+RETURNS VOID
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+	DELETE FROM seguro WHERE id = p_id;
+END;
+$BODY$;

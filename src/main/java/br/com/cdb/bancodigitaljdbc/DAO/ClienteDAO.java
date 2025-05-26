@@ -37,7 +37,7 @@ public class ClienteDAO {
 	}
 
 	public void delete(Long id) {
-		String sql = "DELETE FROM cliente WHERE id = ?";
+		String sql = "SELECT deletar_cliente_v1(?)";
 		jdbcTemplate.update(sql, id);
 		// update pode ser usado pro que não me retorna um valor e sim faz uma ação
 		// ex: insert, delete, update, alter table.

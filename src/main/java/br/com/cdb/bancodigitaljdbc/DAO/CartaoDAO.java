@@ -47,7 +47,7 @@ public class CartaoDAO {
 	}
 
 	public void delete(Long id) {
-		String sql = "DELETE FROM cartao WHERE id = ?";
+		String sql = "SELECT deletar_cartao_v1(?)";
 		jdbcTemplate.update(sql, id);
 	}
 
