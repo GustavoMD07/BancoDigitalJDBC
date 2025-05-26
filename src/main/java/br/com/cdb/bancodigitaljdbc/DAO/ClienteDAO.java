@@ -25,11 +25,7 @@ public class ClienteDAO {
 	}
 
 	public Cliente update(Cliente cliente) {
-		String sql = """
-				UPDATE cliente SET nome = ?, cpf = ?, data_nascimento  = ?, cep = ?,
-				rua = ?, bairro = ?, cidade = ?, estado = ?, tipo_de_cliente  = ?
-				 WHERE id = ?
-				 """;
+		String sql = "SELECT atualizar_cliente_v1(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		jdbcTemplate.update(sql, cliente.getNome(), cliente.getCpf(), cliente.getDataNascimento(), cliente.getCep(),
 				cliente.getRua(), cliente.getBairro(), cliente.getCidade(), cliente.getEstado(),
 				cliente.getTipoDeCliente().toUpperCase(), cliente.getId());
@@ -44,18 +40,18 @@ public class ClienteDAO {
 	}
 
 	public List<Cliente> findAll() {
-        String sql = "SELECT * FROM cliente";
+        String sql = "SELECT * FROM encontrar_todos_cliente_v1()";
         return jdbcTemplate.query(sql, clienteRowMapper);
     }
 
 	  public Optional<Cliente> findById(Long id) {
-	        String sql = "SELECT * FROM cliente WHERE id = ?";
+	        String sql = "SELECT * FROM encontrar_cliente_v1(?)";
 	        List<Cliente> lista = jdbcTemplate.query(sql, clienteRowMapper, id);
 	        return lista.isEmpty() ? Optional.empty() : Optional.of(lista.get(0));
 	    }
 
 	public Optional<Cliente> findByCPF(String cpf) {
-		String sql = "SELECT * FROM cliente WHERE cpf = ?";
+		String sql = "SELECT * FROM encontrar_cliente_cpf_v1(?)";
 		List<Cliente> clientes = jdbcTemplate.query(sql, clienteRowMapper, cpf);
 		return clientes.isEmpty() ? Optional.empty() : Optional.of(clientes.get(0));
 		// se estiver vazia, retorna q tá... se não, retorna o primeiro pegando o index

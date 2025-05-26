@@ -50,7 +50,7 @@ public class SeguroDAO {
     }
 
     public List<Seguro> findByCartaoId(Long cartaoId) {
-        String sql = "SELECT * FROM encontrar_seguro_por_cartao_v1";
+        String sql = "SELECT * FROM encontrar_seguro_por_cartao_v1(?)";
         return jdbcTemplate.query(sql, seguroRowMapper, cartaoId);
     }
 }
