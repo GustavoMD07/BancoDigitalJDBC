@@ -26,7 +26,7 @@ public class UsuarioDAO {
 	}
 	//query é só um comando SQL
 	public Optional<Usuario> findByEmail(String email) {
-		String sql ="SELECT * FROM usuario WHERE email = ?";
+		String sql ="SELECT * FROM encontrar_usuario_por_email_v1(?)";
 		List<Usuario> usuarios = jdbcTemplate.query(sql, new UsuarioRowMapper(), email);		
 		return usuarios.isEmpty() ? Optional.empty() : Optional.of(usuarios.get(0));
 		//se a lista estiver vazia, retorna que tá vazio, se tiver, ele pega o primeiro pelo index

@@ -70,7 +70,7 @@ public class CartaoDAO {
 				cartao.getConta().getId(), fatura, limiteCredito, limiteDebito );
 	}
 
-	public void deleteAll() {
+	public void deleteAll(List<Cartao> cartoes) {
 		String sql = "SELECT deletar_todos_cartao_v1()";
 		jdbcTemplate.execute(sql);
 	} //function pra "resetar" o banco de dados

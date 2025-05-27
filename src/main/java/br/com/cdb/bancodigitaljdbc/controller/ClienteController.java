@@ -85,12 +85,8 @@ public class ClienteController {
 	
 	@GetMapping("/cliente-security/list/{id}")			//com o PathVariable, eu mostro que o LongId vai ser o que o usuário escreve
 	public ResponseEntity<ClienteResponse> buscarClientePorId(@PathVariable Long id) {
-		
 		Cliente clienteProcurado = clienteService.buscarClientePorId(id);
 			return new ResponseEntity<>( ClienteResponse.fromEntity(clienteProcurado), HttpStatus.FOUND);
-			
-			//o próprio JPA já retorna o cliente com o ID, então eu não preciso usar um List, se eu usasse, eu estaria
-			//fazendo algo desnecessário
 	}
 	
 	

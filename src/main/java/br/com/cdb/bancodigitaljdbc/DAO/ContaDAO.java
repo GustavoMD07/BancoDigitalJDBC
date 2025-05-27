@@ -62,7 +62,7 @@ public class ContaDAO {
         return jdbcTemplate.query(sql, contaRowMapper, clienteId);
     }
 	
-	public void deleteAll() {
+	public void deleteAll(List<Conta> contas) {
 		String sql = "SELECT deletar_todos_contas_v1()";
 		jdbcTemplate.execute(sql);
 	}
