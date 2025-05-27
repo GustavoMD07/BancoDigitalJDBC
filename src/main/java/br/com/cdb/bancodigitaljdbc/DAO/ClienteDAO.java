@@ -26,15 +26,18 @@ public class ClienteDAO {
 
 	public Cliente update(Cliente cliente) {
 		String sql = "SELECT atualizar_cliente_v1(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-		jdbcTemplate.update(sql, cliente.getNome(), cliente.getCpf(), cliente.getDataNascimento(), cliente.getCep(),
-				cliente.getRua(), cliente.getBairro(), cliente.getCidade(), cliente.getEstado(),
-				cliente.getTipoDeCliente().toUpperCase(), cliente.getId());
+		jdbcTemplate.queryForObject(sql, Boolean.class, cliente.getId(), cliente.getNome(), cliente.getCpf(),
+				cliente.getDataNascimento(), cliente.getCep(),
+				cliente.getRua(), cliente.getBairro(), cliente.getCidade(),
+				cliente.getEstado(), cliente.getTipoDeCliente().toUpperCase());
 		return cliente;
-	}
+	} //toda função que tiver um "return" mesmo que void, não pode ser update
+	//o update não recebe retorno, select + update não casam bem
+	
 
 	public void delete(Long id) {
-		String sql = "SELECT deletar_cliente_v1(?)";
-		jdbcTemplate.update(sql, id);
+		String sql = "SELECT deletar_cliente_v2(?)";
+		jdbcTemplate.queryForObject(sql, Boolean.class, id);
 		// update pode ser usado pro que não me retorna um valor e sim faz uma ação
 		// ex: insert, delete, update, alter table.
 	}

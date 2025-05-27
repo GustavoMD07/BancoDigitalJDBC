@@ -28,18 +28,19 @@ import br.com.cdb.bancodigitaljdbc.utils.ClienteUtils;
 public class ClienteService {
 
 	// com o AutoWired eu não preciso me preocupar com a criação desse objeto
-	// quando for construido o objeto do Repository, ele vai fazer um new quando precisar
+	// quando for construido o objeto do Repository, ele vai fazer um new quando
+	// precisar
 	@Autowired
 	private ClienteDAO clienteDAO;
-	
+
 	@Autowired
 	private ContaDAO contaDAO;
 
 	// aqui então você precisa validar os campos primeiro
 	// geralmente você usa o próprio Objeto, é uma boa prática:)
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(ClienteService.class);
-	
+
 	public Cliente addCliente(ClienteDTO clienteDto) {
 		// pego a data de nascimento, depois pego a data de hoje e comparo
 		LocalDate dataNascimento = clienteDto.getDataNascimento();
@@ -72,7 +73,7 @@ public class ClienteService {
 		cliente.setDataNascimento(clienteDto.getDataNascimento());
 		Optional<Cliente> clienteExistente = clienteDAO.findByCPF(cliente.getCpf());
 		if (clienteExistente.isPresent()) {
-		    throw new CpfDuplicadoException("Já existe um cliente com este CPF cadastrado.");
+			throw new CpfDuplicadoException("Já existe um cliente com este CPF cadastrado.");
 		}
 
 		EnderecoResponse endereco = ClienteUtils.buscarEndereco(clienteDto.getCep());
@@ -98,50 +99,52 @@ public class ClienteService {
 	// que o método de erro, ele
 	public Cliente removerCliente(Long id) {
 		Cliente cliente = buscarClientePorId(id);
+//		logger.warn("cliente de id{} encontrado", cliente.getId());
+//		logger.warn("id passado {}", id);
 		List<Conta> contas = contaDAO.findByClienteId(cliente.getId());
 		contaDAO.deleteAll(contas);
 		clienteDAO.delete(id);
+		logger.warn("Cliente de id{} removido do sistema", id);
 		return cliente;
 	}
 
-	 public Cliente atualizarCliente(Long id, ClienteDTO dto) {
-	   
-	        buscarClientePorId(id);
+	public Cliente atualizarCliente(Long id, ClienteDTO dto) {
 
-	        
-	        Cliente cliente;
-	        String tipo = dto.getTipoDeCliente().toUpperCase();
-	        switch (tipo) {
-	            case "COMUM":
-	            	cliente = new ClienteComum();
-	                break;
-	            case "SUPER":
-	            	cliente = new ClienteSuper();
-	                break;
-	            case "PREMIUM":
-	            	cliente = new ClientePremium();
-	                break;
-	            default:
-	                throw new SubClasseDiferenteException("Selecione o tipo de cliente: Comum, Super ou Premium");
-	        }
-	        cliente.setId(id);
+		buscarClientePorId(id);
 
-	        // 3) Copia os outros campos
-	        cliente.setNome(dto.getNome());
-	        cliente.setCpf(dto.getCPF());
-	        cliente.setDataNascimento(dto.getDataNascimento());
+		Cliente cliente;
+		String tipo = dto.getTipoDeCliente().toUpperCase();
+		switch (tipo) {
+		case "COMUM":
+			cliente = new ClienteComum();
+			break;
+		case "SUPER":
+			cliente = new ClienteSuper();
+			break;
+		case "PREMIUM":
+			cliente = new ClientePremium();
+			break;
+		default:
+			throw new SubClasseDiferenteException("Selecione o tipo de cliente: Comum, Super ou Premium");
+		}
+		cliente.setId(id);
 
-	        EnderecoResponse end = ClienteUtils.buscarEndereco(dto.getCep());
-	        cliente.setCep(end.getCep());
-	        cliente.setRua(end.getRua());
-	        cliente.setBairro(end.getBairro());
-	        cliente.setCidade(end.getCidade());
-	        cliente.setEstado(end.getEstado());
-	        
-	        logger.info("Cliente atualizado com sucesso");
-	        
-	        return clienteDAO.update(cliente);
-	 }
+		// 3) Copia os outros campos
+		cliente.setNome(dto.getNome());
+		cliente.setCpf(dto.getCPF());
+		cliente.setDataNascimento(dto.getDataNascimento());
+
+		EnderecoResponse end = ClienteUtils.buscarEndereco(dto.getCep());
+		cliente.setCep(end.getCep());
+		cliente.setRua(end.getRua());
+		cliente.setBairro(end.getBairro());
+		cliente.setCidade(end.getCidade());
+		cliente.setEstado(end.getEstado());
+
+		logger.info("Cliente atualizado com sucesso");
+
+		return clienteDAO.update(cliente);
+	}
 
 	public List<Cliente> getAllClientes() {
 		List<Cliente> clientes = clienteDAO.findAll();
@@ -152,8 +155,7 @@ public class ClienteService {
 	}
 
 	public Cliente buscarClientePorId(Long id) {
-		Cliente c = clienteDAO.findById(id).orElseThrow(() -> 
-			new ObjetoNuloException("Cliente não encontrado"));
+		Cliente c = clienteDAO.findById(id).orElseThrow(() -> new ObjetoNuloException("Cliente não encontrado"));
 		List<Conta> contas = contaDAO.findByClienteId(c.getId());
 		c.setContas(contas);
 		return c;

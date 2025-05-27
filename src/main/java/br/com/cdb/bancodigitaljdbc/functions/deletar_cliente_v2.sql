@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION public.deletar_cartao_v1(
+CREATE OR REPLACE FUNCTION public.deletar_cliente_v2(
 	p_id bigint)
     RETURNS boolean
     LANGUAGE 'plpgsql'
@@ -6,12 +6,11 @@ CREATE OR REPLACE FUNCTION public.deletar_cartao_v1(
     VOLATILE PARALLEL UNSAFE
 AS $BODY$
 BEGIN
-	DELETE FROM cartao WHERE id = p_id;
-	
+	DELETE FROM cliente WHERE id = p_id;
 	IF FOUND THEN
-		RETURN true;
+		RETURN TRUE;
 	ELSE
-		RETURN false;
+		RETURN FALSE;
 	END IF;
 END;
 $BODY$;

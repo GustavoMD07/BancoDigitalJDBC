@@ -24,7 +24,7 @@ public class SaldoMoedaDAO {
 	}
 
 	public void update(SaldoMoeda saldo) {
-		String sql = "SELECT atualizar_saldo_v1()";
+		String sql = "SELECT atualizar_saldo_v2()";
 		jdbcTemplate.update(sql, saldo.getSaldo(), saldo.getId());
 	}
 

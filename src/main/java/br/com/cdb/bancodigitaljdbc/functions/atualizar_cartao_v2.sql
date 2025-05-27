@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION public.atualizar_cartao_v1(
+CREATE OR REPLACE FUNCTION public.atualizar_cartao_v2(
 	p_id bigint,
 	p_senha character varying,
 	p_status boolean,
@@ -8,10 +8,9 @@ CREATE OR REPLACE FUNCTION public.atualizar_cartao_v1(
 	p_fatura numeric,
 	p_limite_credito numeric,
 	p_limite_diario numeric)
-    RETURNS BOOLEAN
+    RETURNS void
     LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE PARALLEL UNSAFE
+ 
 AS $BODY$
 BEGIN
 	UPDATE cartao
@@ -25,10 +24,5 @@ BEGIN
 	limite_diario = p_limite_diario
 	WHERE id = p_id;
 
-	IF FOUND THEN
-		RETURN TRUE;
-	ELSE
-		RETURN FALSE;
-	END IF;
 END;
 $BODY$;

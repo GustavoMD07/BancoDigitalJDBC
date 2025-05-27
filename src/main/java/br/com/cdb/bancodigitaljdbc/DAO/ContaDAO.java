@@ -36,9 +36,9 @@ public class ContaDAO {
 	}
 	
 	public void update(Conta conta) {
-		String sql = "SELECT atualizar_conta_v1(?, ?, ?)";
-		jdbcTemplate.update(sql,conta.getId(), conta.getCliente().getId(), conta.getTipoDeConta());
-		
+		String sql = "SELECT atualizar_conta_v2(?, ?, ?)";
+		jdbcTemplate.update(sql, conta.getId(), conta.getCliente().getId(), conta.getTipoDeConta());
+		//se naõ der certo, mete um boolean class msm
 	}
 	
 	public Optional<Conta> findById(Long id) {
@@ -64,6 +64,6 @@ public class ContaDAO {
 	
 	public void deleteAll(List<Conta> contas) {
 		String sql = "SELECT deletar_todos_contas_v1()";
-		jdbcTemplate.execute(sql);
+		jdbcTemplate.queryForObject(sql, Boolean.class);
 	}
 }

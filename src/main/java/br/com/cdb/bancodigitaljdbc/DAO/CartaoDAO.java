@@ -66,7 +66,7 @@ public class CartaoDAO {
 			CartaoDebito cd = (CartaoDebito) cartao;
 			limiteDebito = cd.getLimiteDiario(); // ou getLimiteDebito(), conforme seu getter
 		}
-		jdbcTemplate.update(sql,cartao.getId(), cartao.getSenha(), cartao.isStatus(), cartao.getNumCartao(), cartao.getTipoDeCartao(),  
+		jdbcTemplate.queryForObject(sql, Boolean.class, cartao.getId(), cartao.getSenha(), cartao.isStatus(), cartao.getNumCartao(), cartao.getTipoDeCartao(),  
 				cartao.getConta().getId(), fatura, limiteCredito, limiteDebito );
 	}
 
