@@ -36,13 +36,13 @@ public class ContaDAO {
 	}
 	
 	public void update(Conta conta) {
-		String sql = "UPDATE conta SET cliente_id = ?, tipo_de_conta = ? WHERE id = ?";
-		jdbcTemplate.update(sql, conta.getCliente().getId(), conta.getTipoDeConta(), conta.getId());
+		String sql = "SELECT atualizar_conta_v1(?, ?, ?)";
+		jdbcTemplate.update(sql,conta.getId(), conta.getCliente().getId(), conta.getTipoDeConta());
 		
 	}
 	
 	public Optional<Conta> findById(Long id) {
-        String sql = "SELECT * FROM conta WHERE id = ?";
+        String sql = "SELECT * FROM encontrar_conta_v1(?)";
         List<Conta> lista = jdbcTemplate.query(sql, contaRowMapper, id);
         if (lista.isEmpty()) return Optional.empty();
 
@@ -53,20 +53,17 @@ public class ContaDAO {
     }
 
 	public List<Conta> findAll() {
-        String sql = "SELECT * FROM conta";
+        String sql = "SELECT * FROM encontrar_todos_conta_v1()";
         return jdbcTemplate.query(sql, contaRowMapper);
     }
 	
 	public List<Conta> findByClienteId(Long clienteId) {
-        String sql = "SELECT * FROM conta WHERE cliente_id = ?";
+        String sql = "SELECT * FROM encontrar_conta_por_cliente_v1(?)";
         return jdbcTemplate.query(sql, contaRowMapper, clienteId);
     }
 	
 	public void deleteAll(List<Conta> contas) {
-		String sql = "DELETE FROM conta WHERE id = ?";
-		
-		for (Conta conta : contas) {
-			jdbcTemplate.update(sql, conta.getId());
-		}
+		String sql = "SELECT deletar_todos_contas_v1()";
+		jdbcTemplate.execute(sql);
 	}
 }
