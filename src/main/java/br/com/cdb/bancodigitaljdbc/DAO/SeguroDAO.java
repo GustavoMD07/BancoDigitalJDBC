@@ -32,7 +32,7 @@ public class SeguroDAO {
 		jdbcTemplate.update(sql, id);
 	}
 	
-	public void deleteAll(List<Seguro> seguros) {
+	public void deleteAll() {
 		String sql = "SELECT deletar_todos_seguro_v1()";
 		jdbcTemplate.execute(sql); //sem muito retorno
 	}

@@ -52,18 +52,7 @@ public class CartaoDAO {
 	}
 
 	public void update(Cartao cartao) {
-		String sql = """
-				UPDATE cartao
-				   SET tipo_de_cartao  = ?,
-				       num_cartao       = ?,
-				       senha            = ?,
-				       status           = ?,
-				       conta_id         = ?,
-				       fatura           = ?,
-				       limite_credito   = ?,
-				       limite_diario    = ?
-				 WHERE id = ?
-				""";
+		String sql = "SELECT atualizar_cartao_v1(?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 		Object fatura = null;
 		Object limiteCredito = null;
@@ -77,21 +66,17 @@ public class CartaoDAO {
 			CartaoDebito cd = (CartaoDebito) cartao;
 			limiteDebito = cd.getLimiteDiario(); // ou getLimiteDebito(), conforme seu getter
 		}
-		jdbcTemplate.update(sql, cartao.getTipoDeCartao(), cartao.getNumCartao(), cartao.getSenha(), cartao.isStatus(),
-				cartao.getConta().getId(), fatura, limiteCredito, limiteDebito, cartao.getId());
+		jdbcTemplate.update(sql,cartao.getId(), cartao.getSenha(), cartao.isStatus(), cartao.getNumCartao(), cartao.getTipoDeCartao(),  
+				cartao.getConta().getId(), fatura, limiteCredito, limiteDebito );
 	}
 
-	public void deleteAll(List<Cartao> cartoes) {
-
-		String sql = "DELETE FROM cartao WHERE id = ?";
-
-		for (Cartao cartao : cartoes) {
-			jdbcTemplate.update(sql, cartao.getId());
-		}
-	}
+	public void deleteAll() {
+		String sql = "SELECT deletar_todos_cartao_v1()";
+		jdbcTemplate.execute(sql);
+	} //function pra "resetar" o banco de dados
 
 	public Optional<Cartao> findById(Long id) {
-		String sql = "SELECT * FROM cartao WHERE id = ?";
+		String sql = "SELECT * FROM encontrar_cartao_v1(?)";
 		List<Cartao> lista = jdbcTemplate.query(sql, cartaoRowMapper, id);
 		if (lista.isEmpty())
 			return Optional.empty();
@@ -107,13 +92,13 @@ public class CartaoDAO {
 	// Optional
 
 	public List<Cartao> findAll() {
-		String sql = "SELECT * FROM cartao";
+		String sql = "SELECT * FROM encontrar_todos_cartao_v1()";
 
 		return jdbcTemplate.query(sql, cartaoRowMapper);
 	}
 
 	public List<Cartao> findByContaId(Long contaId) {
-		String sql = "SELECT * FROM cartao WHERE conta_id = ?";
+		String sql = "SELECT * FROM encontrar_cartao_por_conta_v1(?)";
 		return jdbcTemplate.query(sql, cartaoRowMapper, contaId);
 	}
 
