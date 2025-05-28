@@ -29,19 +29,18 @@ public class SaldoMoedaDAO {
 	}
 
 	public List<SaldoMoeda> findByContaId(Long contaId) {
-		String sql = "SELECT * FROM encontrar_saldo_por_conta(?)";
+		String sql = "SELECT * FROM encontrar_saldo_por_conta_v1(?)";
 		return jdbcTemplate.query(sql, saldoMapper, contaId);
 	}
 
-	// apagar todos os saldos de uma conta
 	public void deleteByContaId(Long contaId) {
 		String sql = "SELECT deletar_saldo_por_conta_v1(?)";
-		jdbcTemplate.update(sql, contaId);
+		jdbcTemplate.queryForObject(sql, Boolean.class, contaId);
 	}
 
 	public Optional<SaldoMoeda> findByMoedaAndContaId(String moeda, Long contaId) {
-		String sql = "SELECT * FROM encontrar_saldo_por_moeda(?, ?)";
-		List<SaldoMoeda> saldo = jdbcTemplate.query(sql, saldoMapper, contaId, moeda);
+		String sql = "SELECT * FROM encontrar_saldo_por_moeda_v1(?, ?)";
+		List<SaldoMoeda> saldo = jdbcTemplate.query(sql, saldoMapper, moeda, contaId);
 		return saldo.isEmpty() ? Optional.empty() : Optional.of(saldo.get(0));
 
 	}

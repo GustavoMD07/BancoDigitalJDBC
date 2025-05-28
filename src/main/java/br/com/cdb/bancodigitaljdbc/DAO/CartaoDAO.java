@@ -48,7 +48,7 @@ public class CartaoDAO {
 
 	public void delete(Long id) {
 		String sql = "SELECT deletar_cartao_v1(?)";
-		jdbcTemplate.update(sql, id);
+		jdbcTemplate.queryForObject(sql, Boolean.class, id);
 	}
 
 	public void update(Cartao cartao) {

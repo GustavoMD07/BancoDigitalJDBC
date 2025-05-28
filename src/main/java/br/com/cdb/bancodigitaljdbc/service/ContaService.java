@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import br.com.cdb.bancodigitaljdbc.DAO.CartaoDAO;
 import br.com.cdb.bancodigitaljdbc.DAO.ClienteDAO;
 import br.com.cdb.bancodigitaljdbc.DAO.ContaDAO;
@@ -49,6 +51,7 @@ public class ContaService {
 
 	private static final Logger logger = LoggerFactory.getLogger(ContaService.class);
 
+	@Transactional
 	public Conta addConta(ContaDTO dto) {
 
 		Cliente cliente = clienteDAO.findById(dto.getClienteId())
@@ -94,6 +97,7 @@ public class ContaService {
 			cartaoDAO.deleteAll(conta.getCartoes());
 
 		}
+		saldoMoedaDAO.deleteByContaId(id); //apagando manualmente os saldos pra não bugar por conta da FK
 
 		contaDAO.delete(id);
 		return conta;

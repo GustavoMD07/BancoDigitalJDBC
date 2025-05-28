@@ -29,7 +29,7 @@ public class SeguroDAO {
 	
 	public void delete (Long id) {
 		String sql = "SELECT deletar_seguro_v1(?)";
-		jdbcTemplate.update(sql, id);
+		jdbcTemplate.queryForObject(sql, Boolean.class, id);
 	}
 	
 	public void deleteAll(List<Seguro> seguros) {

@@ -32,7 +32,7 @@ public class ContaDAO {
 	
 	public void delete(Long id) {
 		String sql = "SELECT deletar_conta_v1(?)";
-		jdbcTemplate.update(sql, id);
+		jdbcTemplate.queryForObject(sql, Boolean.class, id);
 	}
 	
 	public void update(Conta conta) {
